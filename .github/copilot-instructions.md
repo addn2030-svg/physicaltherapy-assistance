@@ -53,6 +53,80 @@ Load `data/nkt_detailed_protocols.json`:
   - Equipment: Taping facilitation inhibited Origin->Insertion 25-50% enhance spindle, inhibition facilitated Insertion->Origin 0-15% light downregulate hyperactive, decompression scar cross-pattern 50% center, IASTM 30-60deg bevel 30-60sec, tuning fork 128Hz over lax ligament Pacinian stimulation
   - Master Hierarchy: STEP1 CLEAR SCARS & RECENT TRAUMAS L3 C-sections Appendectomies Portals Navel Episiotomies active scar resets all downstream, STEP2 CLEAR LIGAMENTOUS INSTABILITY L3 ATFL CFL Sacrotuberous SIJ, STEP3 ASSESS MASTER CRANIO-RESPIRATORY DRIVERS L2 Diaphragm Inhalation Exhalation TMJ Hyoid, STEP4 EVALUATE FUNCTIONAL KINETIC SUBSYSTEMS L2 POS AOS DLS Lateral, STEP5 REFINE LOCAL AGONIST-ANTAGONIST SYNERGIST PAIRS L1, STEP6 ADVANCED GAIT INTEGRATION & HOMEWORK Release FIRST Activate SECOND
 
+## NKT Scar 8-Vector Testing Protocol - Custom Instruction (Requested)
+
+**When to use:** Any patient with surgical scars (C-section Pfannenstiel, appendectomy, arthroscopy portals, laparoscopy, episiotomy, perineal, navel umbilicus), trauma scars, or when core inhibition persists (TVA, rectus, glute max weak despite hip/thoracic correction) — scar is likely primary driver per Master Hierarchy STEP1.
+
+**Scars are Level 3 priority — clear scars FIRST before ligaments, diaphragm, TMJ, subsystems, local pairs. Active scar resets all downstream corrections!**
+
+### 8-Vector Assessment (From nkt_level2_level3_manual.html & nkt_master_training_suite.html)
+
+Load `data/nkt_detailed_protocols.json` → `compensation_taxonomy.specialized_drivers.scars.multi_vector_protocol`
+
+**Procedure:**
+
+1. **Find inhibited muscle:** Test suspected victim muscle in isolated shortened range (e.g., Bilateral TVA, Rectus Abdominis, Gluteus Maximus). Must be weak/inhibited spongy give.
+
+2. **Test scar in 8 distinct directional planes while retesting weak muscle within 2 seconds:**
+
+| Vector # | Direction | Hand Technique | Clinical Note |
+|---|---|---|---|
+| **1 N** | Superior Cephalad Traction | Push scar tissue upward toward head | Common for C-section superior tethering |
+| **2 S** | Inferior Caudad Traction | Push scar downward toward feet | Common for C-section inferior tethering |
+| **3 E** | Right Lateral Shear | Shift scar to patient's right | Tests lateral fascial drag |
+| **4 W** | Left Lateral Shear | Shift scar to patient's left | Tests lateral fascial drag |
+| **5 CW** | Clockwise Rotation / Torsion | Two-finger rotational torsion clockwise | Tests rotational fascial distortion |
+| **6 CCW** | Counter-Clockwise Rotation | Two-finger rotational torsion counter-clockwise | Tests opposite rotation |
+| **7 Comp** | Direct Compression | Direct perpendicular pressure into deep scar bed | Tests deep adhesion to underlying fascia/organs |
+| **8 Pinch** | Skin Roll / Distraction Pinch | Lift and pinch scar away from underlying fascia | Tests superficial vs deep fascial glide, decompression need |
+
+3. **Interpretation:** If weak muscle (e.g., TVA) instantly locks strong when scar is challenged in specific vector (e.g., Vector 2 S inferior traction), that vector is the reactive driver vector.
+
+4. **Corrective Treatment:** Apply 45-60 seconds manual cross-fiber mobilization precisely along vector that restored strength, followed immediately by 3-5 reps isolated activation for inhibited muscle (e.g., quadruped drawing-in TVA activation 5sec hold x4). Use 30-60sec neuroplastic window.
+
+5. **Special Scar Topologies:**
+   - **Umbilicus / Navel Scar:** Original birth scar, affects visceral fascia urachus/median umbilical ligament, frequently drives deep lumbar/pelvic floor inhibition, test via TL on navel.
+   - **Episiotomy / Perineal Scars:** Primary drivers of coccygeus, piriformis, obturator internus hypertonicity, test via obturator internus prone hip ER 90deg knee flexion.
+   - **Scar-to-Scar Reactivity:** C-section scar can be reactive to older Appendectomy scar or laparoscopic portal. Test TL on Scar A while challenging Scar B. If indicator weakens or strengthens, scar-to-scar interlink confirmed. Treat both.
+   - **Scar-to-Ligament:** Scar can be reactive to ligament e.g., C-section scar + Sacrotuberous ligament. Test scar TL while stressing ligament.
+
+6. **Retest & Verify:** Retest inhibited muscle in isolation no touch holds strong, retest comparable sign functional task (e.g., standing extension pain, single leg stance pelvic drop) >30% improvement, retest after 2min and 24hr.
+
+7. **Equipment for Scars:**
+   - **Decompression Taping:** Cross-pattern two intersecting strips 50% center tension over reactive scar to reduce fascial tension, wear 3-5 days, retest within 30min.
+   - **IASTM:** 30-60deg bevel edge contact 30-60sec per reactive vector along scar.
+   - **Tuning Fork 128Hz:** Optional vibration over scar to stimulate Pacinian corpuscles before activation if scar hypersensitive.
+
+8. **Homework Prescription (Golden Rule):**
+   - Frequency 2-3x/day 2-4 weeks
+   - Sequence: **Release Scar along specific vector 60sec FIRST → Activate Inhibited Muscle SECOND** strict!
+   - Patient self scar mobilization along vector + TVA drawing-in or glute activation.
+   - If strengthening without releasing scar first, MCC bypasses weak and reinforces compensation!
+
+9. **Safety & Red Flags:**
+   - Check scar age: Even scars >5 years or decades persist neurologically until reprogrammed (tissue remodeling complete but engram remains).
+   - Avoid aggressive mobilization if scar infected, open wound, acute inflammation <6 weeks post-op, malignancy, DVT.
+   - For C-section, ensure medical clearance >6-8 weeks postpartum, avoid deep pressure if acute.
+   - Screen visceral red flags if scar linked to visceral (appendectomy etc) — refer if acute abdomen.
+
+10. **Documentation for LFS Console:**
+    - Driver Checks: `CompensationObserved` = scar vector direction that restored strength
+    - `DependencyResult` = `dependent_on_scar_Csection_VectorS` or `dependent_on_scar_to_scar_Csection_Appendectomy`
+    - `RetestComparator` = TVA weak → after Vector S mobilization 60sec + quadruped activation → TVA strong + lumbar extension pain -50% + pelvic drop improved 40%
+    - Report Summary: Include scar ID, vector #, treatment duration, activation prescribed.
+
+**Example Prompt for Copilot:**
+```
+Use nkt skill scar 8-vector protocol:
+Patient 34F 14 months post-cesarean Pfannenstiel scar + appendectomy scar 2010
+Test TVA inhibited, Glute Max inhibited
+Challenge scar TL C-section Vector S inferior traction -> TVA instantly strong
+Challenge scar-to-scar C-section TL + appendectomy rub -> Glute Max strong
+Apply master hierarchy STEP1 scars first
+```
+
+Copilot must return: Vector-specific treatment, scar-to-scar protocol, taping cross-pattern, homework Release Scar FIRST Activate SECOND, retest rules, safety clearance.
+
 ## Integration with LFS
 
 - NKT MMT is comparable sign binary weak/strong immediate retest >30% shift confirms driver. LFS retest comparator % change maps to NKT Weak->Strong shift
