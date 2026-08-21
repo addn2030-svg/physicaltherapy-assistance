@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PT Console: Run Demo Patient",
+      "type": "shell",
+      "command": "npx ts-node src/console/index.ts",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "PT: Validate Skills Frontmatter",
+      "type": "shell",
+      "command": "for f in skills/*/SKILL.md; do echo \"=== $f ===\"; head -15 \"$f\"; done",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "PT: Test NKT Engine",
+      "type": "shell",
+      "command": "python3 src/engine/techniques.py && python3 src/engine/reasoning.py",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "PT: Open Web Console",
+      "type": "shell",
+      "command": "npx live-server --port=5500 --open=index.html --no-browser & echo \"Open https://5500-${CODESPACE_NAME}.preview.app.github.dev or http://localhost:5500\"",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "PT: Search Techniques (Lumbar weak)",
+      "type": "shell",
+      "command": "python3 -c \"from src.engine.techniques import get_by_region_and_finding; print('\\n'.join([f\\\"{t['id']}: {t['name']} [{t['evidence_level']}]\\\" for t in get_by_region_and_finding('Lumbar','weak','medium')]))\"",
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}

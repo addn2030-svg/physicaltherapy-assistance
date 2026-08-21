@@ -1,0 +1,18 @@
+{
+  "github.copilot.chat.codesearch.enabled": true,
+  "github.copilot.chat.skills.enabled": true,
+  "github.copilot.chat.experimental.skills.enabled": true,
+  "chat.mcp.enabled": true,
+  "files.associations": {
+    "SKILL.md": "markdown"
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  "emmet.includeLanguages": {
+    "markdown": "html"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

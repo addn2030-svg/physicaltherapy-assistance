@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "ms-python.python",
+    "ms-vscode.vscode-typescript-next",
+    "redhat.vscode-yaml",
+    "ms-vscode.live-server"
+  ]
+}
