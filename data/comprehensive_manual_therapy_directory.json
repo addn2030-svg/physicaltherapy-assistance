@@ -670,7 +670,7 @@
           "acronym": "NKT",
           "origin": "David Weinstock, USA",
           "classification": "Motor control theory - weak inhibited muscle compensated by overactive synergist, manual muscle testing + release + reactivation",
-          "evidence_level": "C (Strong clinical reasoning model)",
+          "evidence_level": "B-C (Strong clinical reasoning model, extensive case series, video demonstrations Level 1-3)",
           "best_for_regions": [
             "All regions for inhibition patterns: glute med vs TFL, multifidus vs erector, serratus vs upper trap"
           ],
@@ -696,7 +696,79 @@
           "contraindications": [
             "High pain preventing muscle testing",
             "Need accurate manual muscle test"
-          ]
+          ],
+          "detailed_protocols_file": "data/nkt_detailed_protocols.json",
+          "version": "3.0.0 - Enhanced from 4 HTML training modules",
+          "levels": {
+            "L1": "Local muscle-to-muscle Agonist-Antagonist Reciprocal Inhibition, Agonist-Synergist Synergistic Dominance",
+            "L2": "Kinetic Subsystems POS AOS DLS Lateral, Core Cylinder Diaphragm TVA Multifidus Pelvic Floor, TMJ Masseter Temporalis Pterygoids Digastric, Perturbation A/P Rotational, Joint Compression Decompression Hip Ankle Shoulder",
+            "L3": "Advanced Multi-Phasic Gait Heel Strike Loading Response Terminal Stance Swing, Multi-Vector Scar 8 vectors N S E W CW CCW Comp Pinch Scar-to-Scar Navel Episiotomy, Ligamentous Interlinks Sacrotuberous Sacrospinous Iliolumbar Dorsal SIJ ATFL CFL Deltoid Bifurcate Spring Alar ACL MCL Ligament-to-Ligament, Extraocular CN III IV VI Superior Rectus Inferior Rectus Medial Rectus Inferior Oblique Superior Oblique Lateral Rectus Oculo-Cervical Reflex, Hyoid Supra Infra Deglutition"
+          },
+          "compensation_taxonomy": {
+            "synergistic_dominance_examples": [
+              "TFL -> Glute Med IT band syndrome",
+              "Hamstrings Erector Spinae -> Glute Max hamstring strain facet impingement",
+              "Upper Trap Levator -> Lower Trap Serratus neck stiffness impingement"
+            ],
+            "reciprocal_inhibition_examples": [
+              "Psoas Iliacus -> Glute Max anterior pelvic tilt lumbar shear",
+              "Pec Minor -> Lower Trap Rhomboids scapula protraction",
+              "Gastroc Soleus -> Tibialis Anterior foot drop reduced DF"
+            ]
+          },
+          "kinetic_slings": {
+            "POS": "Lat Dorsi -> Thoracolumbar Fascia -> Contralat Glute Max - Test supine shoulder extended IR + contralat heel press",
+            "AOS": "Ext Oblique -> Abdominal Fascia -> Contralat Int Oblique Adductor Longus Magnus - Test supine shoulder flex across chest toward opposite ASIS + hip flex 45deg adducted",
+            "DLS": "Erector Spinae -> Sacrotuberous -> Biceps Femoris -> Peroneus Longus -> Tibialis Anterior",
+            "Lateral": "Glute Med Min -> TFL -> Contralat QL Adductors - Test sidelying hip abduction vs ipsilateral QL lateral flexion"
+          },
+          "scar_protocol": {
+            "8_vectors": "N Superior Cephalad, S Inferior Caudad, E Right Lateral, W Left Lateral, CW Clockwise Torsion, CCW Counter-Clockwise, Comp Direct Compression, Pinch Skin Roll Distraction",
+            "special": "Umbilicus Navel visceral fascia urachus, Episiotomy Perineal coccygeus piriformis obturator internus, Scar-to-Scar C-section reactive to Appendectomy"
+          },
+          "ligament_inventory": "ATFL plantarflexion+inversion -> Peroneus Glute Med inhibition, CFL pure inversion, Deltoid eversion -> Tibialis Posterior Core inhibition, Sacrotuberous ischial to sacral shear -> Biceps Femoris Glute Max, Iliolumbar L5 to iliac crest -> QL Psoas, Spring ligament arch collapse",
+          "extraocular_table": "CN III Superior Rectus Up&Out -> Posterior chain extension Suboccipitals Erectors, Inferior Rectus Down&Out -> Anterior chain flexion Deep neck flexors Abs, Medial Rectus Medially -> Adductor Deep Front Line, Inferior Oblique Up&In -> Contralat cervical rotation lateral sling, CN IV Superior Oblique Down&In -> Ipsilateral vestibular core, CN VI Lateral Rectus Laterally -> Lateral subsystem Glute Med SCM",
+          "tmj_table": "Temporalis Elevation Retrusion bite posterior molars -> Compensates Front Line Deep Neck Flexors TVA Back Line Gluteals, Masseter Elevation Ipsilateral Translation lateral shear -> Lateral Subsystem Glute Med QL Peroneals, Medial Pterygoid Elevation Contralat Deviation -> Contralat Oblique pelvic floor Tinnitus, Lateral Pterygoid Depression Protrusion Contralat Deviation -> Deep Cervical Flexors Upper Cervical Ligaments, Digastric Suprahyoids Jaw Depression Hyoid Elevation -> Diaphragm Pelvic floor Valsalva",
+          "corrective_protocol_6_steps": "1 Baseline Test inhibited shortened range spongy give MCC failure, 2 TL/Tactile Challenge patient fingers on driver or rub muscle belly scar ligament gaze hold sensory burst floods MCC, 3 Immediate Retest within 2sec Weak->Strong = REACTIVE PAIR CONFIRMED, 4 Release Facilitated Driver 30-60sec ischemic compression IASTM 30-60deg bevel deep friction pin-stretch DN scar cross-fiber tuning fork 128Hz over lax ligament, 5 Activate Inhibited 3-5 reps x5sec isometric light-moderate precision no fatigue burn engram, 6 Retest Verify holds strong prescribe homework Release FIRST -> Activate SECOND 2-3x/day 2-4 weeks synaptic consolidation",
+          "reverse_TL": "Touch painful hypertonic driver, scan inhibited muscles across chain Glute Max TVA Lower Trap, when normally strong muscle breaks weak when touching driver found receiver, release driver -> activate receiver",
+          "golden_rule": "Driver must always be downregulated immediately before receiver is upregulated. If strengthening inhibited without releasing driver, MCC bypasses weak and reinforces compensation!",
+          "equipment": {
+            "taping": "Facilitation inhibited Origin->Insertion 25-50% tension, Inhibition facilitated Insertion->Origin 0-15% light, Decompression scar cross-pattern 50% center",
+            "iastm": "30-60deg bevel 30-60sec per reactive site",
+            "tuning_fork": "128Hz over lax ligament ATFL Sacrotuberous Pacinian stimulation"
+          },
+          "certification": {
+            "L1": "15h 3 cases 1-on-1 practical",
+            "L2": "15h 6 cases Subsystems TMJ Diaphragm Perturbation",
+            "L3": "15h 5 cases Scars Ligaments Eyes Gait"
+          },
+          "video_library": [
+            {
+              "title": "Low Back Pain & SI Joint Assessment",
+              "url": "https://www.youtube.com/watch?v=2Xaix3lIK8g"
+            },
+            {
+              "title": "IT Band Tightness Relieved by Glute Max",
+              "url": "https://www.youtube.com/watch?v=pafd2pLLtCU"
+            },
+            {
+              "title": "Exact Manual Muscle Testing Angles",
+              "url": "https://www.youtube.com/watch?v=V_ubd0XhXOQ"
+            },
+            {
+              "title": "Motor Control Theory & Neuroscience",
+              "url": "https://www.youtube.com/watch?v=P1vsqv72_-s"
+            }
+          ],
+          "master_decision_hierarchy": [
+            "STEP1 CLEAR SCARS & RECENT TRAUMAS L3 C-sections Appendectomies Portals Navel Episiotomies - active scar resets all downstream",
+            "STEP2 CLEAR LIGAMENTOUS INSTABILITY L3 ATFL CFL Sacrotuberous SIJ restore ligamento-muscular baseline",
+            "STEP3 ASSESS MASTER CRANIO-RESPIRATORY DRIVERS L2 Diaphragm Inhalation Exhalation challenge TMJ Hyoid",
+            "STEP4 EVALUATE FUNCTIONAL KINETIC SUBSYSTEMS L2 POS AOS DLS Lateral",
+            "STEP5 REFINE LOCAL AGONIST-ANTAGONIST SYNERGIST PAIRS L1",
+            "STEP6 ADVANCED GAIT INTEGRATION & HOMEWORK Release FIRST -> Activate SECOND"
+          ],
+          "integration_with_lfs_extended": "NKT MMT is comparable sign binary weak/strong immediate >30% shift confirms driver. Registry candidate muscles become NKT inhibited candidates. Isolation logic prone knee flex 90 reduces hamstring to isolate glute = NKT precise vector rule. Compensation watch list = NKT substitution watch trunk rotation Valsalva foot gripping shoulder hiking. Dependency dependent_on_X = NKT reactive pair. Irritability high -> gentle release only avoid deep DN use sliders not tensioners PNE BPS priority per golden rule release must be tolerable to allow plasticity window. Homework Release FIRST Activate SECOND 2-3x/day 2-4 weeks same as LFS exercise integration CES 4-phase but strict sequence"
         },
         {
           "id": "pnf",
