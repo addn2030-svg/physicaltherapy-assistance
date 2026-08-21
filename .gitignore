@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+docs/reports/*
+!docs/reports/.gitkeep
+*.log
+.DS_Store
+coverage/
+.idea/
+.vscode/
+data/demo_patient_completed.json
+data/live_patients/

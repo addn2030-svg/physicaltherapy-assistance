@@ -1,0 +1,35 @@
+name: Validate PT Skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: npm install
+      - name: Validate SKILL.md frontmatter
+        run: |
+          echo "Checking skills/*/SKILL.md exists..."
+          ls -R skills/
+          for f in skills/*/SKILL.md; do
+            echo "=== $f ==="
+            head -20 "$f"
+            if ! grep -q "^name:" "$f"; then echo "Missing name in $f"; exit 1; fi
+            if ! grep -q "^description:" "$f"; then echo "Missing description in $f"; exit 1; fi
+          done
+      - name: Validate registry JSON
+        run: node -e "const r=require('./data/directional_test_registry.json'); console.log('Regions:', r.regions.length); if(r.regions.length<5) throw 'Too few regions'"
+      - name: Build console
+        run: npx tsc --noEmit
+      - name: Demo run
+        run: npx ts-node src/console/index.ts

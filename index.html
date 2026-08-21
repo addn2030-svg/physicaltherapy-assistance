@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LFS Clinical Driver Console - PT Skills v2 with Full Directory</title>
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--text:#0f172a;--muted:#475569;--border:#cbd5e1;--accent:#0f172a;--green:#dcfce7;--red:#fee2e2;--yellow:#fef9c3;}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;}
+  .header{background:#0f172a;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  .header h1{margin:0;font-size:18px;}
+  .badge{background:#22c55e;padding:4px 10px;border-radius:999px;font-size:11px;color:#052e16;}
+  .tabs{display:flex;gap:8px;padding:12px 24px;background:#e2e8f0;position:sticky;top:0;z-index:10;}
+  .tab{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--border);cursor:pointer;font-size:13px;}
+  .tab.active{background:#0f172a;color:white;border-color:#0f172a;}
+  .container{max-width:1400px;margin:16px auto;padding:0 16px;display:grid;grid-template-columns:320px 1fr;gap:16px;}
+  .card{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:14px;margin-bottom:16px;}
+  .card h3{margin:0 0 10px 0;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:#475569;display:flex;justify-content:space-between;align-items:center;}
+  label{display:block;font-size:12px;margin:8px 0 3px;color:#334155;font-weight:500;}
+  select,input,textarea{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;}
+  textarea{resize:vertical;}
+  button{background:var(--accent);color:white;border:0;padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;width:100%;margin-top:10px;}
+  button:hover{background:#1e293b;}
+  button.secondary{background:white;color:#0f172a;border:1px solid var(--border);}
+  .pill{display:inline-block;background:#e2e8f0;color:#334155;padding:2px 8px;border-radius:999px;font-size:10px;margin:2px;}
+  .pill.green{background:var(--green);color:#166534;}
+  .pill.red{background:var(--red);color:#991b1b;}
+  .pill.yellow{background:var(--yellow);color:#854d0e;}
+  .pill.blue{background:#dbeafe;color:#1e40af;}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .output{white-space:pre-wrap;font-size:12px;line-height:1.5;background:#f8fafc;padding:10px;border-radius:8px;border:1px dashed var(--border);}
+  .lookup{background:#f1f5f9;padding:10px;border-radius:8px;font-size:11px;margin-top:8px;line-height:1.5;}
+  .status{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
+  .tech-card{border:1px solid var(--border);border-radius:10px;padding:10px;margin:6px 0;background:#fff;}
+  .tech-card h4{margin:0 0 6px 0;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+  .tech-meta{font-size:11px;color:var(--muted);margin:3px 0;line-height:1.4;}
+  .search-bar{display:flex;gap:8px;margin-bottom:10px;}
+  .search-bar input{flex:1;}
+  .cols{columns:2;column-gap:12px;}
+  @media(max-width:900px){.container{grid-template-columns:1fr;}.cols{columns:1;}.grid4{grid-template-columns:1fr;}}
+  .hidden{display:none;}
+  .highlight{background:#fef08a;padding:1px 3px;border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🩺 LFS Clinical Driver Console v2 — 32 Techniques Directory</h1>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="badge">Safety: assessment_only_until_confirmed</span>
+    <span class="pill blue" style="font-size:11px;">Jeddah | Ali Marzok Methods included</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('console')">Clinical Console (4 Pillars)</div>
+  <div class="tab" onclick="switchTab('directory')">📚 Comprehensive Manual Therapy Directory (32)</div>
+  <div class="tab" onclick="switchTab('integration')">🔗 Integration Map + Export</div>
+</div>
+
+<!-- TAB 1 CONSOLE -->
+<div id="tab-console">
+<div class="container">
+  <div>
+    <div class="card">
+      <h3>1. Patient + Case</h3>
+      <label>Patient ID</label><input id="pid" value="PT-JED-001">
+      <label>Patient Name</label><input id="pname" placeholder="Ahmed">
+      <label>Age / Gender</label><input id="age" value="34 / M">
+      <label>Chief Complaint</label><textarea id="cc" rows="2">LBP with sitting >20min, eases standing</textarea>
+      <label>Functional Task</label><input id="ftask" value="Office sitting, driving">
+      <label>Previous Response</label><input id="prev" value="Massage temporary">
+    </div>
+
+    <div class="card">
+      <h3>3. Driver Checks</h3>
+      <label>Red Flags Cleared</label>
+      <select id="red"><option value="not_tested">not_tested</option><option value="cleared" selected>cleared</option><option value="positive_referral_needed">positive_referral_needed</option></select>
+      <label>Neuro Screen</label>
+      <select id="neuro"><option value="not_tested">not_tested</option><option value="cleared" selected>cleared</option><option value="positive_deficit_documented">positive_deficit_documented</option></select>
+      <label>Adjacent Region Check</label><input id="adjacent" value="Thoracic extension limited T6-8">
+      <label>Compensation Observed</label><input id="comp" value="Lumbar shift left at 80% extension">
+      <label>Dependency Result</label><select id="dep"><option value="not_tested">not_tested</option><option value="independent">independent</option><option value="dependent_on_thoracic_extension" selected>dependent_on_thoracic_extension</option><option value="dependent_on_hip">dependent_on_hip</option><option value="dependent_on_visceral_psoas">dependent_on_visceral_psoas (Ali Marzok)</option></select>
+      <label>Irritability</label><select id="irrit"><option value="low">low</option><option value="medium" selected>medium</option><option value="high">high</option></select>
+      <label>Retest Change %</label><input id="retest" type="number" value="57">
+      <label>Retest Detail</label><input id="retestDetail" value="After thoracic PA T6-8 - standing ext 100% ROM Pain 2/10">
+    </div>
+
+    <div class="card">
+      <h3>Techniques Suggestion (Auto from Directory)</h3>
+      <div id="autoTech" class="lookup">Generate to see suggested techniques from 32 directory based on Finding Type + Region + Irritability</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h3>2. Comparable Sign — Select Region First, then Direction/Position/Bias from Registry</h3>
+      <div class="grid4">
+        <div><label>Canonical Region</label><select id="region"></select></div>
+        <div><label>Specific Joint</label><input id="joint" value="L4-L5"></div>
+        <div><label>Movement Direction</label><select id="direction"></select></div>
+        <div><label>Position</label><select id="position"></select></div>
+        <div><label>Bias / Range Gate</label><select id="bias"></select></div>
+        <div><label>Angle / Load</label><input id="angle" value="80% ROM Pain 6/10"></div>
+        <div><label>Finding Type</label><select id="finding" onchange="updateAutoTechPreview()"><option value="weak" selected>weak</option><option value="painful">painful</option><option value="limited">limited</option><option value="unstable">unstable</option><option value="apprehensive">apprehensive</option><option value="compensation">compensation</option></select></div>
+        <div><label>Pain Behavior</label><input id="painb" value="Pain eases with repetition, shift left"></div>
+      </div>
+      <div id="lookupPanel" class="lookup">Select region to see Dynamic Lookup Panel</div>
+      <button onclick="generate()">🧠 Generate AI Reasoning + Auto Technique Match</button>
+    </div>
+
+    <div class="card">
+      <h3>4. AI Reasoning Output</h3>
+      <div class="status">
+        <span class="pill" id="safetyPill">Safety: assessment_only_until_confirmed</span>
+        <span class="pill green" id="confPill">Confidence: --</span>
+      </div>
+      <label>Primary Finding</label><div id="primary" class="output"></div>
+      <label>Secondary Finding</label><div id="secondary" class="output"></div>
+      <label>Third Finding</label><div id="third" class="output"></div>
+      <label>Manual Therapy Option (From Comprehensive Directory)</label><div id="manual" class="output"></div>
+      <label>Exercise Integration (Corrective + Therapeutic)</label><div id="exercise" class="output"></div>
+      <label>Report Summary (SOAP EN + AR)</label><div id="soap" class="output"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <button onclick="saveJson()" style="background:#16a34a;">💾 Save JSON</button>
+        <button onclick="copyCsv()" style="background:#0284c7;">📋 Copy CSV</button>
+        <button onclick="exportTechniques()" style="background:#7c3aed;">📚 Export Techniques List</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TAB 2 DIRECTORY -->
+<div id="tab-directory" class="hidden">
+<div style="max-width:1200px;margin:16px auto;padding:0 16px;">
+  <div class="card">
+    <h3>Comprehensive International Manual Therapy and Rehabilitation Techniques Directory — 32 Techniques, 10 Categories</h3>
+    <div class="search-bar">
+      <input id="techSearch" placeholder="Search: e.g., Mulligan, Maitland, McKenzie, fascial, visceral, Ali Marzok, NKT, PNF, ANF, vestibular, painful weak limited..." oninput="filterTech()">
+      <select id="filterFinding" onchange="filterTech()"><option value="">All Finding Types</option><option value="weak">weak</option><option value="painful">painful</option><option value="limited">limited</option><option value="unstable">unstable</option><option value="apprehensive">apprehensive</option><option value="compensation">compensation</option></select>
+      <select id="filterRegion" onchange="filterTech()"><option value="">All Regions</option><option value="Cervical">Cervical</option><option value="Thoracic">Thoracic</option><option value="Lumbar">Lumbar</option><option value="Shoulder">Shoulder</option><option value="Hip">Hip</option><option value="Knee">Knee</option><option value="Ankle">Ankle</option><option value="Vestibular">Vestibular</option></select>
+      <select id="filterIrrit" onchange="filterTech()"><option value="">All Irritability</option><option value="low">low</option><option value="medium">medium</option><option value="high">high - gentle only</option></select>
+      <select id="filterCategory" onchange="filterTech()"><option value="">All Categories</option><option value="OMPT">OMPT</option><option value="FASCIAL">Fascial/Myofascial</option><option value="VISCERAL">Visceral</option><option value="NEUROMUSCULAR">Neuromuscular</option><option value="EXERCISE">Exercise</option><option value="SPECIALIZED">Specialized Rehab</option><option value="PAIN">Pain Science</option></select>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+      <span class="pill blue" onclick="setSearch('Ali Marzok')" style="cursor:pointer;">Ali Marzok Methods (2)</span>
+      <span class="pill" onclick="setSearch('Mulligan')" style="cursor:pointer;">Mulligan MWM</span>
+      <span class="pill" onclick="setSearch('McKenzie')" style="cursor:pointer;">McKenzie MDT</span>
+      <span class="pill" onclick="setSearch('Maitland')" style="cursor:pointer;">Maitland</span>
+      <span class="pill" onclick="setSearch('Dry Needling')" style="cursor:pointer;">Dry Needling</span>
+      <span class="pill" onclick="setSearch('NKT')" style="cursor:pointer;">NKT</span>
+      <span class="pill" onclick="setSearch('PNF')" style="cursor:pointer;">PNF</span>
+      <span class="pill" onclick="setSearch('Vestibular')" style="cursor:pointer;">Vestibular</span>
+      <span class="pill" onclick="setSearch('ANF')" style="cursor:pointer;">ANF</span>
+      <span class="pill red" onclick="setSearch('painful')" style="cursor:pointer;">Finding: painful</span>
+      <span class="pill yellow" onclick="setSearch('weak')" style="cursor:pointer;">Finding: weak</span>
+    </div>
+    <div><small style="color:#64748b;">Showing <span id="techCount">0</span> techniques. Click card to expand dosage, retest, safety, integration. Based on <code>data/comprehensive_manual_therapy_directory.json</code></small></div>
+    <div id="techList" class="cols" style="margin-top:12px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- TAB 3 INTEGRATION -->
+<div id="tab-integration" class="hidden">
+<div style="max-width:1200px;margin:16px auto;padding:0 16px;">
+  <div class="card">
+    <h3>🔗 When to Use Which Technique — Integration Map (LFS Driver Model + Comprehensive Directory)</h3>
+    <div class="grid4" style="font-size:12px;line-height:1.6;">
+      <div class="tech-card">
+        <h4>Finding Type: weak (Motor Inhibition)</h4>
+        <div class="tech-meta">Candidate muscles weak at specific position/bias. Isolation logic from registry + NKT release facilitated + activate inhibited.</div>
+        <div><span class="pill green">NKT</span> <span class="pill green">Motor Control 10% MVC</span> <span class="pill">PNF rhythmic initiation</span> <span class="pill">DN Trigger if taut band</span> <span class="pill blue">DN Fascial Ali Marzok if chain</span> <span class="pill">ANF if inflamed</span></div>
+        <div class="tech-meta">Retest: Strength + comparable sign immediate >30%. Dosage: low threshold 3x8 5sec hold, quality>quantity. Irrit high -> isometrics only.</div>
+      </div>
+      <div class="tech-card">
+        <h4>Finding Type: painful at end-range</h4>
+        <div class="tech-meta">Joint nociceptive driver, facetal/capsular. Mechanical sensitization.</div>
+        <div><span class="pill green">Maitland Grade II-III</span> <span class="pill green">Mulligan MWM pain-free</span> <span class="pill">McKenzie MDT centralization if directional preference</span> <span class="pill">Neurodynamics sliders if mechanosensitive</span> <span class="pill">Fascial Manipulation CC</span> <span class="pill">Kinesio mechanical correction 50-75%</span></div>
+        <div class="tech-meta">If painful + chronic non-mechanical + widespread → add <span class="pill red">PNE + BPS</span></div>
+      </div>
+      <div class="tech-card">
+        <h4>Finding Type: limited / stiff</h4>
+        <div class="tech-meta">Capsular/joint + myofascial length chain restriction.</div>
+        <div><span class="pill green">Kaltenborn-Evjenth Grade III sustained 30-60sec</span> <span class="pill green">Maitland III-IV end-range</span> <span class="pill">Myofascial Release 90-120sec</span> <span class="pill">Fascial Manipulation Stecco</span> <span class="pill">FDM triggerband/continuum</span> <span class="pill">PNF hold-relax</span> <span class="pill">Anatomy Trains SBL/SL</span></div>
+        <div class="tech-meta">Isolate: Does traction improve pain? Does specific CC release improve plane >50%? Retest functional task.</div>
+      </div>
+      <div class="tech-card">
+        <h4>Finding Type: unstable / apprehensive</h4>
+        <div class="tech-meta">Motor control deficit + proprioceptive + fear component.</div>
+        <div><span class="pill green">Motor Control low threshold 10% MVC + PNF rhythmic stabilization</span> <span class="pill">Kaltenborn Grade II traction not stretch</span> <span class="pill">Balance & Proprioception progression</span> <span class="pill">Kinesio facilitation 25%</span> <span class="pill red">PNE + BPS for apprehension</span> <span class="pill">ANF calming</span></div>
+      </div>
+      <div class="tech-card">
+        <h4>Compensation Observed</h4>
+        <div class="tech-meta">From Dynamic Lookup Panel compensation_watch → map to CES 4-phase.</div>
+        <div><span class="pill green">Corrective Exercise CES: Inhibit-Lengthen-Activate-Integrate</span> <span class="pill green">NKT: release overactive 90sec + activate inhibited</span> <span class="pill">Functional Movement SFMA breakout</span> <span class="pill">Anatomy Trains</span> <span class="pill">Gait Analysis if walking</span></div>
+        <div class="tech-meta">E.g., Lumbar shift left at 80% ext → check TFL/glute med inhibition, QL overactive. Protocol: SMR TFL 90sec + stretch + glute med activation 3x8 + single leg training.</div>
+      </div>
+      <div class="tech-card">
+        <h4>Ali Marzok Methods — Special Integration</h4>
+        <div class="tech-meta"><b>DN Fascial System Ali Marzok Method:</b> Fascia as sensory organ. When multiple muscles along chain weak (hamstring+calf+plantar+Lumbar erectors = SBL), not individual muscle driver. Needle along fascial planes superficial. Retest whole chain: SLR + lumbar ext + ankle DF all improve >15% = fascial system driver.</div>
+        <div class="tech-meta"><b>Visceral Manual Therapy Ali Marzok Approach:</b> Visceral irritation reflex inhibits psoas/diaphragm/glute med. If psoas weak + lower quadrant tender (ileocecal) + history IBS/ eating, visceral driver. Gentle visceral mobilization 2min + breathing → psoas strength immediate >30% = visceral contribution. Safety: screen red flags acute abdomen, refer.</div>
+      </div>
+      <div class="tech-card">
+        <h4>Pain Science + Biopsychosocial</h4>
+        <div class="tech-meta">High irrit, chronic >3 months, disproportionate pain, fear-avoidance, poor sleep, boom-bust.</div>
+        <div><span class="pill red">PNE 30-60min Explain Pain</span> <span class="pill">Therapeutic Pain Management pacing + sleep hygiene</span> <span class="pill">BPS: Tampa, PCS, Orebro, STarT Back + collaborative goals + graded exposure time-contingent</span></div>
+        <div class="tech-meta">Integration: PNE first enables mechanical treatment later. If comparable improves >30% after reassurance + gentle movement without manual, belief/autonomic driver component.</div>
+      </div>
+      <div class="tech-card">
+        <h4>Specialized Rehab Integration</h4>
+        <div class="tech-meta"><b>Vestibular:</b> Cervicogenic dizziness vs BPPV. If Dix-Hallpike positive → Epley not cervical SNAG. <b>Gait:</b> Walking pain → check ankle DF, glute med pelvic drop, plantar fascia. <b>Balance:</b> Chronic ankle instability → SEBT Y-balance <94%. <b>Cardiopulmonary:</b> Apical breathing + rib flare as compensation → diaphragm driver → 90/90 breathing + IMT.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Crosswalk — How Directory Links to Your Original Sheet</h3>
+    <div style="font-size:12px;line-height:1.6;color:#334155;">
+      <div><b>Sheet Column 2: Finding Type weak</b> → Directory filter finding_type_match includes weak → Suggest NKT, Motor Control, PNF, DN Trigger, ANF, Corrective Ex, TherEx, Anatomy Trains chain</div>
+      <div><b>Finding Type painful</b> → Maitland, Mulligan MWM, McKenzie MDT, Neurodynamics sliders, Fascial Manipulation, Taping 50-75% mechanical correction, + PNE/BPS if central sensitization (non-mechanical night pain etc)</div>
+      <div><b>Finding Type limited</b> → Kaltenborn Grade III sustained, Maitland III-IV, MFR 90-120sec, FM Stecco, FDM, PNF hold-relax, Anatomy Trains</div>
+      <div><b>Column 3: Compensation Observed</b> → From registry compensation_watch + CES 4-phase + NKT inhibition pair. E.g., Lumbar shift left = TFL overactive vs glute med inhibited → CES protocol.</div>
+      <div><b>Dependency Result</b> → Test dependency with directory isolation_logic: e.g., Does thoracic PA improve lumbar ext? Does glute med activation improve pelvic drop? Does visceral release improve psoas? = driver confirmed</div>
+      <div><b>Irritability medium</b> → Directory irritability_guidance medium = Grade II-III, MWM pain-free, MDT mid-range, sliders+gentle tensioners, gentle DN, gentle fascial 2min. Auto-applied in suggestions.</div>
+      <div><b>Safety Gate assessment_only_until_confirmed</b> → All manual techniques blocked until Red flags cleared + Neuro cleared, only education+breathing+PNE allowed. Enforced in reasoning engine.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let registry = null;
+let techDirectory = null;
+
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-console').classList.add('hidden');
+  document.getElementById('tab-directory').classList.add('hidden');
+  document.getElementById('tab-integration').classList.add('hidden');
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  if(id==='directory' && !window.techRendered) renderTechDirectory();
+}
+
+Promise.all([
+  fetch('./data/directional_test_registry.json').then(r=>r.json()),
+  fetch('./data/comprehensive_manual_therapy_directory.json').then(r=>r.json())
+]).then(([reg, tech])=>{
+  registry=reg;
+  techDirectory=tech;
+  const regionSel=document.getElementById('region');
+  registry.regions.forEach(rg=>{
+    let opt=document.createElement('option');
+    opt.value=rg.canonical_region;
+    opt.textContent=rg.canonical_region;
+    regionSel.appendChild(opt);
+  });
+  regionSel.value='Lumbar';
+  onRegionChange();
+  updateAutoTechPreview();
+});
+
+function onRegionChange(){
+  const region=document.getElementById('region').value;
+  const joint=document.getElementById('joint');
+  const data=registry.regions.find(r=>r.canonical_region===region);
+  if(!data) return;
+  joint.placeholder=data.specific_joints.slice(0,3).join(', ');
+  const dirSel=document.getElementById('direction');
+  dirSel.innerHTML='';
+  data.directions.forEach(d=>{
+    let opt=document.createElement('option');
+    opt.value=d.direction; opt.textContent=d.direction;
+    dirSel.appendChild(opt);
+  });
+  dirSel.value=data.directions[0].direction;
+  onDirectionChange();
+}
+
+function onDirectionChange(){
+  const region=document.getElementById('region').value;
+  const direction=document.getElementById('direction').value;
+  const regionData=registry.regions.find(r=>r.canonical_region===region);
+  const dirData=regionData.directions.find(d=>d.direction===direction);
+  const posSel=document.getElementById('position');
+  const biasSel=document.getElementById('bias');
+  posSel.innerHTML=''; biasSel.innerHTML='';
+  dirData.positions.forEach(p=>{
+    let opt=document.createElement('option');opt.value=p;opt.textContent=p;posSel.appendChild(opt);
+  });
+  dirData.biases.forEach(b=>{
+    let opt=document.createElement('option');opt.value=b;opt.textContent=b;biasSel.appendChild(opt);
+  });
+  document.getElementById('lookupPanel').innerHTML=`
+    <b>Available directions for selected region:</b> ${regionData.directions.map(d=>d.direction).join(', ')}<br>
+    <b>Available positions for selected region + direction:</b> ${dirData.positions.join(', ')}<br>
+    <b>Available biases / range gates:</b> ${dirData.biases.join(', ')}<br>
+    <b>Candidate muscles:</b> <span class="pill green">${dirData.candidate_muscles.join('</span> <span class="pill green">')}</span><br>
+    <b>Isolation logic:</b> ${dirData.isolation_logic}<br>
+    <b>Compensation watch:</b> ${dirData.compensation_watch.join(', ')}<br>
+    <b>Retest rule:</b> ${dirData.retest_rule}<br>
+    <b>Associated Techniques (from Directory):</b> <span id="assocTechInline"></span>
+  `;
+  updateAutoTechPreview();
+}
+
+document.getElementById('region').addEventListener('change', onRegionChange);
+document.getElementById('direction').addEventListener('change', onDirectionChange);
+document.getElementById('finding').addEventListener('change', updateAutoTechPreview);
+document.getElementById('irrit').addEventListener('change', updateAutoTechPreview);
+
+function getTechniquesForCurrent(){
+  if(!techDirectory) return [];
+  const region=document.getElementById('region').value;
+  const finding=document.getElementById('finding').value;
+  const irrit=document.getElementById('irrit').value;
+  const lowerReg=region.toLowerCase();
+  let list=[];
+  techDirectory.categories.forEach(cat=>{
+    cat.techniques.forEach(t=>{
+      const regionsLower=t.best_for_regions.join(' ').toLowerCase();
+      const matchRegion = regionsLower.includes(lowerReg) || regionsLower.includes('all') || regionsLower.includes('whole');
+      const matchFinding = t.finding_type_match.includes(finding);
+      if(matchRegion && matchFinding) list.push({...t, category: cat.category_name, cat_id: cat.category_id});
+    });
+  });
+  // sort by evidence then name
+  list.sort((a,b)=>{ 
+    const order={A:0,B:1,C:2}; 
+    return (order[a.evidence_level[0]]||9)-(order[b.evidence_level[0]]||9);
+  });
+  return list.slice(0,8);
+}
+
+function updateAutoTechPreview(){
+  if(!techDirectory) return;
+  const list=getTechniquesForCurrent();
+  const html=list.map(t=>`<span class="pill ${t.evidence_level.includes('A')?'green':t.evidence_level.includes('B')?'blue':''}" title="${t.dosage_template}">${t.acronym || t.name.split(' ')[0]} ${t.evidence_level}</span>`).join(' ');
+  const autoDiv=document.getElementById('autoTech');
+  if(autoDiv) autoDiv.innerHTML=`<b>Region:</b> ${document.getElementById('region').value} | <b>Finding:</b> ${document.getElementById('finding').value} | <b>Irritability:</b> ${document.getElementById('irrit').value}<br>${html}<br><small>Top techniques by evidence for this combination. See Directory tab for details.</small>`;
+  const inline=document.getElementById('assocTechInline');
+  if(inline) inline.innerHTML=html;
+}
+
+function calcSafety(red, neuro, irrit){
+  if(red==='positive_referral_needed') return 'referral_only';
+  if(red==='not_tested'||neuro==='not_tested') return 'assessment_only_until_confirmed';
+  if(irrit==='high') return 'gentle_assessment_and_education_only';
+  return 'proceed_with_caution';
+}
+function calcConf(retest, dep, comp, adj, irrit){
+  let c=50;
+  if(retest>50) c+=20; else if(retest>30) c+=10;
+  if(dep.includes('dependent_on')) c+=10;
+  if(comp) c+=10;
+  if(adj.includes('cleared')) c+=5;
+  if(adj.includes('positive_driver_elsewhere')) c-=20;
+  if(irrit==='high') c-=15;
+  if(!retest) c-=10;
+  return Math.max(20, Math.min(95,c));
+}
+
+function generate(){
+  const region=document.getElementById('region').value;
+  const joint=document.getElementById('joint').value;
+  const direction=document.getElementById('direction').value;
+  const position=document.getElementById('position').value;
+  const bias=document.getElementById('bias').value;
+  const angle=document.getElementById('angle').value;
+  const finding=document.getElementById('finding').value;
+  const painb=document.getElementById('painb').value;
+
+  const red=document.getElementById('red').value;
+  const neuro=document.getElementById('neuro').value;
+  const adjacent=document.getElementById('adjacent').value;
+  const comp=document.getElementById('comp').value;
+  const dep=document.getElementById('dep').value;
+  const irrit=document.getElementById('irrit').value;
+  const retest=parseInt(document.getElementById('retest').value||0);
+  const retestDetail=document.getElementById('retestDetail').value;
+
+  const cc=document.getElementById('cc').value;
+  const ftask=document.getElementById('ftask').value;
+  const pid=document.getElementById('pid').value;
+
+  const safety=calcSafety(red, neuro, irrit);
+  const confidence=calcConf(retest, dep, comp, adjacent, irrit);
+
+  document.getElementById('safetyPill').textContent='Safety: '+safety;
+  document.getElementById('safetyPill').className='pill '+(safety.includes('referral')?'red':safety.includes('assessment_only')?'yellow':'green');
+  document.getElementById('confPill').textContent='Confidence: '+confidence+'%';
+
+  let primary='', secondary='', third='';
+  if(finding==='weak'){
+    if(region==='Lumbar' && direction==='Extension'){
+      primary=`Lumbar extension motor control deficit - ${joint} multifidus inhibition with ${dep.includes('thoracic')?'thoracic extension driver T6-8':dep.includes('visceral')?'visceral psoas reflex inhibition (Ali Marzok Approach)':'glute max inhibition'}. Evidence: comparable sign ${retest}% improved when correcting driver.`;
+      secondary=`Left glute med weakness allowing pelvic drop - compensatory lumbar shift ${comp} → candidate pair glute med vs TFL (NKT)`;
+      third=`Breathing strategy - apical breathing and breath holding at end-range ${direction} → diaphragm / thoracolumbar fascia driver`;
+    } else if(region==='Shoulder'){
+      primary=`Scapular upward rotation deficit - serratus anterior inhibition leading to GH impingement. Flexion limited to ${bias} with compensation ${comp}`;
+      secondary=`Thoracic extension limitation driver T4-6 reducing scapular posterior tilt → Kaltenborn inferior glide + Maitland PA`;
+      third=`Rotator cuff control deficit - anterior humeral translation lack of control → NKT + Motor Control 10% MVC`;
+    } else {
+      primary=`${region} ${direction} motor control deficit - primary muscle inhibition, weak at ${position} position`;
+      secondary=`Adjacent region adaptation - ${adjacent}`;
+      third=`Compensation ${comp} suggests synergist dominance → Corrective Exercise CES required`;
+    }
+  } else if(finding==='painful'){
+    primary=`${region} ${direction} painful at end-range - suggests joint nociceptive driver at ${joint} with sensitization. Pain behavior: ${painb}`;
+    secondary=`Motor inhibition secondary to pain - guarding ${comp} → NKT pair`;
+    third=dep.includes('dependent')?`Dependent on ${dep}`:'Independent driver, check central sensitization if non-mechanical → PNE/BPS';
+  } else {
+    primary=`${region} ${direction} ${finding} stiffness driver - restriction at ${joint}, limiting ${ftask}`;
+    secondary=`Myofascial chain limitation contributing - check Anatomy Trains SBL/SL + Fascial Manipulation CC`;
+    third=`Compensatory increased mobility adjacent - ${adjacent} → functional movement SFMA breakout`;
+  }
+
+  // Build manual therapy options from directory
+  const techList=getTechniquesForCurrent();
+  let manualStr='';
+  if(safety==='assessment_only_until_confirmed'){
+    manualStr=`Assessment only - complete red flag (${red}) + neuro (${neuro}) first. No manual therapy until cleared. Allowed only: education + breathing + PNE gentle (from Pain Science category).\nSafety Gate: assessment_only_until_confirmed`;
+  } else if(safety==='referral_only'){
+    manualStr=`Referral only - positive red flag screening. Document and refer immediately. No manual therapy.`;
+  } else {
+    manualStr=`Safety: ${safety} | Irritability: ${irrit} - dosage adjusted per directory irritability_guidance\n\n`;
+    techList.forEach((t,i)=>{
+      const dosage = t.irritability_guidance[irrit] || t.dosage_template;
+      manualStr+=`${i+1}. [${t.category}] ${t.name} (${t.id}) Evidence ${t.evidence_level}\n   Technique: ${t.name} - ${dosage}\n   Isolation: ${t.isolation_logic}\n   Retest: ${t.retest_rule}\n   Safety: ${t.safety_notes.substring(0,120)}...\n   Integration: ${t.integration_with_exercise.substring(0,120)}...\n\n`;
+    });
+    // Add specific for visceral if dependency mentions visceral
+    if(dep.includes('visceral')){
+      const visceralT = techDirectory.categories.flatMap(c=>c.techniques).find(t=>t.id==='visceral_ali_marzok');
+      if(visceralT) manualStr+=`+ VISCERAL LINK (Ali Marzok Approach): ${visceralT.name}\n   Dosage: ${visceralT.irritability_guidance[irrit]}\n   Retest: ${visceralT.retest_rule}\n\n`;
+    }
+  }
+
+  let exerciseStr='';
+  if(safety.includes('referral')||safety.includes('assessment_only')){
+    exerciseStr=`Education only until cleared: breathing 90/90 + gentle AROM within comfort, avoid ${ftask}. Monitor 24hr pain. PNE 10min if fear-avoidance.`;
+  } else {
+    if(finding==='weak'){
+      exerciseStr=`Corrective Exercise Programming CES 4-phase:\nPhase1 Inhibit: Release overactive per NKT ${comp} - SMR/manual 90sec (TFL/QL/Upper Trap)\nPhase2 Lengthen: Static stretch overactive 30sec x2\nPhase3 Activate: Isolated candidate muscles from registry low threshold 10% MVC 3x8 5sec hold - e.g., multifidus prone, glute med side-lying, serratus wall slide\nPhase4 Integrate: Functional task ${ftask} with new control - single leg stance + band, sitting microbreaks q30min + 5 ext, gait with corrected pelvic control\n\nTherapeutic Exercise Prescription FITTVP: Frequency 2-3x/day small doses quality>quantity, Intensity 10-30% MVC activation phase, Time 5-10min bouts, Type motor control+strength\n\nProgression Criteria: When comparable sign >50% improved and pain <3/10, progress to loaded: single leg deadlift, overhead press with scapular control\n\nANF/Taping support: Kinesio facilitation tape 25% for glute med/serratus to hold gains 3-5 days, ANF inflammation discs if inflammatory driver suspected`;
+    } else if(finding==='painful'){
+      exerciseStr=`Graded exposure + PNE if chronic: Pain-free isometrics 3x10 5sec, then isotonic light\nMobility for driver region: e.g., thoracic extension foam roller 2x10 + breathing, then motor control to hold new range\nIf mechanosensitive nerve: neurodynamics sliders 6-10 reps median/sciatic bias\nSleep hygiene + pacing if high irrit\nRetest functional tolerance time: sitting tolerance target +10% weekly time-contingent`;
+    } else {
+      exerciseStr=`Fascial/Myofascial chain + Mobility:\nAnatomy Trains SBL release plantar+calf+ham+thoracolumbar 10min -> then stretch chain\nMyofascial Release thoracolumbar 90-120sec sustained barrier -> then quadruped rock\nPNF hold-relax for limited: contract 5sec + relax 10sec x3 for ham/calf\nIntegrate: Functional movement pattern overhead squat/single leg with new ROM\nBalance: if unstable add balance progression static->dynamic`;
+    }
+  }
+
+  const soap=`S: ${cc} with ${ftask}. Irrit: ${irrit}. Prev: ${document.getElementById('prev').value}
+O: Comparable = ${region} ${direction} ${position} ${bias} - ${finding} ${angle}. Red flags ${red}, neuro ${neuro}, adjacent ${adjacent}, comp=${comp}, dependency=${dep}, retest ${retest}% ${retestDetail}. Candidate muscles from registry: ${(() => { try{return registry.regions.find(r=>r.canonical_region===region).directions.find(d=>d.direction===direction).candidate_muscles.join(', ')}catch(e){return ''}})()}
+A: Primary ${primary}; Secondary ${secondary}; Third ${third}; Confidence ${confidence}%; Safety ${safety}; Techniques matched from comprehensive directory (${techList.length} techniques): ${techList.map(t=>t.id).join(', ')}
+P: Manual Techniques (from ${techList.length} matched, evidence filtered by ${irrit} irritability):\n${manualStr}\n\nExercise CES+TherEx:\n${exerciseStr}\n\nRetest comparable sign + 24hr monitoring. FU 3 days. Use techniques-directory skill for full dosage.\nPatient AR: ملخص: مشكلتك مرتبطة بـ ${region} في حركة ${direction}. تحسنت بنسبة ${retest}% عند تحسين ${dep}. الخطة: ${techList.slice(0,2).map(t=>t.name).join(' + ')} + تمارين تصحيحية. السلامة: ${safety}`;
+
+  document.getElementById('primary').textContent=primary;
+  document.getElementById('secondary').textContent=secondary;
+  document.getElementById('third').textContent=third;
+  document.getElementById('manual').textContent=manualStr;
+  document.getElementById('exercise').textContent=exerciseStr;
+  document.getElementById('soap').textContent=soap;
+
+  window.lastExport={
+    Patient_ID: pid,
+    CanonicalRegion: region,
+    SpecificJoint: joint,
+    MovementDirection: direction,
+    Position: position,
+    Bias: bias,
+    Angle_Load: angle,
+    FindingType: finding,
+    PainBehavior: painb,
+    RedFlagsCleared: red,
+    NeuroScreen: neuro,
+    AdjacentRegionCheck: adjacent,
+    CompensationObserved: comp,
+    DependencyResult: dep,
+    Irritability: irrit,
+    RetestPercent: retest,
+    PrimaryFinding: primary,
+    Confidence: confidence,
+    SafetyGate: safety,
+    ManualTherapyTechniquesMatched: techList.map(t=>({id:t.id, name:t.name, category:t.category, evidence:t.evidence_level, dosage: t.irritability_guidance[irrit]})),
+    ManualTherapyOption: manualStr,
+    ExerciseIntegration: exerciseStr,
+    ReportSummary: soap
+  };
+}
+
+function saveJson(){
+  if(!window.lastExport){ alert('Generate first'); return; }
+  const blob=new Blob([JSON.stringify(window.lastExport,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`${window.lastExport.Patient_ID}-v2-${new Date().toISOString().split('T')[0]}.json`;a.click();
+}
+function copyCsv(){
+  if(!window.lastExport){ alert('Generate first'); return; }
+  const e=window.lastExport;
+  const headers=["Patient_ID","CanonicalRegion","SpecificJoint","MovementDirection","Position","Bias","Angle_Load","FindingType","PainBehavior","RedFlagsCleared","NeuroScreen","AdjacentRegionCheck","CompensationObserved","DependencyResult","Irritability","RetestPercent","PrimaryFinding","Confidence","SafetyGate","TechniquesMatched","Manual","Exercise"];
+  const techniques= (e.ManualTherapyTechniquesMatched||[]).map(t=>t.id).join('|');
+  const row=[e.Patient_ID,e.CanonicalRegion,e.SpecificJoint,e.MovementDirection,e.Position,e.Bias,e.Angle_Load,e.FindingType,e.PainBehavior,e.RedFlagsCleared,e.NeuroScreen,e.AdjacentRegionCheck,e.CompensationObserved,e.DependencyResult,e.Irritability,e.RetestPercent,`"${(e.PrimaryFinding||'').replace(/\"/g,'""')}"`,e.Confidence,e.SafetyGate,techniques,`"${e.ManualTherapyOption.replace(/\"/g,'""').substring(0,2000)}`,`"${e.ExerciseIntegration.replace(/\"/g,'""').substring(0,2000)}"`];
+  const csv=headers.join(',')+'\n'+row.join(',');
+  navigator.clipboard.writeText(csv).then(()=>alert('CSV row copied!')).catch(()=>{prompt('Copy CSV',csv)});
+}
+function exportTechniques(){
+  if(!techDirectory) return;
+  const all=techDirectory.categories.flatMap(c=>c.techniques.map(t=>({category:c.category_name, ...t})));
+  const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`comprehensive_techniques_directory_${all.length}_techniques.json`;a.click();
+}
+
+// Techniques Directory Tab Logic
+function setSearch(term){
+  document.getElementById('techSearch').value=term;
+  filterTech();
+}
+
+function renderTechDirectory(){
+  if(!techDirectory) return;
+  const all=techDirectory.categories.flatMap(c=>c.techniques.map(t=>({cat_name:c.category_name, cat_id:c.category_id, ...t})));
+  window.allTechFlat=all;
+  filterTech();
+  window.techRendered=true;
+}
+
+function filterTech(){
+  if(!window.allTechFlat) return;
+  const q=document.getElementById('techSearch').value.toLowerCase();
+  const fFinding=document.getElementById('filterFinding').value;
+  const fRegion=document.getElementById('filterRegion').value;
+  const fIrrit=document.getElementById('filterIrrit').value;
+  const fCat=document.getElementById('filterCategory').value;
+
+  let filtered=window.allTechFlat.filter(t=>{
+    const blob=`${t.name} ${t.acronym} ${t.id} ${t.origin} ${t.cat_name} ${t.best_for_regions.join(' ')} ${t.finding_type_match.join(' ')} ${t.classification}`.toLowerCase();
+    const matchQ=!q || blob.includes(q);
+    const matchFind=!fFinding || t.finding_type_match.includes(fFinding);
+    const matchReg=!fRegion || t.best_for_regions.join(' ').toLowerCase().includes(fRegion.toLowerCase()) || t.best_for_regions.some(r=>r.toLowerCase().includes('all'));
+    const matchCat=!fCat || t.cat_id===fCat;
+    return matchQ && matchFind && matchReg && matchCat;
+  });
+
+  document.getElementById('techCount').textContent=filtered.length;
+  const container=document.getElementById('techList');
+  container.innerHTML=filtered.map(t=>`
+    <div class="tech-card" onclick="this.querySelector('.details').classList.toggle('hidden')">
+      <h4>${t.name} <span><span class="pill ${t.evidence_level.includes('A')?'green':t.evidence_level.includes('B')?'blue':''}">${t.evidence_level}</span> <span class="pill blue">${t.cat_name}</span></span></h4>
+      <div class="tech-meta"><b>Acronym:</b> ${t.acronym} | <b>Origin:</b> ${t.origin} | <b>ID:</b> <span class="pill">${t.id}</span></div>
+      <div class="tech-meta"><b>Best for:</b> ${t.best_for_regions.join(', ')} | <b>Finding:</b> ${t.finding_type_match.map(f=>`<span class="pill ${f==='weak'?'yellow':f==='painful'?'red':'green'}">${f}</span>`).join(' ')}</div>
+      <div class="tech-meta"><b>Dosage:</b> ${t.dosage_template.substring(0,120)}...</div>
+      <div class="details hidden" style="margin-top:8px;border-top:1px dashed #cbd5e1;padding-top:8px;">
+        <div class="tech-meta"><b>Full Dosage Template:</b> ${t.dosage_template}</div>
+        <div class="tech-meta"><b>Irritability Guidance:</b><br>
+          <span class="pill green">Low:</span> ${t.irritability_guidance.low}<br>
+          <span class="pill yellow">Medium:</span> ${t.irritability_guidance.medium}<br>
+          <span class="pill red">High:</span> ${t.irritability_guidance.high}
+        </div>
+        <div class="tech-meta"><b>Isolation Logic:</b> ${t.isolation_logic}</div>
+        <div class="tech-meta"><b>Compensation Watch:</b> ${t.compensation_watch.join(', ')}</div>
+        <div class="tech-meta"><b>Retest Rule:</b> <span class="highlight">${t.retest_rule}</span></div>
+        <div class="tech-meta"><b>Safety Notes:</b> ${t.safety_notes}</div>
+        <div class="tech-meta"><b>Integration with Exercise:</b> ${t.integration_with_exercise}</div>
+        <div class="tech-meta"><b>Contraindications:</b> ${t.contraindications.join(', ')}</div>
+        <div class="tech-meta"><b>Classification:</b> ${t.classification}</div>
+      </div>
+      <div style="margin-top:6px;"><small style="color:#7c3aed;cursor:pointer;">Click to expand/collapse dosage & retest details</small></div>
+    </div>
+  `).join('');
+}
+
+// auto generate
+setTimeout(()=>{ if(registry) generate(); }, 1800);
+</script>
+</body>
+</html>

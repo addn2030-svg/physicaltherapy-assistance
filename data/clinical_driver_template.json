@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "template": "LFS Clinical Driver Console",
+    "instruction": "Use this frontpage during examination. Select region first, then direction/position/bias from Directional_Test_Registry. Keep free text only for clinical nuance."
+  },
+  "patient_case": {
+    "Patient_ID": "PT-JED-000",
+    "Patient_Name": "",
+    "Therapist": "",
+    "Age_Gender": "",
+    "Contact_Chat_ID": "",
+    "ChiefComplaint": "",
+    "FunctionalTask": "e.g. sitting >20min, lifting, overhead reach, running",
+    "PreviousResponse": "What helped/worsened previously"
+  },
+  "comparable_sign": {
+    "CanonicalRegion": "",
+    "SpecificJoint_Segment": "",
+    "MovementDirection": "",
+    "Position": "",
+    "Bias_RangeGate": "",
+    "Angle_Load": "",
+    "FindingType": "weak | painful | limited | unstable | apprehensive | compensation",
+    "PainBehavior": "",
+    "BaselineMeasure": "e.g. Pain 7/10 at 80% flexion",
+    "AvailableDirectionsForRegion": [],
+    "AvailablePositionsForDirection": [],
+    "AvailableBiases": [],
+    "CandidateMuscles": [],
+    "IsolationLogic": "",
+    "CompensationWatch": [],
+    "RetestRule": ""
+  },
+  "driver_checks": {
+    "RedFlagsCleared": "not_tested | cleared | positive_referral_needed",
+    "NeuroScreen": "not_tested | cleared | positive_deficit_documented",
+    "AdjacentRegionCheck": "not_tested | cleared | positive_driver_elsewhere",
+    "CompensationObserved": "",
+    "DependencyResult": "not_tested | independent | dependent_on_X",
+    "Irritability": "low | medium | high",
+    "ComparableSignSelected": false,
+    "RetestComparator": {
+      "PostIntervention": "",
+      "ChangePercent": 0,
+      "PainDelta": "",
+      "DriverConfirmed": false
+    }
+  },
+  "ai_reasoning": {
+    "PrimaryFinding": "",
+    "SecondaryFinding": "",
+    "ThirdFinding": "",
+    "Confidence": 0,
+    "SafetyGate": "assessment_only_until_confirmed | referral_only | gentle_assessment_and_education_only | proceed_with_caution",
+    "ManualTherapyOption": {
+      "Technique": "",
+      "Rationale": "",
+      "Dosage": "",
+      "Precautions": "",
+      "Alternative": ""
+    },
+    "ExerciseIntegration": {
+      "InClinic": [],
+      "HomeProgram": [],
+      "FunctionalIntegration": "",
+      "ProgressionCriteria": "",
+      "IrritabilityAdjustment": ""
+    },
+    "ReportSummary": {
+      "SOAP": "",
+      "PatientFriendlyEN": "",
+      "PatientFriendlyAR": "",
+      "ReferralNote": ""
+    }
+  },
+  "dynamic_lookup_panel": {
+    "note": "Auto-filled from directional_test_registry.json when region/direction selected",
+    "formulas": {
+      "AvailableDirections": "=FILTER(Registry!Directions, Registry!Region = SelectedRegion)",
+      "AvailablePositions": "=FILTER(Registry!Positions, Region=Selected AND Direction=Selected)",
+      "AvailableBiases": "=FILTER(Registry!Biases, Region=Selected AND Direction=Selected AND Position=Selected)",
+      "CandidateMuscles": "=VLOOKUP(Region+Direction+Position)",
+      "IsolationLogic": "=VLOOKUP",
+      "CompensationWatch": "=VLOOKUP",
+      "RetestRule": "=VLOOKUP"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "physicaltherapy-skills",
+  "version": "1.0.0",
+  "description": "GitHub Skills for Physical Therapy Assistance - LFS Clinical Driver Console",
+  "main": "src/console/index.ts",
+  "scripts": {
+    "dev": "ts-node src/console/index.ts",
+    "build": "tsc",
+    "start": "node dist/console/index.js",
+    "test": "jest",
+    "lookup": "ts-node src/engine/lookup.ts",
+    "reasoning": "ts-node src/engine/reasoning.ts"
+  },
+  "keywords": ["physicaltherapy", "github-skills", "clinical-reasoning", "lfs", "physiotherapy", "copilot"],
+  "author": "LFS PT - Jeddah",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  },
+  "skills": {
+    "directory": "skills",
+    "format": "github-agent-skills"
+  }
+}

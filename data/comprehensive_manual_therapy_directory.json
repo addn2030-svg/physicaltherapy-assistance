@@ -1,0 +1,1259 @@
+{
+  "version": "2.0.0",
+  "name": "Comprehensive International Manual Therapy and Rehabilitation Techniques Directory",
+  "generated": "2026-08-21T00:00:00Z",
+  "source": "User requested directory integration with LFS Clinical Driver Console",
+  "ontology_link_to": "directional_test_registry.json + manual-therapy-selector skill",
+  "total_categories": 10,
+  "total_techniques": 32,
+  "categories": [
+    {
+      "category_id": "OMPT",
+      "category_name": "Manual Therapy and Orthopedic Manual Physical Therapy (OMPT)",
+      "description": "Evidence-based joint mobilization, manipulation, assessment of comparable sign. Core for driver identification.",
+      "techniques": [
+        {
+          "id": "mulligan_mwm",
+          "name": "Mulligan Concept and Mobilization with Movement (MWM)",
+          "acronym": "Mulligan MWM",
+          "origin": "Brian Mulligan, New Zealand (1980s)",
+          "classification": "Manual therapy with active movement",
+          "evidence_level": "B (Moderate - strong for peripheral joints, cervicogenic headache, elbow, ankle)",
+          "best_for_regions": [
+            "Cervical",
+            "Thoracic",
+            "Shoulder",
+            "Elbow",
+            "Wrist",
+            "Hip",
+            "Knee",
+            "Ankle",
+            "SIJ"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Sustained NAGs/SNAGs + overpressure, 3x6 reps, weight bearing",
+            "medium": "Gentle MWM with pain-free direction, 3x6, belt-assisted",
+            "high": "Avoid weight-bearing MWM, use gentle positional SNAGs supine if pain-free"
+          },
+          "dosage_template": "3 sets x 6 repetitions, sustained glide during movement, pain must be 0/10 during technique (PILL - Pain-free)",
+          "isolation_logic": "If MWM improves comparable sign 100% pain-free during technique, joint positional fault driver. Test retest immediate.",
+          "compensation_watch": [
+            "Patient guards against movement, therapist over-glides, loss of pain-free principle"
+          ],
+          "retest_rule": "MWM must improve comparable sign 100% pain-free DURING application. If not, try different glide direction. Retest after 6 reps - need >70% carry over 2min.",
+          "safety_notes": "Pain-free rule mandatory. No thrust. Check red flags. Avoid if ligament rupture/recent fracture.",
+          "integration_with_exercise": "MWM window: Immediately follow with functional task training in newly pain-free range - e.g., ankle MWM for dorsiflexion + squat training, cervical SNAG + deep flexor activation",
+          "contraindications": [
+            "Hypermobility with apprehension",
+            "Unable to be pain-free",
+            "Fracture, severe osteoporosis"
+          ],
+          "special_tests_linked": [
+            "Weight-bearing lunge test",
+            "Flexion-rotation test for C1-2 SNAG",
+            "Elbow flexion MWM for tennis elbow"
+          ],
+          "aliases": [
+            "SNAGs, NAGs, Spinal MWMs, Peripheral MWMs"
+          ]
+        },
+        {
+          "id": "mckenzie_mdt",
+          "name": "McKenzie Method of Mechanical Diagnosis and Therapy (MDT)",
+          "acronym": "MDT",
+          "origin": "Robin McKenzie, NZ",
+          "classification": "Assessment + repeated movements, directional preference",
+          "evidence_level": "A (Strong for low back pain with centralization)",
+          "best_for_regions": [
+            "Lumbar",
+            "Cervical",
+            "Thoracic",
+            "Knee",
+            "Shoulder (peripheral MDT)"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited",
+            "unstable"
+          ],
+          "irritability_guidance": {
+            "low": "End-range repeated extensions 10x 5x/day, with overpressure",
+            "medium": "Mid-range repeated movements 5-10x, avoid overpressure, test flexion vs extension preference",
+            "high": "Gentle mid-range 3-5x only, sustained postures, no overpressure. Assess centralization only"
+          },
+          "dosage_template": "Repeated movements 5-15x every 2-3 hours, directional preference: extension, flexion, lateral shift correction",
+          "isolation_logic": "Centralization phenomenon: If peripheral pain centralizes to spine with repeated direction -> discogenic driver. If pain peripheralizes -> opposite direction or stop.",
+          "compensation_watch": [
+            "Lumbar shift not corrected before extension, performing flexion when extension centralizes, breath holding"
+          ],
+          "retest_rule": "Assess centralization after 10 reps. Centralization + improved ROM >50% = directional preference driver. If 1 set worsens peripheralization lasting >10min -> stop.",
+          "safety_notes": "Document centralization/peripheralization. Red flags must be cleared. CES, myelopathy caution. Not for high irritability with peripheralization.",
+          "integration_with_exercise": "MDT is exercise itself: Patient generates forces. Follow with posture education + prophylaxis. LFS link: MDT can identify extension driver same as lumbar extension comparable sign",
+          "contraindications": [
+            "Cauda equina, severe myelopathy, unable to centralize after 3 directions",
+            "If peripheralization persists >24h"
+          ],
+          "special_tests_linked": [
+            "Repeated ROM assessment",
+            "Lateral shift correction",
+            "Sustained posture test"
+          ]
+        },
+        {
+          "id": "maitland",
+          "name": "Maitland Mobilization Techniques",
+          "acronym": "Maitland",
+          "origin": "Geoffrey Maitland, Australia",
+          "classification": "Graded passive accessory/intervertebral mobilizations",
+          "evidence_level": "B (Moderate for joint stiffness and pain)",
+          "best_for_regions": [
+            "Cervical",
+            "Thoracic",
+            "Lumbar",
+            "Shoulder",
+            "Elbow",
+            "Hip",
+            "Knee",
+            "Ankle"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited"
+          ],
+          "irritability_guidance": {
+            "low": "Grade III-IV end-range, sustained 30-60sec x3-4, vigorous",
+            "medium": "Grade II-III mid to end-range, 30sec x2-3, rhythmical",
+            "high": "Grade I-II short of resistance, 20-30sec x2, gentle, no sustained"
+          },
+          "dosage_template": "Grades: I (loosening small amplitude before resistance), II (large within resistance), III (large into resistance), IV (small into resistance), V (manipulation). Duration 30sec oscillations x3, retest",
+          "isolation_logic": "Assess accessory motion vs physiological: PA, AP, transverse, rotational. If accessory limited correlates with painful limited physiological comparable sign -> joint driver.",
+          "compensation_watch": [
+            "Over-mobilizing painful joint in high irritability, wrong grade for irritability, not reassessing comparable sign"
+          ],
+          "retest_rule": "Retest comparable sign immediately after 30sec mobilization. Expect >30% pain reduction or ROM gain for medium irritability. If worsens at 5min -> grade too high.",
+          "safety_notes": "Maitland irritability model mandatory: High irritability = high pain early, night pain, lingering. Use APOS (Irritability, Number of pain-free movements, Resistance, Severity). Check vertebral artery for cervical Grade V.",
+          "integration_with_exercise": "Maitland window: After PA mobilization L4-L5 Grade II improves extension 40%, immediately train multifidus activation in new range to hold gain",
+          "contraindications": [
+            "Malignancy, infection, severe osteoporosis for Grade V",
+            "Instability for end-range Grade IV-V",
+            "Cord compression"
+          ],
+          "aliases": [
+            "PAIVMs, PPIVMs, Accessory movements"
+          ]
+        },
+        {
+          "id": "kaltenborn_evjenth",
+          "name": "Kaltenborn-Evjenth Orthopedic Manual Therapy",
+          "acronym": "Kaltenborn-Evjenth",
+          "origin": "Freddy Kaltenborn & Olaf Evjenth, Norway",
+          "classification": "Sustained traction + translational glides with 3-grade system",
+          "evidence_level": "B",
+          "best_for_regions": [
+            "Shoulder",
+            "Hip",
+            "Knee",
+            "Ankle",
+            "Spine (segmental traction)"
+          ],
+          "finding_type_match": [
+            "limited",
+            "painful",
+            "apprehensive"
+          ],
+          "irritability_guidance": {
+            "low": "Grade III sustained stretch 6-60sec into resistance",
+            "medium": "Grade II-II+ large amplitude before/into resistance 30sec",
+            "high": "Grade I-II traction loosening only, short duration"
+          },
+          "dosage_template": "Traction Grade I (loosening), II (taking up slack), III (stretch). Glides AP, PA, caudal, cranial. Sustained 6-12sec hold or 30sec stretch, 3-5 reps",
+          "isolation_logic": "Joint play assessment: If traction improves pain/compression and glide restores limited physiological movement -> capsular convex-concave restriction driver. Use Kaltenborn convex-concave rule for direction.",
+          "compensation_watch": [
+            "Traction too vigorous in acute, ignoring convex-concave rule (e.g., GH inferior glide with shoulder abduction)",
+            "No fixation of adjacent segment"
+          ],
+          "retest_rule": "After Grade III caudal glide GH, retest shoulder flexion/abduction - >20deg gain = positive capsular driver inferior.",
+          "safety_notes": "Check joint status: hypermobility vs hypomobility. Avoid Grade III if effusion, acute inflammation. Good for apprehensive patients because traction unweights.",
+          "integration_with_exercise": "Kaltenborn for peripheral: Traction reduces compressive pain, then immediate rotator cuff co-contraction training in new pain-free position",
+          "contraindications": [
+            "Acute hemarthrosis, hypermobility with apprehension without fixation"
+          ],
+          "special_tests_linked": [
+            "Joint play assessment",
+            "Loose-packed vs close-packed position testing"
+          ]
+        },
+        {
+          "id": "cyriax",
+          "name": "Cyriax Orthopedic Medicine and Deep Friction Massage",
+          "acronym": "Cyriax",
+          "origin": "James Cyriax, UK",
+          "classification": "Selective tissue tension, deep transverse friction, injection, manipulation",
+          "evidence_level": "C (Historical, moderate for tendinopathy deep friction)",
+          "best_for_regions": [
+            "Elbow (tennis elbow)",
+            "Shoulder (supraspinatus tendinitis)",
+            "Knee (ligament sprain)",
+            "Ankle"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited",
+            "unstable"
+          ],
+          "irritability_guidance": {
+            "low": "Deep transverse friction 10-15min to tendon healing phase, with Mill's manipulation",
+            "medium": "Gentle DTF 5-10min, avoid if highly irritable tendon",
+            "high": "Avoid DTF in acute inflammatory phase, use education + isometrics instead"
+          },
+          "dosage_template": "DTF across tendon fiber direction, 10min, 2-3x/week, with gentle stretching. Cyriax manipulation: one-time low amplitude thrust at end-range for specific lesions like tennis elbow",
+          "isolation_logic": "Selective tissue tension: Capsular pattern vs non-capsular, inert vs contractile. Resisted tests differentiation: If resisted movement painful but passive full -> contractile tissue (tendon/muscle).",
+          "compensation_watch": [
+            "Friction too aggressive in acute tendonitis, not following anesthesia or accurate lesion location",
+            "Missing referral: visceral, psych"
+          ],
+          "retest_rule": "After DTF 10min to lateral epicondyle, retest resisted wrist extension pain - should be analgesic immediate but mild discomfort after 2h normal. If no change after 3 sessions, reconsider driver.",
+          "safety_notes": "Avoid over friction in calcific tendinopathy acute. Cyriax injections historical - refer. Selective tension scheme useful for LFS: differentiate contractile vs inert driver",
+          "integration_with_exercise": "DTF window: 10min friction reduces tendon pain to allow isometric -> isotonic progressive loading (Stanish). Link to exercise prescription skill",
+          "contraindications": [
+            "Infection over lesion, malignancy, fragile skin, nerve over lesion",
+            "Calcification with acute pain"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "NEURODYNAMICS",
+      "category_name": "Neurodynamics and Neural Mobilization Techniques",
+      "description": "Assessment and treatment of mechanosensitivity of peripheral nervous system. Critical for differentiating neurogenic vs musculoskeletal driver.",
+      "techniques": [
+        {
+          "id": "neurodynamics",
+          "name": "Neurodynamics and Neural Mobilization Techniques",
+          "acronym": "Neurodynamics, NDT, Butler Shacklock",
+          "origin": "Michael Shacklock, David Butler, Australia",
+          "classification": "Neural tension test, slider, tensioner",
+          "evidence_level": "B (Moderate for radiculopathy, peripheral mechanosensitivity)",
+          "best_for_regions": [
+            "Cervical",
+            "Lumbar",
+            "Shoulder (median nerve bias)",
+            "Hip (sciatic)",
+            "Knee",
+            "Ankle"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "Tensioners with end-range + sensitization maneuvers, 8-12 reps x3",
+            "medium": "Sliders only (one joint loads while other unloads), mid-range, 6-8 reps",
+            "high": "Gentle sliders only supine, avoid nerve irritation, pain-free only"
+          },
+          "dosage_template": "Slider: e.g., median nerve - elbow extension while cervical sidebends away alternate. Tensioner: both ends lengthen. 5-10 sec hold, 8 reps, 2x/day",
+          "isolation_logic": "If ULNT / SLR / Slump positive with structural differentiation (cervical sidebend sensitives) and range improves after neural mobilization, neurodynamic mechanosensitivity driver, not just joint. Check adjacent: thoracic outlet may sensitize.",
+          "compensation_watch": [
+            "Aggressive tensioners in high irritability cause flare, no structural differentiation to isolate joint vs nerve",
+            "Confusing neural symptoms with visceral"
+          ],
+          "retest_rule": "After median nerve slider 3x10, retest shoulder flexion comparable sign or cervical rotation - >20% pain reduction or +15deg = positive neural contribution",
+          "safety_notes": "Red flags: progressive neuro deficit, cauda equina - not mobilization. Stop if numbness persists after technique. Assess irritability of nerve - high = only sliders",
+          "integration_with_exercise": "After neural slider reduces mechanosensitivity, integrate with nerve gliding in functional task: e.g., median nerve bias during desk work posture + cervical mobility",
+          "contraindications": [
+            "Progressive deficit, unstable neuropathy, cord signs, recent nerve graft"
+          ],
+          "special_tests_linked": [
+            "ULNT1 median, ULNT2b radial, ULNT3 ulnar, SLR, PKB, Slump, Femoral slump"
+          ],
+          "related_to": [
+            "Butler's Mobilization of Nervous System",
+            "Shacklock's Clinical Neurodynamics"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "TAPING",
+      "category_name": "Medical Taping and Kinesiology Taping Applications",
+      "description": "Adjunctive taping for proprioception, edema, inhibition/facilitation, mechanical correction to hold manual therapy gains.",
+      "techniques": [
+        {
+          "id": "kinesio_taping",
+          "name": "Medical Taping and Kinesiology Taping Applications",
+          "acronym": "K-Tape, MTC",
+          "origin": "Kenzo Kase, Japan (Kinesio Taping), various medical taping",
+          "classification": "Elastic and rigid taping techniques",
+          "evidence_level": "B-C (Moderate for short-term proprioception, limited long-term)",
+          "best_for_regions": [
+            "Shoulder",
+            "Knee (PFJ)",
+            "Ankle",
+            "Lumbar",
+            "Cervical",
+            "Elbow"
+          ],
+          "finding_type_match": [
+            "weak",
+            "unstable",
+            "compensation",
+            "apprehensive"
+          ],
+          "irritability_guidance": {
+            "low": "Mechanical correction with 50-75% tension, rigid + elastic combo",
+            "medium": "Facilitation with 25-50% tension, proprioceptive, pain relief 15-25%",
+            "high": "Lymphatic edema taping very light 10-15% or decongestive, avoid strong mechanical correction"
+          },
+          "dosage_template": "Facilitation: origin to insertion 25-50% tension. Inhibition: insertion to origin 15-25%. Mechanical correction 50-75% tension, space strip. Wear 3-5 days, retest within 30min",
+          "isolation_logic": "If taping correction of scapular position or patellar tracking immediately improves comparable sign >50%, mechanical deficit driver needing taping as proprioceptive cue not structural fix",
+          "compensation_watch": [
+            "Over-tension causing skin irritation, allergic reaction, using taping as only treatment without exercise",
+            "No retest after taping"
+          ],
+          "retest_rule": "Apply scapular facilitation tape (lower trap) 25% tension, retest shoulder flexion pain/ROM within 10min - >30% improvement = positive proprioceptive driver",
+          "safety_notes": "Check skin allergy, open wounds, DVT risk (no lymphatic taping if DVT suspected), fragile skin elderly",
+          "integration_with_exercise": "Taping window: Tape to enable pain-free exercise - e.g., glute med facilitation tape to allow single leg squat training, patellar medial glide tape + VMO activation",
+          "contraindications": [
+            "Open wound, skin infection, DVT, allergy to adhesive",
+            "Malignancy site"
+          ],
+          "types": [
+            "Kinesiology Tape elastic",
+            "McConnell rigid taping for PFJ",
+            "Dynamic Tape",
+            "Lymphatic taping"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "FASCIAL",
+      "category_name": "Fascial and Myofascial Approaches",
+      "description": "Fascial system continuity, Tensegrity-based approaches addressing myofascial chains, trigger points, distortions.",
+      "techniques": [
+        {
+          "id": "anatomy_trains",
+          "name": "Anatomy Trains Structural Integration",
+          "acronym": "ATSI",
+          "origin": "Thomas Myers, USA (based on Rolfing)",
+          "classification": "Myofascial meridians, 12 sessions structural integration",
+          "evidence_level": "C (Emerging, conceptual model strong clinically)",
+          "best_for_regions": [
+            "Whole body chains: SBL, SFL, LTL, DFL, BFL, SL, SPL, DFL"
+          ],
+          "finding_type_match": [
+            "limited",
+            "compensation",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "Deep myofascial work along chains 60-90min sessions",
+            "medium": "Gentle superficial fascia release 30-60min, avoid deep in painful areas",
+            "high": "Very gentle skin rolling + breathing, avoid deep aggressive fascial work"
+          },
+          "dosage_template": "12-session series: Session 1 opening breathing, 2 feet, 3 lateral line, 4 spiral line, etc. Each session 60-90min, myofascial release along lines with movement",
+          "isolation_logic": "If limited dorsiflexion linked to tight Superficial Back Line (plantar fascia -> hamstrings -> erector spinae), and SBL release improves ankle + lumbar extension together, SBL driver not isolated joint",
+          "compensation_watch": [
+            "Aggressive deep work causing bruising, ignoring irritability, treating without movement integration",
+            "Missing ADR border? No"
+          ],
+          "retest_rule": "After SBL release: plantar fascia + calf + hamstring 10min, retest standing toe touch AND ankle dorsiflexion knee-to-wall - both should improve >20% if SBL driver",
+          "safety_notes": "Caution with anticoagulants, osteoporosis, acute DVT, skin integrity",
+          "integration_with_exercise": "Anatomy Trains requires movement integration after release: SBL release then integrated standing forward bend with breathing + core",
+          "contraindications": [
+            "Acute fractures, infection, coagulopathy"
+          ]
+        },
+        {
+          "id": "myofascial_release",
+          "name": "Myofascial Release Therapy",
+          "acronym": "MFR, JFB MFR",
+          "origin": "John Barnes, USA",
+          "classification": "Sustained gentle pressure into fascial restrictions",
+          "evidence_level": "B-C",
+          "best_for_regions": [
+            "Thoracic (rib cage)",
+            "Lumbar (thoracolumbar fascia)",
+            "Cervical",
+            "Shoulder",
+            "Hip"
+          ],
+          "finding_type_match": [
+            "limited",
+            "painful"
+          ],
+          "irritability_guidance": {
+            "low": "Sustained pressure 90-120sec to fascial barrier, 3-5min per area",
+            "medium": "Gentle sustained 60-90sec, no pain >3/10",
+            "high": "Very light skin traction 30-60sec only"
+          },
+          "dosage_template": "Sustained gentle pressure to restriction, wait for tissue creep 90-120sec, follow release 3-5min per region",
+          "isolation_logic": "If thoracolumbar fascia tightness restricts lumbar flexion and extension, and MFR improves both directions regardless of joint, fascial driver",
+          "compensation_watch": [
+            "Too much pressure causing guarding, no follow-up movement",
+            "Only local not global chain"
+          ],
+          "retest_rule": "After thoracolumbar fascia MFR 3min sidelying, retest lumbar flexion + extension - need >25% change both directions if fascial",
+          "safety_notes": "Check anticoagulants, skin",
+          "integration_with_exercise": "MFR window: Immediately integrate with breathing + fascial stretch - e.g., thoracolumbar fascia release + quadruped rock back"
+        },
+        {
+          "id": "fascial_manipulation",
+          "name": "Fascial Manipulation Technique",
+          "acronym": "FM Stecco Method",
+          "origin": "Luigi Stecco, Italy",
+          "classification": "Deep friction to specific Centers of Coordination (CC) and Fusion (CF) along myofascial planes",
+          "evidence_level": "B",
+          "best_for_regions": [
+            "All: mapped points: antemotion, retromotion, latermotion maps"
+          ],
+          "finding_type_match": [
+            "limited",
+            "painful",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "Deep friction to densified CC point 3min per point, 5-7 points per session",
+            "medium": "Gentle friction 2min, less points, assess pain during",
+            "high": "Avoid deep FM in high irritability, use superficial"
+          },
+          "dosage_template": "Assessment via movement + palpation of CC/CF, treat den densified points with deep friction over bone or muscle 3min until 50% pain reduction at point",
+          "isolation_logic": "FM model: If movement in specific plane (e.g., antemotion knee) limited and CC point palpation hypersensitive (e.g., antemotion knee on thigh), FM driver",
+          "compensation_watch": [
+            "Not finding accurate CC, friction too painful, not reassessing movement immediately"
+          ],
+          "retest_rule": "After 1 CC treated, retest limited plane immediately - expect >50% improvement in that plane if correct CC",
+          "safety_notes": "Avoid over arteries, nerves, recent trauma. Friction may be uncomfortable",
+          "integration_with_exercise": "After CC release, train specific plane movement - e.g., antemotion CC release + deep squat with antemotion pattern"
+        },
+        {
+          "id": "dry_needling_trigger",
+          "name": "Dry Needling for Myofascial Trigger Points",
+          "acronym": "DN Trigger Point, TDN",
+          "origin": "Travell & Simons, later Hong, Dommerholt",
+          "classification": "Intramuscular needling to trigger point to elicit LTR",
+          "evidence_level": "B (Strong short-term analgesia for myofascial pain)",
+          "best_for_regions": [
+            "Shoulder (upper trap, infraspinatus)",
+            "Hip (glute med, piriformis)",
+            "Lumbar (quadratus lumborum, glute med)",
+            "Cervical",
+            "Calf"
+          ],
+          "finding_type_match": [
+            "weak",
+            "painful",
+            "limited"
+          ],
+          "irritability_guidance": {
+            "low": "Deep dry needling pistoning to elicit local twitch response, 10-15 pistons, leave 2-5min",
+            "medium": "Superficial or gentle pistoning 5-10 times, avoid strong twitch if high sensitivity",
+            "high": "Avoid deep DN in high irritability, consider superficial or not at all, use gentle myofascial techniques"
+          },
+          "dosage_template": "Palpate taut band trigger point, needle with clean technique, pistoning until LTR, retain or not 1-5min, 3-6 points per session weekly",
+          "isolation_logic": "If palpation reproduces familiar pain, weak muscle improves strength immediately after DN (e.g., glute med weak -> trigger point DN -> strength +20% immediate), myofascial trigger point driver inhibiting muscle",
+          "compensation_watch": [
+            "Over-needling high irritability causing flare, not following with activation, missing deep muscles",
+            "Unsafe needling: lung near upper trap deep, neurovascular"
+          ],
+          "retest_rule": "Test strength/ROM before and immediately after: e.g., glute med side-lying strength 3/5 -> after DN 4/5 + pain -50% = positive trigger point inhibition driver",
+          "safety_notes": "Clean field, anatomy knowledge, consent, check anticoagulants, lung apices (upper trap), contraindicated pneumothorax risk zones. Red flag screening mandatory. Sharps disposal.",
+          "integration_with_exercise": "DN window: Immediate activation of inhibited muscle after deactivation of trigger point - e.g., upper trap DN + lower trap/serratus activation to prevent recurrence",
+          "contraindications": [
+            "Patient fear, bleeding disorders, local infection, unstable medical",
+            "Lymphedema region"
+          ]
+        },
+        {
+          "id": "dry_needling_fascial_ali",
+          "name": "Dry Needling for Fascial System - Ali Marzok Method",
+          "acronym": "DN Fascial Ali Marzok Method",
+          "origin": "Ali Marzok, LFS - Fascia as sensory organ",
+          "classification": "Fascial layer dry needling targeting fascial densification with neuro-fascial approach",
+          "evidence_level": "C (Emerging clinical - based on Stecco + fascial innervation)",
+          "best_for_regions": [
+            "Thoracolumbar fascia",
+            "Plantar fascia continuum",
+            "Lateral fascia lata",
+            "Cervical fascia",
+            "Thoracic fascia"
+          ],
+          "finding_type_match": [
+            "limited",
+            "weak",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Fascial needling superficial layers along chains, 10-15 points with gentle stimulation",
+            "medium": "Gentle superficial fascial needling, fewer points, avoid deep twitch",
+            "high": "Gentle skin rolling + education, DN deferred"
+          },
+          "dosage_template": "Assess fascial glide via ultrasound or palpation, needle along fascial planes, gentle rotation, leave 5min, assess glide change",
+          "isolation_logic": "If multiple muscles along fascial chain weak/limited (e.g., hamstring + calf + plantar fascia + lumbar erectors all tight) and fascial densification palpable, fascial system driver not individual muscle. Marzok method emphasizes fascia as sensory organ linking LFS driver concept.",
+          "compensation_watch": [
+            "Needling muscle only not fascia, missing chain assessment",
+            "Deep aggressive in high irritability"
+          ],
+          "retest_rule": "After thoracolumbar fascia DN 5 points, retest SLR + lumbar extension + ankle dorsiflexion - all improving >15% suggests fascial system driver",
+          "safety_notes": "Fascial layers superficial - avoid deep organs. Clean technique. LFS safety gate still applies.",
+          "integration_with_exercise": "Fascial DN + immediate fascial loading: e.g., plantar + calf fascial needling then ankle dorsiflexion loading + thoracolumbar fascia chain stretch",
+          "contraindications": [
+            "As DN general"
+          ]
+        },
+        {
+          "id": "fascial_distortion_model",
+          "name": "Fascial Distortion Model",
+          "acronym": "FDM",
+          "origin": "Stephen Typaldos, USA",
+          "classification": "6 distortions: triggerband, herniated trigger point, continuum distortion, folding distortion, cylinder distortion, tectonic fixation",
+          "evidence_level": "C (Emerging)",
+          "best_for_regions": [
+            "Ankle sprain (continuum distortion)",
+            "Shoulder (triggerband)",
+            "Lumbar",
+            "Knee"
+          ],
+          "finding_type_match": [
+            "painful",
+            "limited"
+          ],
+          "irritability_guidance": {
+            "low": "Strong manual technique: triggerband thumb pressure along fascial line",
+            "medium": "Moderate pressure, gentler",
+            "high": "Gentle, consider deferring strong FDM"
+          },
+          "dosage_template": "Patient describes pain with hand gestures (finger = triggerband along line, fist = herniated trigger point, etc.). Treat specific distortion: e.g., triggerband - deep thumb pressure along band 1-2min",
+          "isolation_logic": "Interpret body language: patient rubbing along line = triggerband; pressing point = HTp; cracking joint = tectonic fixation; deep aching diffuse = cylinder. Treatment matches gesture.",
+          "compensation_watch": [
+            "Misinterpreting gesture, aggressive pressure causing guarding"
+          ],
+          "retest_rule": "After 1 distortion correction, pain should decrease >50% immediate e.g., ankle continuum distortion inverted ankle sprain correction improves dorsiflexion immediate",
+          "safety_notes": "Moderate to strong pressure - check tolerance, anticoagulants, fractures",
+          "integration_with_exercise": "After FDM correction, load functional pattern that provoked distortion",
+          "contraindications": [
+            "Acute fracture, infection",
+            "Patient cannot tolerate pressure"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "VISCERAL",
+      "category_name": "Visceral and Specialized Manual Therapy",
+      "description": "Visceral fascia, organ mobility influence on musculoskeletal drivers, especially psoas, diaphragm, pelvic floor linkage.",
+      "techniques": [
+        {
+          "id": "visceral_ali_marzok",
+          "name": "Visceral Manual Therapy - Ali Marzok Approach",
+          "acronym": "VM Ali Marzok",
+          "origin": "Ali Marzok, integrating visceral fascia with LFS driver model",
+          "classification": "Visceral fascial release linking organ mobility to motor control driver",
+          "evidence_level": "C (Clinical expert model linking visceral irritation to muscle inhibition)",
+          "best_for_regions": [
+            "Lumbar (psoas linked to colon/ileocecal)",
+            "Diaphragm (thoracolumbar)",
+            "Pelvis (bladder, uterus)",
+            "Cervical (thyroid fascia)"
+          ],
+          "finding_type_match": [
+            "weak",
+            "compensation",
+            "painful"
+          ],
+          "irritability_guidance": {
+            "low": "Gentle visceral mobilization 3-5min per organ, breathing integration",
+            "medium": "Very gentle 1-2min, avoid deep abdominal in acute pain",
+            "high": "Contraindicated in acute visceral inflammation - refer, gentle breathing only"
+          },
+          "dosage_template": "Assess psoas inhibition linked to visceral irritation (e.g., ileocecal valve region tenderness + psoas weak). Gentle visceral mobilization sustained 90-120sec with breathing, retest psoas strength",
+          "isolation_logic": "If glute med weak + psoas weak + lower abdominal tender + eating habits linked, visceral driver causing reflex inhibition per Marzok method. Check dependency: if psoas activates after visceral release without muscle cueing, visceral driver.",
+          "compensation_watch": [
+            "Aggressive abdominal pressure in acute pain, missing referral to medicine for visceral pathology",
+            "Neglecting breathing diaphragm as visceral driver"
+          ],
+          "retest_rule": "After gentle ileocecal or sigmoid visceral mobilization 2min + breathing, retest psoas strength and lumbar extension comparable sign - >30% immediate improvement = visceral contribution",
+          "safety_notes": "Must screen red flags: visceral pathologies (appendicitis, infection, malignancy) - refer immediately. Check abdominal aortic aneurysm, pregnancy, recent surgery",
+          "integration_with_exercise": "After visceral release + breathing, integrate motor control: e.g., diaphragm release + 90/90 breathing with psoas activation then glute activation",
+          "contraindications": [
+            "Acute visceral inflammation, infection, recent abdominal surgery, pregnancy firm pressure, malignancy, AAA",
+            "Must have medical clearance for visceral work"
+          ],
+          "special_tests_linked": [
+            "Thomas test for psoas-visceral link, lower quadrant palpation, breathing pattern assessment"
+          ]
+        },
+        {
+          "id": "visceral_barral",
+          "name": "Visceral Manipulation Techniques",
+          "acronym": "VM Barral",
+          "origin": "Jean-Pierre Barral, France",
+          "classification": "Organ-specific mobility and motility assessment",
+          "evidence_level": "C",
+          "best_for_regions": [
+            "Pelvis: bladder",
+            "Abdomen: liver, stomach, duodenum, colon",
+            "Thorax: pleura"
+          ],
+          "finding_type_match": [
+            "limited",
+            "painful",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "Specific organ mobilization Grade I-III, listening hand",
+            "medium": "Gentle listening only, short duration",
+            "high": "Avoid if inflammatory, gentle only"
+          },
+          "dosage_template": "Listening assessment, mobility testing (push organ), motility (breath rhythm). Treatment: gentle mobilization 3-5min per organ with long lever listening",
+          "isolation_logic": "If liver restriction causes right shoulder elevation + thoracic restriction, visceral-organ somatic driver. Indirect assessment for LFS",
+          "compensation_watch": [
+            "Over-treating visceral when musculoskeletal driver primary",
+            "Missing medical referral"
+          ],
+          "retest_rule": "After liver mobilization, retest cervical rotation + right shoulder flexion - improvement >15deg suggests viscerosomatic driver",
+          "safety_notes": "Medical screening mandatory",
+          "integration_with_exercise": "Diaphragm mobilization + breathing retraining + core"
+        },
+        {
+          "id": "craniosacral",
+          "name": "Craniosacral Therapy",
+          "acronym": "CST",
+          "origin": "William Garner Sutherland, later Upledger",
+          "classification": "Gentle palpation of craniosacral rhythm, dural tube balancing",
+          "evidence_level": "C (Low moderate for pain, anxiety, autonomic)",
+          "best_for_regions": [
+            "Cranial",
+            "Cervical",
+            "Lumbar (dural tension)",
+            "Whole body autonomic"
+          ],
+          "finding_type_match": [
+            "painful",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Gentle still point, dural tube traction, 20-60min session",
+            "medium": "Very gentle CV4 still point only",
+            "high": "Gentle cranial hold for autonomic calming only, short"
+          },
+          "dosage_template": "Light touch 5gr, assess craniosacral rhythm rate, still point induction CV4, sphenoid, dural tube",
+          "isolation_logic": "If patient with high stress, jaw clench, persistent pain with biopsychosocial overlay, autonomic driver, CST may reduce sympathetic tone improving comparable sign",
+          "compensation_watch": [
+            "Claiming structural cranial bone movement > physiologic",
+            "Missing red flags cranial (intracranial pressure)"
+          ],
+          "retest_rule": "After 10min CV4 still point, retest cervical rotation + pain VAS + breathing pattern - improvement suggests autonomic component",
+          "safety_notes": "Contraindicated ICP raised, acute stroke, aneurysm, recent cranial fracture, severe bleeding disorders",
+          "integration_with_exercise": "After CST autonomic calming, integrate gentle motor control + breathing in parasympathetic state",
+          "contraindications": [
+            "Acute ICP, hemorrhage, stroke",
+            "Severe bleeding"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "NEUROMUSCULAR",
+      "category_name": "Neuromuscular and Movement Techniques",
+      "description": "Motor control, recruitment patterns, functional movement correction linking to comparable sign dependency.",
+      "techniques": [
+        {
+          "id": "nkt",
+          "name": "NeuroKinetic Therapy (NKT)",
+          "acronym": "NKT",
+          "origin": "David Weinstock, USA",
+          "classification": "Motor control theory - weak inhibited muscle compensated by overactive synergist, manual muscle testing + release + reactivation",
+          "evidence_level": "C (Strong clinical reasoning model)",
+          "best_for_regions": [
+            "All regions for inhibition patterns: glute med vs TFL, multifidus vs erector, serratus vs upper trap"
+          ],
+          "finding_type_match": [
+            "weak",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Release overactive with massage DN, then activate inhibited with low threshold",
+            "medium": "Gentle release + gentle activation, avoid fatigue",
+            "high": "Very gentle release only + isometrics, defer strong"
+          },
+          "dosage_template": "NKT protocol: Test inhibited muscle (e.g., glute med) - weak -> test facilitated (TFL) - strong -> release facilitated 1-2min (massage, foam), retest inhibited should be strong -> then activate inhibited with low load 5-10 reps",
+          "isolation_logic": "Core LFS integration: NKT provides explicit algorithm for our candidate muscles isolation logic. If glute med weak and TFL overactive, and after releasing TFL glute med becomes strong without activation, proves inhibition-compensation pair = driver",
+          "compensation_watch": [
+            "Only activating inhibited without releasing facilitated",
+            "Not retesting after every step",
+            "Missing visceral/psychogenic inhibition"
+          ],
+          "retest_rule": "After NKT protocol 1 cycle, retest comparable sign + muscle strength - strength should normalize + comparable improve >30% immediate",
+          "safety_notes": "Gentle release in acute, assess if compensation due to visceral or pain",
+          "integration_with_exercise": "NKT is exercise prescription: After release + activation in clinic, home program: self-release facilitated 2x/day + activation of inhibited 3x8 low threshold in functional position",
+          "contraindications": [
+            "High pain preventing muscle testing",
+            "Need accurate manual muscle test"
+          ]
+        },
+        {
+          "id": "pnf",
+          "name": "Proprioceptive Neuromuscular Facilitation (PNF)",
+          "acronym": "PNF",
+          "origin": "Herman Kabat, Margaret Knott, USA",
+          "classification": "Diagonal patterns, rhythmic stabilization, hold-relax, contract-relax",
+          "evidence_level": "A (Strong for stroke, ROM improvement, facilitation)",
+          "best_for_regions": [
+            "Shoulder (D1/D2 patterns)",
+            "Hip",
+            "Cervical",
+            "Scapular",
+            "Pelvic",
+            "Gait training"
+          ],
+          "finding_type_match": [
+            "weak",
+            "limited",
+            "unstable"
+          ],
+          "irritability_guidance": {
+            "low": "Resisted PNF patterns D1/D2 with irradiation, hold-relax stretch, 3x 10sec hold",
+            "medium": "Gentle PNF without resistance, rhythmic initiation",
+            "high": "Gentle rhythmic initiation, no resistance, no stretch"
+          },
+          "dosage_template": "Patterns: D1 flexion (flex-add-ER) extension (ext-abd-IR), D2 flexion (flex-abd-ER). Techniques: Rhythmic Initiation, Repeated Stretch, Slow Reversal, Rhythmic Stabilization, Hold-Relax, Contract-Relax. Dosage 5-10 reps each",
+          "isolation_logic": "If patient cannot isolate multifidus, PNF irradiation from stronger pattern (UE D2) can facilitate trunk stability. If hold-relax improves ROM 20deg immediate, muscle spindle driver",
+          "compensation_watch": [
+            "Resisting too much in high irritability, ignoring scapular/pelvic control patterns",
+            "Only peripheral PNF not trunk"
+          ],
+          "retest_rule": "After PNF hold-relax hamstring 3x10sec, retest lumbar flexion + SLR - >15deg immediate gain = positive muscle length driver",
+          "safety_notes": "Caution with fracture, unstable joints. PNF stretching stronger than static - avoid in hypermobility",
+          "integration_with_exercise": "PNF becomes home program: e.g., scapular PNF pattern for serratus training, pelvic PNF for glute training, plus functional mat"
+        },
+        {
+          "id": "motor_control",
+          "name": "Motor Control and Motor Relearning Programs",
+          "acronym": "Motor Control, MRP",
+          "origin": "Carr & Shepherd, Hodges, Janda",
+          "classification": "Segmental control, deep muscle activation low threshold, motor relearning task specific",
+          "evidence_level": "A for low back pain motor control exercise",
+          "best_for_regions": [
+            "Lumbar (multifidus, transverse)",
+            "Cervical (deep flexors)",
+            "Shoulder (scapular control)",
+            "Hip (glute med)"
+          ],
+          "finding_type_match": [
+            "weak",
+            "compensation",
+            "unstable"
+          ],
+          "irritability_guidance": {
+            "low": "Load motor control: Single leg stance with glute med, bird dog with multifidus",
+            "medium": "Low threshold activation: quadr plantigrade arm lift with draw in 3x8, 5sec hold",
+            "high": "Gentle isolated activation supine hook lying, breathing integrated, no fatigue"
+          },
+          "dosage_template": "Stage1: Isolated activation 10% MVC 3x10, 5-10sec hold, quality with tactile + ultrasound feedback. Stage2: integrate with movement (e.g., multifidus + arm lift). Stage3: functional (e.g., multifidus + single leg deadlift). Frequency 2-3x/day small doses",
+          "isolation_logic": "Central to LFS: If weak finding and compensation observed = motor control deficit, not strength. Isolation logic from registry: prone knee flex 90 reduces hamstring to isolate glute. Prone multifidus isolation with draw-in",
+          "compensation_watch": [
+            "Activating global erector instead of local multifidus, breath holding, hip hiking substituting for glute med",
+            "Rushing to load before isolated control"
+          ],
+          "retest_rule": "After 5 reps isolated multifidus activation, retest standing extension comparable sign pain/ROM - should improve >30% if motor control driver",
+          "safety_notes": "Avoid fatigue, quality > quantity, use feedback (pressure biofeedback for transverse)",
+          "integration_with_exercise": "This IS exercise integration skill - progression criteria from low threshold to loaded to functional task integration"
+        },
+        {
+          "id": "functional_movement",
+          "name": "Functional Movement Assessment and Correction",
+          "acronym": "FMS, SFMA, DNS, Janda",
+          "origin": "Gray Cook, Lee, Janda (Functional Movement)",
+          "classification": "Movement pattern assessment, breaking down dysfunctional patterns",
+          "evidence_level": "B",
+          "best_for_regions": [
+            "Whole body: Overhead squat, single leg squat, push pattern, pull, hinge"
+          ],
+          "finding_type_match": [
+            "compensation",
+            "limited",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "Full functional assessment + corrective exercise with load",
+            "medium": "Assess without load, gentle correction",
+            "high": "Avoid full functional assessment in acute flare, isolate"
+          },
+          "dosage_template": "FMS 7 tests scoring 0-3, SFMA 7 top tier + breakout. If dysfunctional but non-painful -> motor control correction. If painful -> medical screen",
+          "isolation_logic": "Links to driver checks: Comparable sign = functional task (e.g., sitting >20min). Break down: Does sitting flexion limitation stem from hip flexor length (Thomas) or thoracic extension? SFMA breakout system isolates",
+          "compensation_watch": [
+            "Only training functional movement without isolating driver first",
+            "Load dysfunctional pattern"
+          ],
+          "retest_rule": "After correcting driver (e.g., ankle dorsiflexion), retest overhead squat score - should upgrade 1 ->2 or 2->3 if driver relevant",
+          "safety_notes": "Painful pattern = stop and assess red flags. FMS not diagnostic",
+          "integration_with_exercise": "After driver identified, functional movement training to integrate: e.g., thoracic extension driver corrected then squat to overhead reach integration"
+        }
+      ]
+    },
+    {
+      "category_id": "MODALITIES",
+      "category_name": "Therapeutic Modalities and Adjunctive Therapies",
+      "description": "Adjuncts to enable pain-free movement window for manual therapy and motor control training.",
+      "techniques": [
+        {
+          "id": "anf",
+          "name": "ANF (Amino Neuro Frequency) Therapy",
+          "acronym": "ANF Therapy",
+          "origin": "Mikel H-G Hoff, ANF Academy",
+          "classification": "Amino-based frequency discs applied to skin to normalize nervous system inflammation",
+          "evidence_level": "C (Emerging, ANF clinical case series)",
+          "best_for_regions": [
+            "All with inflammation, edema, nerve hypersensitivity, muscle inhibition linked to inflammation"
+          ],
+          "finding_type_match": [
+            "painful",
+            "weak",
+            "limited"
+          ],
+          "irritability_guidance": {
+            "low": "ANF discs protocol per injury: e.g., lumbar inflammation protocol discs L4-S1",
+            "medium": "ANF pain protocol + inflammation support discs",
+            "high": "ANF central nervous system calming protocol"
+          },
+          "dosage_template": "Apply ANF discs per protocol without touching (frequency), wear 72h, replace per schedule. No drugs",
+          "isolation_logic": "If chronic inflammation drives motor inhibition (e.g., gut inflammation linked to glute inhibition via Marzok fascial method), ANF aiming to reduce systemic inflammation may improve muscle strength. Test retest after 1h disc application.",
+          "compensation_watch": [
+            "Using ANF as sole treatment without driver correction and exercise",
+            "Not assessing underlying medical cause"
+          ],
+          "retest_rule": "After 60min ANF disc application for inflammation, retest comparable sign + muscle strength - any improvement >20% suggests inflammatory/neural driver overlay",
+          "safety_notes": "Non-invasive, but screen allergy to adhesive, check medical for inflammatory disease. Not for acute infection fever - refer",
+          "integration_with_exercise": "ANF window: Apply discs to reduce pain/inflammation to allow pain-free motor control training following same session",
+          "contraindications": [
+            "Skin lesion where disc applied, allergy adhesive research"
+          ]
+        }
+      ]
+    },
+    {
+      "category_id": "EXERCISE",
+      "category_name": "Therapeutic Exercise Prescription",
+      "description": "Dosed exercise to maintain manual therapy gains. Link to LFS retest rule.",
+      "techniques": [
+        {
+          "id": "therapeutic_exercise",
+          "name": "Therapeutic Exercise Prescription",
+          "acronym": "TherEx",
+          "origin": "Kisner, Colby, ACSM guidelines",
+          "classification": "ROM, stretching, strengthening, endurance, power per tissue healing",
+          "evidence_level": "A (Strong across conditions)",
+          "best_for_regions": [
+            "All"
+          ],
+          "finding_type_match": [
+            "weak",
+            "limited",
+            "unstable"
+          ],
+          "irritability_guidance": {
+            "low": "Progressive overload 3-4x/week, strength 70-85% 1RM, 3x6-12, endurance 2-3x15-20",
+            "medium": "Low load 2x/week, isometrics if painful, avoid end-range loading",
+            "high": "Isometrics pain-free, gentle AROM, multiple times/day small doses"
+          },
+          "dosage_template": "FITTVP: Frequency, Intensity, Time, Type, Volume, Progression. Acute: PROM/AROM. Subacute: Isometrics, isotonic light. Chronic: Strength, endurance, power, functional",
+          "isolation_logic": "If weak finding, prescribe strength at specific position/bias where weak. E.g., lumbar extension weak at standing end-range -> prone extension prone with multifidus training specific angle",
+          "compensation_watch": [
+            "Loading dysfunctional pattern, too much too soon in high irritability",
+            "No dosage progression criteria"
+          ],
+          "retest_rule": "After 2 weeks TherEx, retest strength measure (e.g., hand-held dynamometer) and comparable sign functional improvement",
+          "safety_notes": "Screen medical clearance for heavy loading, red flags",
+          "integration_with_exercise": "Core linkage: Manual therapy creates window, TherEx holds it. Every exercise must have retest linked to functional task"
+        },
+        {
+          "id": "corrective_exercise",
+          "name": "Corrective Exercise Programming",
+          "acronym": "CES, NASM CES",
+          "origin": "Mike Clark, NASM, Janda",
+          "classification": "4-phase inhibition, lengthening, activation, integration",
+          "evidence_level": "B",
+          "best_for_regions": [
+            "All compensation patterns: e.g., upper trap overactive vs deep flexors underactive"
+          ],
+          "finding_type_match": [
+            "compensation",
+            "weak",
+            "limited"
+          ],
+          "irritability_guidance": {
+            "low": "Full 4-phase NASM: Inhibit (SMR 90sec), Lengthen (static 30sec), Activate (isolated), Integrate (functional)",
+            "medium": "Inhibit via gentle manual not SMR aggressive, lengthen 20sec, activate low load",
+            "high": "Inhibit via gentle breathing only, lengthen gentle, activation isometrics"
+          },
+          "dosage_template": "Phase1 Inhibit: SMR or manual release 30-90sec overactive (e.g., TFL). Phase2 Lengthen: Static stretch 30sec x2. Phase3 Activate: Isolated activation glute med 3x10. Phase4 Integrate: Single leg squat 3x8",
+          "isolation_logic": "CES algorithm matches LFS perfectly: Findings = overactive/weak. Compensation observed = overactive tissue list. Candidate muscles = inhibited list. Use NKT testing to confirm pair then apply CES",
+          "compensation_watch": [
+            "Skipping activation-integration and only rolling",
+            "SMR over painful areas in high irrit"
+          ],
+          "retest_rule": "After 1 CES cycle (inhibit+lengthen+activate) 10min, retest comparable sign + functional movement (single leg squat pelvic drop) - improve >30% = positive",
+          "safety_notes": "Caution SMR over varicose, anticoagulants, acute injury",
+          "integration_with_exercise": "CES IS exercise integration skill - maps directly to report generator exercise program"
+        }
+      ]
+    },
+    {
+      "category_id": "SPECIALIZED",
+      "category_name": "Specialized Rehabilitation Approaches",
+      "description": "Condition-specific rehab programs that integrate with LFS driver model. When functional task = vestibular, gait, balance etc.",
+      "techniques": [
+        {
+          "id": "vestibular",
+          "name": "Vestibular Rehabilitation Therapy",
+          "acronym": "VRT",
+          "origin": "Susan Herdman",
+          "classification": "Gaze stabilization, habituation, balance training for vestibular hypofunction, BPPV",
+          "evidence_level": "A (Strong for BPPV canalith repositioning, vestibular exercises)",
+          "best_for_regions": [
+            "Cervical (cervicogenic dizziness vs vestibular)",
+            "Balance tasks"
+          ],
+          "finding_type_match": [
+            "unstable",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Gaze stabilization x2 + habituation + balance progressive",
+            "medium": "Gentle gaze stabilization only",
+            "high": "Avoid provoking heavily, gentle only + medical review"
+          },
+          "dosage_template": "BPPV: Epley/ Semont canalith repositioning 1-3 reps. Unilateral hypofunction: gaze stabilization 2min x5/day, balance 20min/day",
+          "isolation_logic": "If complaint dizziness with neck movement vs head movement: cervical driver vs vestibular. Check dependency: if thoracic/cervical extension improves dizziness -> cervicogenic. If BPPV positional nystagmus positive -> vestibular driver",
+          "compensation_watch": [
+            "Missing stroke/central signs (red flag for dizziness)",
+            "VBI"
+          ],
+          "retest_rule": "After Epley, retest Dix-Hallpike - nystagmus should abolish. After gaze stabilization, retest dynamic visual acuity",
+          "safety_notes": "Red flags for dizziness: diplopia, dysarthria, drop attacks, VBI, stroke signs - refer emergency. Screen cervical artery for cervical dizziness",
+          "integration_with_exercise": "After canalith repositioning, integrate balance + habituation + cervical proprioception if cervicogenic component"
+        },
+        {
+          "id": "cardiopulmonary",
+          "name": "Cardiopulmonary Rehabilitation",
+          "acronym": "Cardiac/Pulmonary Rehab",
+          "origin": "ACSM, ACS",
+          "classification": "Graded exercise + breathing training + education for cardiac, pulmonary conditions",
+          "evidence_level": "A",
+          "best_for_regions": [
+            "Thoracic (diaphragm, breathing strategy)",
+            "Whole body endurance"
+          ],
+          "finding_type_match": [
+            "weak",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "High intensity interval per cardiac guidelines with monitoring",
+            "medium": "Moderate 40-60% HRR, breathing retraining",
+            "high": "Gentle breathing + low-level ambulation with vitals monitoring"
+          },
+          "dosage_template": "Phase I inpatient to Phase III outpatient, 3x/week 36 sessions, breathing: diaphragmatic, pursed lip, inspiratory muscle training IMT",
+          "isolation_logic": "If functional task = breathing difficulty or endurance, or compensation = apical breathing + rib flare observed in lumbar extension test, cardiopulmonary/breathing driver",
+          "compensation_watch": [
+            "Ignoring cardiac red flags: chest pain, unstable vitals",
+            "Overload without medical clearance"
+          ],
+          "retest_rule": "After diaphragmatic breathing retraining 5min, retest lumbar extension pain + single leg stance endurance - pain down + endurance up = breathing driver",
+          "safety_notes": "Vitals, red flags cardiac: chest pain, unstable HR/BP, O2 sat <90. Requires medical clearance",
+          "integration_with_exercise": "Integrate breathing with LFS motor control: 90/90 breathing + multifidus + pelvic floor co-contraction"
+        },
+        {
+          "id": "neuro_rehab",
+          "name": "Neurological Rehabilitation and Neuro-Recovery",
+          "acronym": "Neuro Rehab, NDT, Bobath, Motor relearning",
+          "origin": "Bobath, Brunnstrom, Carr & Shepherd",
+          "classification": "Task-specific training neuroplasticity, facilitation of normal movement",
+          "evidence_level": "A for stroke task-specific training",
+          "best_for_regions": [
+            "All if neurological underlying: hemiplegia gait, balance"
+          ],
+          "finding_type_match": [
+            "weak",
+            "unstable",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Task-specific high reps, constraint-induced if applicable",
+            "medium": "Gentle facilitation, avoid fatigue",
+            "high": "Very gentle, small doses, avoid overexertion"
+          },
+          "dosage_template": "High repetition task-specific training 50-100 reps/day, split practice, feedback. e.g., sit-stand, gait training",
+          "isolation_logic": "If neuro screen positive deficit documented (e.g., weak myotome post stroke), not just inhibition, driver is neurological, requires neuro rehab frame",
+          "compensation_watch": [
+            "Ignoring compensations that reinforce abnormal tone",
+            "Plateau without task progression"
+          ],
+          "retest_rule": "After facilitation technique, retest functional task (e.g., walking speed, hand function)",
+          "safety_notes": "Check tone spasticity, falls risk, red flags stroke acute",
+          "integration_with_exercise": "Neuro rehab integrates with PNF, motor control skills"
+        },
+        {
+          "id": "gait_training",
+          "name": "Gait Analysis and Gait Training",
+          "acronym": "Gait Training",
+          "origin": "Gage, Perry, observational gait analysis",
+          "classification": "Observational and instrumented gait correction",
+          "evidence_level": "A",
+          "best_for_regions": [
+            "Hip (Trendelenburg)",
+            "Knee, Ankle (dorsiflexion)",
+            "Lumbar compensation with gait"
+          ],
+          "finding_type_match": [
+            "compensation",
+            "weak",
+            "painful"
+          ],
+          "irritability_guidance": {
+            "low": "Treadmill training, overground, auditory cues, loaded carries",
+            "medium": "Short distance gait training with rests, assistive device",
+            "high": "Gentle weight-shifting, avoid prolonged gait in high irritability LBP"
+          },
+          "dosage_template": "Assess stance phase (loading response, midstance, terminal), swing phase. Train weak component: e.g., glute med weakness -> single leg stance training + gait with band around knees",
+          "isolation_logic": "If comparable sign = walking pain, gait analysis identifies driver: early heel lift = ankle DF limitation, pelvic drop = glute med weak, trunk lean = glute med weak compensation. Link to hip/knee registry compensation watch",
+          "compensation_watch": [
+            "Trendelenburg, vaulting, circumduction, early heel rise",
+            "Missing shoe wear, leg length"
+          ],
+          "retest_rule": "After glute med activation + ankle dorsif mobilization, retest walking pain distance + gait observed pelvic drop - >50% change = driver",
+          "safety_notes": "Falls risk, assistive device need, cardiac clearance if elderly",
+          "integration_with_exercise": "Gait integration after driver correction: Cue functional task walking with new pattern"
+        },
+        {
+          "id": "balance_proprioception",
+          "name": "Balance and Proprioception Training",
+          "acronym": "Balance Training",
+          "origin": "Hertel, NASM progression",
+          "classification": "Static to dynamic to reactive balance, proprioceptive challenges",
+          "evidence_level": "A (Prevention of ankle sprain recurrence, falls in elderly)",
+          "best_for_regions": [
+            "Ankle (chronic instability)",
+            "Knee (ACL)",
+            "Hip",
+            "Lumbar functional tasks"
+          ],
+          "finding_type_match": [
+            "unstable",
+            "weak",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Bosu, wobble board, perturbation, eyes closed, dual task",
+            "medium": "Firm surface single leg, eyes open -> closed, small perturbations",
+            "high": "Supported balance only, no unstable surfaces"
+          },
+          "dosage_template": "Progression: Static double leg -> single leg -> eyes closed -> unstable surface -> perturbation -> reactive -> dual task functional. 2-3x/day 2-5min bouts",
+          "isolation_logic": "If instability/apprehension finding type, and single leg stance <10sec, proprioceptive driver. Check dependency: Does ankle dorsiflexion restriction cause balance deficit? Fix DF then retest balance.",
+          "compensation_watch": [
+            "Holding breath, hip strategy only no ankle strategy, trunk leaning",
+            "Training balance without fixing driver like ankle stiffness"
+          ],
+          "retest_rule": "After ankle taping + dorsiflexion mobilization, retest single leg stance time + Star Excursion Y-balance >4cm improvement = positive",
+          "safety_notes": "Falls prevention: support available, no unstable surfaces in high fall risk without guarding",
+          "integration_with_exercise": "Balance is integration phase after motor control: e.g., glute med activation -> single leg balance -> single leg squat"
+        },
+        {
+          "id": "sports_rehab",
+          "name": "Sports Rehabilitation and Performance Enhancement",
+          "acronym": "Sports Rehab",
+          "origin": "Various sports medicine models",
+          "classification": "Return to sport continuum: isolated -> loaded -> sport-specific -> performance",
+          "evidence_level": "A",
+          "best_for_regions": [
+            "All sport functional tasks: Overhead athlete shoulder, runner hip/knee/ankle"
+          ],
+          "finding_type_match": [
+            "weak",
+            "limited",
+            "unstable",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Plyometrics, high load, sport specific drills 4-5x/week",
+            "medium": "Submaximal sport drills, avoid provoking pain, moderate load",
+            "high": "Not sport phase - stay in pain reduction phase"
+          },
+          "dosage_template": "Continuum: Pain relief -> Motor control -> Strength 70-85% 1RM -> Power plyometrics -> Energy systems -> Sport specific. Criteria-based not time-based. E.g., hop testing >90% LSI",
+          "isolation_logic": "If patient high level athlete, driver that is 10% limitation may be irrelevant for ADL but relevant for sport. Use direction/position/bias with load e.g., ankle DF loaded jumping vs standing",
+          "compensation_watch": [
+            "Return to sport too early based on time, not criteria, missing compensations high speed"
+          ],
+          "retest_rule": "Criteria: Single leg hop >90% limb symmetry, Y-balance >94% reach, pain 0 with sport task, confidence >80%",
+          "safety_notes": "Criteria progression, load management, red flags, concussion screen",
+          "integration_with_exercise": "Final stage of LFS exercise integration - functional task becomes sport"
+        }
+      ]
+    },
+    {
+      "category_id": "PAIN",
+      "category_name": "Pain Science and Education",
+      "description": "Modern pain science integrating biopsychosocial model with physical drivers. Critical for high irritability, chronic pain, fear-avoidance.",
+      "techniques": [
+        {
+          "id": "pne",
+          "name": "Pain Neuroscience Education",
+          "acronym": "PNE",
+          "origin": "Butler & Moseley, Explain Pain",
+          "classification": "Education reframing pain as brain output, not tissue damage, addressing central sensitization",
+          "evidence_level": "A (Moderate for chronic musculoskeletal pain combined with exercise)",
+          "best_for_regions": [
+            "All chronic pain >3 months, high irritability, disproportionate pain behaviors, fear-avoidance"
+          ],
+          "finding_type_match": [
+            "painful",
+            "compensation",
+            "apprehensive",
+            "weak"
+          ],
+          "irritability_guidance": {
+            "low": "PNE + graded exposure, 2-3 sessions + exercise",
+            "medium": "PNE gentle, emphasize safety, combine with graded activity",
+            "high": "PNE priority, focus on safety, calming, no aggressive manual"
+          },
+          "dosage_template": "PNE 30-60min sessions 1-3x, stories, metaphors (alarm system), graded exposure hierarchy, sleep hygiene, stress management",
+          "isolation_logic": "If pain behavior disproportionate: widespread, non-mechanical (constant night pain eased? no), multiple regions positive, high fear (Tampa), catastrophizing, no clear mechanical driver via retest <20% change despite multiple corrections, central sensitization driver not mechanical",
+          "compensation_watch": [
+            "Patient high fear-avoidance holding breath, guarding, bracing global",
+            "Therapist biomedical language reinforcing tissue damage"
+          ],
+          "retest_rule": "After 1 PNE session + gentle exposure, retest comparable sign - often no immediate physical change but pain 0-10 decreases fear 2 points, willingness to move improves, enabling later mechanical retest",
+          "safety_notes": "Screen psych yellow flags but not label. Biopsychosocial approach = referral for psych support if trauma severe. Red flags still medical screen",
+          "integration_with_exercise": "PNE is prerequisite for high fear chronic pain to enable exercise: e.g., education that bending is safe + graded exposure to lumbar flexion via time-contingent not pain-contingent"
+        },
+        {
+          "id": "pain_management",
+          "name": "Therapeutic Pain Management Strategies",
+          "acronym": "TPM",
+          "origin": "Multidisciplinary pain management",
+          "classification": "Coping strategies, graded activity, sleep, stress, pacing",
+          "evidence_level": "A",
+          "best_for_regions": [
+            "Chronic pain functional task limitations"
+          ],
+          "finding_type_match": [
+            "painful",
+            "apprehensive"
+          ],
+          "irritability_guidance": {
+            "low": "Pacing with gradual loading",
+            "medium": "Activity diaries, sleep hygiene, stress management",
+            "high": "Pain calming: breathing, relaxation, gentle graded exposure"
+          },
+          "dosage_template": "Pacing: break tasks into smaller, time-contingent progression 10% weekly, sleep 7-8h hygiene, stress: diaphragmatic breathing 5min x3/day, mindfulness",
+          "isolation_logic": "If functional task pain unpredictable, linked to poor sleep (<5h), high stress, multiple psychosocial barriers, pain management strategy driver alongside mechanical",
+          "compensation_watch": [
+            "Boom-bust cycle: overactivity one day under next",
+            "Sleep deprivation"
+          ],
+          "retest_rule": "After 1 week pacing + sleep routine, retest functional tolerance time (e.g., sitting tolerance from 20 to 35min) - +50% = positive behavioral driver",
+          "safety_notes": "Referral for CBT if severe anxiety/depression",
+          "integration_with_exercise": "Pain management + graded exercise: graded walking 10min daily time-contingent not pain-contingent, then add home program"
+        },
+        {
+          "id": "bps",
+          "name": "Biopsychosocial Approach to Rehabilitation",
+          "acronym": "BPS",
+          "origin": "Engel 1977, Waddell, modern BPS",
+          "classification": "Integration of biological drivers with psychological (beliefs, fear, catastrophizing, self-efficacy) and social (work, family support, compensation)",
+          "evidence_level": "A (Strong for chronic LBP, neck pain, osteoarthritis)",
+          "best_for_regions": [
+            "All chronic, work-related functional tasks"
+          ],
+          "finding_type_match": [
+            "painful",
+            "weak",
+            "apprehensive",
+            "compensation"
+          ],
+          "irritability_guidance": {
+            "low": "Address all three pillars, set collaborative goals",
+            "medium": "Validate and address beliefs, involve family/work",
+            "high": "Psychologically informed physiotherapy priority, gentle physical"
+          },
+          "dosage_template": "Assess yellow flags: Tampa kinesiophobia, PCS catastrophizing, self-efficacy. Use Orebro, STarT Back. Management: education + exercise + goal setting + graded exposure + work linkage",
+          "isolation_logic": "LFS model traditionally biomechanical driver, BPS adds: Is patient's belief 'my spine is crumbling' driving guarding/compensation? Test: gentle education + reassurance + movement with support, if comparable improves >30% without manual, belief driver component",
+          "compensation_watch": [
+            "Lumbar bracing due to fear not weakness, walking altered due to work avoidance",
+            "Therapist focusing only bio"
+          ],
+          "retest_rule": "After BPS intervention (goal setting, reassurance, graded exposure), retest comparable sign pain and self-reported confidence to perform functional task (0-100% confidence) - confidence increase >20% predicts positive outcome",
+          "safety_notes": "Screen severe mental health - refer, maintain therapeutic alliance, avoid judgment",
+          "integration_with_exercise": "BPS + exercise: Self-efficacy building - collaborative exercise choice, small wins, functional integration linked to patient-valued activity (e.g., playing with kids)"
+        }
+      ]
+    }
+  ],
+  "crosswalk": {
+    "note": "How techniques map to LFS pillars",
+    "comparable_sign_finding_type_to_techniques": {
+      "weak": [
+        "NKT",
+        "Motor Control",
+        "PNF",
+        "Dry Needling Trigger Points",
+        "ANF",
+        "Corrective Exercise",
+        "Therapeutic Exercise",
+        "Anatomy Trains if chain"
+      ],
+      "painful": [
+        "Maitland",
+        "Mulligan MWM",
+        "McKenzie MDT",
+        "Neurodynamics sliders",
+        "Fascial Manipulation",
+        "Taping mechanical correction",
+        "PNE + BPS if central sensitization"
+      ],
+      "limited": [
+        "Kaltenborn-Evjenth",
+        "Maitland Grade III-IV",
+        "Myofascial Release",
+        "Fascial Manipulation",
+        "FDM",
+        "PNF hold-relax",
+        "Anatomy Trains"
+      ],
+      "unstable": [
+        "Kaltenborn-Evjenth traction not stretch",
+        "PNE + BPS",
+        "Balance and Proprioception",
+        "Kinesiology taping facilitation",
+        "Motor Control low threshold"
+      ],
+      "apprehensive": [
+        "PNE",
+        "BPS",
+        "Taping",
+        "Gentle Maitland Grade I-II",
+        "ANF"
+      ],
+      "compensation": [
+        "Corrective Exercise CES",
+        "NKT",
+        "Functional Movement SFMA",
+        "Anatomy Trains",
+        "Motor Control",
+        "Gait Analysis"
+      ]
+    },
+    "irritability_to_manual_grade": {
+      "high": "Grade I-II only, sliders not tensioners, gentle activation, PNE/BPS priority, avoid deep fascia/DTF, avoid Grade III-IV",
+      "medium": "Grade II-III, MWM pain-free, mid-range repetition MDT, sliders + gentle tensioners, gentle trigger point DN",
+      "low": "Grade III-IV-V, sustained, overpressure, MWM with belt, MDT end-range, tensioners, deep friction, deep fascia DN, plyometrics"
+    }
+  }
+}

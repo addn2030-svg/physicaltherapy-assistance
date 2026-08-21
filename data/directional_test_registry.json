@@ -1,0 +1,230 @@
+{
+  "version": "1.0.0",
+  "generated_from": "Clinical_Driver_Console sheet - Dynamic Lookup Panel",
+  "note": "Select region first, then direction/position/bias",
+  "regions": [
+    {
+      "canonical_region": "Cervical",
+      "specific_joints": ["C0-C1", "C1-C2", "C2-C3", "C3-C4", "C4-C5", "C5-C6", "C6-C7", "C7-T1"],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": ["Sitting", "Supine", "Standing"],
+          "biases": ["End-range", "With overpressure", "Chin tuck bias", "Combined with rotation"],
+          "candidate_muscles": ["Longus colli", "Longus capitis", "SCM"],
+          "isolation_logic": "Supine chin tuck isolates deep flexors vs SCM",
+          "compensation_watch": ["SCM dominance", "Jaw clench", "Shoulders elevation"],
+          "retest_rule": "Retest after deep flexor activation - >30% neck pain VAS decrease = positive"
+        },
+        {
+          "direction": "Extension",
+          "positions": ["Sitting", "Prone", "Quadruped"],
+          "biases": ["End-range", "Upper vs Lower cervical bias", "With rotation bias"],
+          "candidate_muscles": ["Cervical extensors", "Semispinalis", "Multifidus"],
+          "isolation_logic": "Upper cervical extension vs lower - nod vs whole ext",
+          "compensation_watch": ["Lumbar extension", "Scapular retraction", "Eye movement"],
+          "retest_rule": "PA mobilization C5-C6 + motor control, retest extension 2min"
+        },
+        {
+          "direction": "Rotation",
+          "positions": ["Sitting", "Supine"],
+          "biases": ["Flexion biased", "Extension biased", "To left", "To right"],
+          "candidate_muscles": ["Rotators", "SCM contralateral"],
+          "isolation_logic": "Flexion-rotation test isolates C1-C2",
+          "compensation_watch": ["Thoracic rotation", "Eye following", "Sidebend substitution"],
+          "retest_rule": "Upper thoracic manipulation may improve cervical rotation >15deg"
+        },
+        {
+          "direction": "Sidebend",
+          "positions": ["Sitting", "Supine"],
+          "biases": ["Left", "Right", "With flexion", "With extension"],
+          "candidate_muscles": ["Scalenes", "Upper trap"],
+          "isolation_logic": "Check thoracic sidebend dependency",
+          "compensation_watch": ["Shoulder hike", "Rotation substitution"],
+          "retest_rule": "Retest after first rib mobilization"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Thoracic",
+      "specific_joints": ["T1-T2", "T2-T3", "T3-T4", "T4-T5", "T5-T6", "T6-T7", "T7-T8", "T8-T9", "T9-T10", "T10-T11", "T11-T12"],
+      "directions": [
+        {
+          "direction": "Extension",
+          "positions": ["Sitting", "Prone", "Standing", "Quadruped"],
+          "biases": ["End-range over foam roller", "Segmental T6-8 bias", "Loaded arms overhead", "Breathing bias"],
+          "candidate_muscles": ["Thoracic extensors", "Erector spinae"],
+          "isolation_logic": "Foam roller isolates thoracic vs lumbar; arms overhead biases upper T",
+          "compensation_watch": ["Lumbar extension", "Rib flare", "Neck extension"],
+          "retest_rule": "Retest cervical rotation or shoulder flexion or lumbar extension after PA T6-8 - need >20% improvement"
+        },
+        {
+          "direction": "Flexion",
+          "positions": ["Sitting", "Quadruped", "Standing"],
+          "biases": ["Segmental", "Combined with rotation"],
+          "candidate_muscles": ["Intercostals", "Abs as antagonist"],
+          "isolation_logic": "Check if limited by extension driver",
+          "compensation_watch": ["Lumbar flexion dominance"],
+          "retest_rule": "After extension mobilization, flexion often improves automatically"
+        },
+        {
+          "direction": "Rotation",
+          "positions": ["Sitting", "Sidelying", "Quadruped"],
+          "biases": ["Left", "Right", "Half kneeling chop"],
+          "candidate_muscles": ["Rotators", "Obliques"],
+          "isolation_logic": "Sitting rotation vs lumbar locked",
+          "compensation_watch": ["Lumbar rotation", "Hip rotation", "Scapular move"],
+          "retest_rule": "Open book test retest after thoracic PA"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Lumbar",
+      "specific_joints": ["T12-L1", "L1-L2", "L2-L3", "L3-L4", "L4-L5", "L5-S1"],
+      "directions": [
+        {
+          "direction": "Extension",
+          "positions": ["Standing", "Prone", "Sitting", "Quadruped", "Single Leg Stance"],
+          "biases": ["End-range overpressure", "Mid-range", "Sustained 5sec", "Loaded 5kg", "Knee flex 90 reduces hamstring"],
+          "candidate_muscles": ["Multifidus L4-L5", "Erector spinae", "Glute Max", "Hamstring as synergist"],
+          "isolation_logic": "Prone knee flex 90deg reduces hamstring -> isolates glute vs erector; Single leg stance isolates glute med control; Hook lying draw in isolates multifidus",
+          "compensation_watch": ["Lumbar shift left/right", "Hip extension substitution", "Knee flexion", "Breath holding", "Rib flare"],
+          "retest_rule": "Retest standing extension pain/ROM AND sitting flexion after multifidus facilitation + thoracic mobilization - needs >50% change to confirm primary driver",
+          "irritability_note": "High irrit -> test prone mid-range only, no standing overpressure"
+        },
+        {
+          "direction": "Flexion",
+          "positions": ["Standing", "Sitting", "Supine", "Long sitting"],
+          "biases": ["End-range", "With posterior pelvic tilt bias", "Combined with rotation", "Under load"],
+          "candidate_muscles": ["Multifidus eccentric", "Transverse abdominis", "Hamstring", "Psoas"],
+          "isolation_logic": "Long sitting flex isolates hamstring length vs lumbar; Supine knee to chest isolates lumbar vs hip",
+          "compensation_watch": ["Hip flexion early", "Thoracic flexion", "Neck flexion", "Knee bending"],
+          "retest_rule": "After hamstring length or psoas release, retest lumbar flex 2min - >30% improvement = hip driver"
+        },
+        {
+          "direction": "Rotation",
+          "positions": ["Sitting", "Standing", "Sidelying", "Half kneeling"],
+          "biases": ["Left", "Right", "Combined with ext/flex"],
+          "candidate_muscles": ["Multifidus rotation", "Obliques", "Glute med"],
+          "isolation_logic": "Sitting rotation blocks hip, isolates lumbar",
+          "compensation_watch": ["Hip rotation", "Thoracic rotation dominates", "Pelvic shift"],
+          "retest_rule": "Retest rotation after SIJ mobilization or hip rotator activation"
+        },
+        {
+          "direction": "Sidebend",
+          "positions": ["Standing", "Sitting", "Side plank"],
+          "biases": ["Left", "Right", "With overpressure hip"],
+          "candidate_muscles": ["Quadratus lumborum", "Glute med", "Obliques"],
+          "isolation_logic": "Side plank isolates QL vs glute",
+          "compensation_watch": ["Hip hiking", "Shoulder lateral shift"],
+          "retest_rule": "Check hip abductor strength effect on lumbar sidebend pain"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Shoulder",
+      "specific_joints": ["GH", "AC", "SC", "Scapulothoracic", "C5-C6 contribution"],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": ["Supine", "Standing", "Sidelying", "Prone"],
+          "biases": ["With scapular assistance", "Without scapula assist", "External rotation bias", "Thumb up vs neutral", "Loaded 1kg"],
+          "candidate_muscles": ["Anterior Deltoid", "Serratus Anterior", "Upper Trap", "Lower Trap", "Rotator cuff"],
+          "isolation_logic": "Supine eliminates trunk compensation; Scapular assistance test isolates scapular driver vs GH; ER bias checks rotator cuff control",
+          "compensation_watch": ["Scapular elevation", "Trunk extension/lean", "Elbow flexion", "Forward head", "Rib flare"],
+          "retest_rule": "If flexion improves >30deg with scapular assistance or thoracic PA T4-6, driver = scapular/thoracic not GH"
+        },
+        {
+          "direction": "Abduction",
+          "positions": ["Standing", "Supine", "Scapular plane"],
+          "biases": ["Empty can", "Full can", "External rotation", "Scapular setting"],
+          "candidate_muscles": ["Supraspinatus", "Deltoid", "Serratus"],
+          "isolation_logic": "Scaption 30deg forward reduces impingement; Empty can isolates supraspinatus",
+          "compensation_watch": ["Shrug", "Trunk sidebend", "Internal rotation"],
+          "retest_rule": "GH inferior glide + serratus activation, retest painful arc"
+        },
+        {
+          "direction": "External Rotation",
+          "positions": ["Sidelying", "Standing at 0deg", "Abducted 90deg"],
+          "biases": ["At side", "90-90 position", "With scapular assistance"],
+          "candidate_muscles": ["Infraspinatus", "Teres minor", "Posterior deltoid"],
+          "isolation_logic": " sidelying ER isolates cuff vs deltoid",
+          "compensation_watch": ["Scapular retraction too much", "Trunk rotation", "Wrist extension"],
+          "retest_rule": "After thoracic extension + posterior GH mobilization, ER should improve >20%"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Hip",
+      "specific_joints": ["Femoroacetabular", "SIJ contribution", "Lumbar contribution"],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": ["Supine", "Standing", "Deep squat"],
+          "biases": ["Knee to chest", "With overpressure", "Internal rotation bias", "With lumbar neutral cue"],
+          "candidate_muscles": ["Iliopsoas", "Rectus femoris", "Glute max antagonist", "Deep hip flexors"],
+          "isolation_logic": "Thomas test isolates rectus vs psoas; Supine with lumbar neutral isolates hip vs lumbar",
+          "compensation_watch": ["Lumbar posterior tilt", "Pelvic rotation", "Knee valgus"],
+          "retest_rule": "After psoas release + glute activation, retest squat depth"
+        },
+        {
+          "direction": "Extension",
+          "positions": ["Prone", "Standing", "Quadruped", "Single leg stance"],
+          "biases": ["Knee flex 90", "Knee extended", "With abduction bias", "Loaded"],
+          "candidate_muscles": ["Glute Max", "Hamstring", "Erector spinae"],
+          "isolation_logic": "Knee flexed isolates glute vs hamstring; Prone hip ext with palpation",
+          "compensation_watch": ["Lumbar extension", "Pelvic rotation", "Knee flexion substitution"],
+          "retest_rule": "If lumbar pain reduces after glute facilitation, primary = glute inhibition driver"
+        },
+        {
+          "direction": "Abduction",
+          "positions": ["Sidelying", "Standing", "Single leg stance"],
+          "biases": ["External rotation", "Internal rotation", "With pelvic neutral"],
+          "candidate_muscles": ["Glute Med", "Glute Min", "TFL"],
+          "isolation_logic": "Sidelying abduction with slight ER isolates glute med vs TFL; Standing checks functional control",
+          "compensation_watch": ["Pelvic hiking", "Trunk lean", "Hip external rotation", "Lumbar sidebend"],
+          "retest_rule": "After glute med facilitation, retest single leg stance pelvic drop - <50% drop = positive"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Knee",
+      "specific_joints": ["Tibiofemoral", "Patellofemoral", "Proximal tib-fib"],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": ["Prone", "Supine", "Sitting"],
+          "biases": ["Active", "Passive", "With overpressure", "With patellar bias"],
+          "candidate_muscles": ["Quads eccentrically", "Hamstring", "Popliteus"],
+          "isolation_logic": "Passive vs active to separate joint vs muscle; Check hip flex influence",
+          "compensation_watch": ["Hip external rotation", "Pelvic rotation"],
+          "retest_rule": "After patellar mobilization + quad activation, retest flexion pain"
+        },
+        {
+          "direction": "Extension",
+          "positions": ["Supine", "Standing"],
+          "biases": ["Terminal extension", "With overpressure", "Long sit"],
+          "candidate_muscles": ["VMO", "Quads", "Hamstring length"],
+          "isolation_logic": "Terminal knee ext isolates VMO",
+          "compensation_watch": ["Hip hike", "Lumbar extension"],
+          "retest_rule": "Immediate improvement after patella medial glide = PF driver"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Ankle",
+      "specific_joints": ["Talocrural", "Subtalar", "Midfoot"],
+      "directions": [
+        {
+          "direction": "Dorsiflexion",
+          "positions": ["Standing lunge", "Supine", "Sitting"],
+          "biases": ["Knee extended", "Knee flexed", "With overpressure", "Loaded"],
+          "candidate_muscles": ["Tibialis anterior", "Gastrocnemius", "Soleus"],
+          "isolation_logic": "Knee flexed isolates soleus vs gastrocnemius; Lunge test functional",
+          "compensation_watch": ["Foot pronation", "Knee valgus", "Early heel rise", "Hip adduction"],
+          "retest_rule": "After calf length + talocrural AP mobilization, retest lunge knee-to-wall >2cm improvement = positive"
+        }
+      ]
+    }
+  ]
+}
