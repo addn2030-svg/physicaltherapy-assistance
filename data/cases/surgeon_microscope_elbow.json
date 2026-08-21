@@ -1,0 +1,172 @@
+{
+  "case_id": "ELBOW-SURGEON-MICROSCOPE-001",
+  "title": "Elbow Focus - Surgeon Working Under Microscope 10H Sustained",
+  "profile": {
+    "occupation": "Surgeon - microsurgery under microscope",
+    "work_duration": "10H sustained",
+    "posture": "Sitting microscope posture: elbow flexion 90-110deg sustained, forearm pronation 70%, shoulder abduction 30-45deg, cervical flexion 20-30deg forward head, thoracic kyphosis, static grip 0.2kg instruments",
+    "chief_complaint": "Lateral elbow pain, medial elbow tightness, forearm fatigue, grip weakness after 3-4H microscope, eases with rest but returns next day, worse with resisted wrist extension middle finger",
+    "functional_task": "Microscope instrument handling 10H, pinch grip, precision grip, sustained elbow flexion pronation, need to maintain steady hands",
+    "previous_response": "Rest helps temporarily, massage forearm temporary relief 1 day, NSAIDs temporary, stretching wrist extensors aggravates if aggressive",
+    "age_gender": "38 / M example"
+  },
+  "clinical_driver_console": {
+    "patient_case": {
+      "Patient_ID": "PT-SURGEON-ELBOW-001",
+      "Patient_Name": "Dr. Microscope Surgeon",
+      "Therapist": "PT LFS",
+      "Age_Gender": "38 / M",
+      "ChiefComplaint": "Lateral elbow pain after 3-4H microscope, forearm fatigue, grip weakness, pain with resisted wrist extension middle finger (Cozen), eases rest",
+      "FunctionalTask": "10H microscope surgery - sustained elbow flexion 90-110deg pronation 70% + precision grip 0.2kg instruments + cervical flexion 20-30deg",
+      "PreviousResponse": "Rest temporary, forearm massage temporary 1 day, aggressive wrist extensor stretch aggravates"
+    },
+    "comparable_sign": {
+      "CanonicalRegion": "Elbow",
+      "SpecificJoint_Segment": "Humeroradial + Humeroulnar + Lateral Epicondyle ECRB",
+      "MovementDirection": "Gripping - Microscope Instrument Handling",
+      "Position": "Sitting microscope posture 10H simulated",
+      "Bias_RangeGate": "Sustained grip 10H microsurgery instruments 0.2kg + pronation 70% + elbow flexion 90-110deg + cervical protraction bias",
+      "Angle_Load": "Grip tolerance baseline 20min pain 7/10 lateral epicondyle, grip strength 28kg vs 40kg contralateral, Cozen test positive pain 8/10, middle finger extension test positive",
+      "FindingType": "painful + weak + compensation",
+      "PainBehavior": "Pain lateral epicondyle with resisted wrist extension middle finger, forearm extensor tightness, pain eases rest but returns with microscope work 3-4H, no night pain constant but ache after work, no numbness but occasional radial forearm tingling",
+      "BaselineMeasure": "Cozen resisted wrist extension pain 8/10 at lateral epicondyle, grip strength 28kg (contralateral 40kg) -30%, microscope posture tolerance 20min before pain 7/10, supine pure elbow flexion pain-free full ROM"
+    },
+    "driver_checks": {
+      "RedFlagsCleared": "cleared",
+      "RedFlagsDetails": "No trauma, no fever weight loss cancer, no constant night pain unrelieved, no fracture signs, age 38 no systemic",
+      "NeuroScreen": "cleared with radial bias note",
+      "NeuroScreenDetails": {
+        "sensory": "Intact C5-T1 dermatomes, occasional radial forearm tingling after 10H but not persistent dermatomal",
+        "motor": "C5 deltoid 5/5, C6 biceps wrist extensors ECRB 4-/5 painful, C7 triceps 5/5, C8 grip 4/5 vs 5/5 contralateral, T1 finger abduction 5/5",
+        "reflexes": "Biceps C5-6 2+ symmetric, Triceps C7 2+, Brachioradialis C6 2+",
+        "UMN": "negative",
+        "special_neuro": "ULNT2b radial bias: elbow extension + shoulder depression + wrist flexion + pronation reproduces lateral elbow pain 6/10, sensitizes with cervical sidebend away -> radial mechanosensitivity positive. ULNT1 median bias: slight positive with pronator teres tightness but less than radial. No progressive deficit."
+      },
+      "AdjacentRegionCheck": "Cervical C5-C6 extension limited and painful, thoracic T4-6 extension limited, shoulder scapular upward rotation deficit serratus inhibition vs upper trap overactive, wrist extension limited ECRB tight",
+      "CompensationObserved": "Shoulder elevation shrug upper trap overactive vs lower trap serratus inhibited, cervical flexion 45deg forward head, thoracic kyphosis, trunk lean over microscope, wrist flexion substitution for grip, finger flexor over-grip, breath holding Valsalva during precision tasks, elbow valgus, ulnar deviation",
+      "DependencyResult": "dependent_on_cervical_C5C6_and_thoracic_T4T6_and_scapular_and_pronator_teres",
+      "DependencyDetails": {
+        "cervical": "Cervical retraction + SNAG C5-C6 + thoracic extension PA T4-6 improves Cozen pain from 8/10 to 4/10 (50% improvement) and grip tolerance from 20min to 45min",
+        "scapular": "Scapular assistance setting lower trap serratus improves elbow flexion tolerance +30% and reduces shoulder shrug",
+        "pronator_teres": "NKT: Test ECRB weak -> rub pronator teres -> ECRB instantly strong, test supinator weak -> rub pronator teres -> supinator strong, reactive pair confirmed pronator teres driver",
+        "radial_nerve": "Radial nerve slider ULNT2b reduces lateral elbow pain 40% immediate"
+      },
+      "Irritability": "medium",
+      "IrritabilityJustification": "Pain at mid-range with microscope posture, lingers < few hours after aggravation, no constant night pain, AROM limited by pain not stiffness, grip weakness 30% but not severe",
+      "ComparableSignSelected": true,
+      "RetestComparator": {
+        "PostInterventionTarget": "After cervical SNAG C5-C6 + thoracic PA T4-6 + NKT release pronator teres flexor digitorum 60sec FIRST -> Activate ECRB supinator triceps 3x5sec SECOND + radial nerve slider + taping ECRB facilitation 25-50% + decompression cross-pattern lateral epicondyle 50% center + ergonomic armrest adjustment",
+        "ExpectedChange": "Cozen pain 8/10 -> 2/10 (75% improvement), grip strength 28kg -> 38kg (+35%), microscope tolerance 20min -> 90min (+350%), supination ROM +25deg",
+        "DriverConfirmed": "Pending retest - if >50% improvement with cervical thoracic scapular + pronator teres NKT, driver = cervical thoracic scapular + pronator teres synergistic dominance over ECRB supinator, not isolated lateral epicondylitis"
+      }
+    },
+    "ai_reasoning": {
+      "PrimaryFinding": "Lateral elbow pain driver = synergistic dominance pronator teres + flexor digitorum over ECRB + supinator inhibition with cervical C5-C6 and thoracic T4-6 extension driver and scapular upward rotation deficit serratus inhibition. Evidence: NKT ECRB weak -> pronator teres rub -> ECRB strong reactive pair confirmed, supinator weak -> pronator teres rub -> strong, cervical retraction + thoracic PA improves Cozen 50% and grip tolerance 20->45min, radial nerve ULNT2b positive mechanosensitivity 40% improvement with slider.",
+      "SecondaryFinding": "Cervical C5-C6 extension limitation + thoracic T4-6 extension stiffness driver with forward head 45deg + thoracic kyphosis from 10H microscope posture, driving C6-C7 inhibition of triceps ECRB via cervical driver",
+      "ThirdFinding": "Scapular upward rotation deficit serratus anterior inhibition vs upper trap levator overactive, causing shoulder shrug compensation and elbow valgus, reducing proximal stability for distal precision grip",
+      "Confidence": 82,
+      "SafetyGate": "proceed_with_caution - red flags cleared, neuro cleared with radial mechanosensitivity note not progressive deficit, irritability medium",
+      "ManualTherapyTechniquesMatched": [
+        {
+          "id": "mulligan_mwm",
+          "name": "Mulligan Concept Mobilization with Movement - Elbow Lateral",
+          "rationale": "Mulligan elbow MWM lateral: sustained lateral glide humeroulnar during pain-free gripping, PILL rule pain must be 0/10 during. For lateral epicondylalgia surgeon with Cozen positive.",
+          "dosage_medium": "Belt-assisted lateral glide MWM elbow 90deg flexion, sustained glide during grip 6 reps x3 sets, pain-free only, retest Cozen during. If 100% pain-free during, positional fault driver.",
+          "evidence": "B",
+          "retest": "MWM must improve grip pain 100% pain-free DURING application, need >70% carry over 2min"
+        },
+        {
+          "id": "maitland",
+          "name": "Maitland Mobilization Techniques - Elbow + Cervical + Thoracic",
+          "rationale": "Maitland Grade II-III: Cervical PA C5-C6 Grade II-III + Thoracic PA T4-6 Grade II-III + Elbow humeroradial AP glide Grade II to improve extension and reduce lateral elbow pain per cervical dependency 50% improvement.",
+          "dosage_medium": "Cervical PA C5-C6 Grade II 30sec x2-3 rhythmical, Thoracic PA T4-6 Grade II-III 30sec x3, Elbow AP glide humeroradial Grade II 30sec x2, retest Cozen after each",
+          "evidence": "B",
+          "retest": "Retest Cozen immediately after 30sec mobilization, expect >30% pain reduction for medium irrit"
+        },
+        {
+          "id": "kaltenborn_evjenth",
+          "name": "Kaltenborn-Evjenth - Elbow Traction + Humeroradial Glide",
+          "rationale": "Kaltenborn traction Grade II-III reduces compressive pain at humeroradial joint, caudal glide improves extension after sustained flexion 10H.",
+          "dosage_medium": "Elbow traction Grade II 6-12sec hold x5, humeroradial AP caudal glide Grade II-II+ 30sec, fixation humerus",
+          "evidence": "B"
+        },
+        {
+          "id": "cyriax",
+          "name": "Cyriax Deep Transverse Friction Massage - ECRB",
+          "rationale": "Cyriax DTF across ECRB tendon fiber direction 10min for lateral epicondylitis healing phase, with Mill's manipulation if low irritability.",
+          "dosage_medium": "DTF across ECRB tendon 5-10min gentle, avoid if highly irritable tendon, 2-3x/week, follow with gentle stretching",
+          "evidence": "C",
+          "retest": "After DTF 10min lateral epicondyle, retest resisted wrist extension pain should be analgesic immediate but mild discomfort after 2h normal"
+        },
+        {
+          "id": "neurodynamics",
+          "name": "Neurodynamics Radial Nerve Bias + Median Pronator Teres Syndrome",
+          "rationale": "ULNT2b radial bias positive reproduces lateral elbow pain 6/10, sensitizes cervical sidebend away = radial mechanosensitivity driver overlay. Median nerve pronator teres syndrome median compression between two heads pronator teres drives pronator teres hypertonicity.",
+          "dosage_medium": "Radial nerve slider: shoulder depression + elbow extension + wrist flexion + pronation alternate with cervical sidebend away vs toward, 6-8 reps sliders only mid-range, not tensioners for medium irrit. Median nerve slider: elbow extension while wrist extension alternate.",
+          "evidence": "B",
+          "retest": "After median/radial slider 3x10, retest Cozen + microscope grip tolerance >20% pain reduction or +15deg supination = positive neural contribution"
+        },
+        {
+          "id": "nkt",
+          "name": "NeuroKinetic Therapy - Elbow Reactive Pairs",
+          "rationale": "NKT core for surgeon elbow: ECRB inhibited vs pronator teres + flexor digitorum facilitated synergistic dominance, supinator vs pronator teres, triceps vs biceps reciprocal inhibition, lower trap serratus vs upper trap, TVA vs C-section scar if applicable. Master Hierarchy: Clear scars L3 first (if elbow surgery scar), then ligaments lateral collateral, then cranio-respiratory diaphragm TMJ, then subsystems, then local pairs.",
+          "protocol": "Test ECRB weak (Cozen) -> Challenge rub pronator teres belly 3sec -> Retest ECRB instantly strong = REACTIVE PAIR CONFIRMED TFL analogy. Release pronator teres 60sec pin-stretch FIRST -> Activate ECRB 3-5 reps x5sec isometric light-moderate SECOND within 30-60sec window. Homework Release FIRST Activate SECOND 2-3x/day 2-4 weeks. Reverse TL: Touch painful lateral epicondyle driver scan inhibited muscles ECRB supinator lower trap TVA.",
+          "master_hierarchy": "STEP1 Clear scars elbow surgery if any, STEP2 Clear ligamentous lateral collateral ATFL analogy, STEP3 Cranio-respiratory cervical SNAG + diaphragm breathing, STEP4 Subsystems thoracic extension scapular, STEP5 Local pairs ECRB vs pronator teres supinator vs pronator teres, STEP6 Gait? For elbow: microscope posture integration",
+          "evidence": "B-C strong clinical reasoning model",
+          "video_links": ["https://www.youtube.com/watch?v=2Xaix3lIK8g", "https://www.youtube.com/watch?v=pafd2pLLtCU"]
+        },
+        {
+          "id": "kinesio_taping",
+          "name": "Medical Taping and Kinesiology Taping - Elbow Lateral",
+          "rationale": "Taping to hold manual gains proprioceptive cue for ECRB facilitation and pronator teres inhibition + scapular setting.",
+          "techniques": [
+            "ECRB facilitation Origin->Insertion 25-50% tension along extensor forearm",
+            "Pronator teres inhibition Insertion->Origin 0-15% light",
+            "Decompression cross-pattern two intersecting strips 50% center tension over lateral epicondyle",
+            "Scapular facilitation lower trap serratus 25% to reduce shrug compensation"
+          ],
+          "dosage": "Wear 3-5 days, retest within 30min Cozen pain -30% = positive proprioceptive driver",
+          "evidence": "B-C"
+        },
+        {
+          "id": "motor_control",
+          "name": "Motor Control and Motor Relearning - Elbow + Scapular + Cervical",
+          "rationale": "Motor control deficit driver: ECRB weak at specific microscope posture, not strength. Isolation logic: Supine pure flexion vs microscope posture with cervical flexion + shoulder protraction. NKT precise vector rule.",
+          "protocol": "Stage1 Isolated activation 10% MVC: ECRB middle finger extension 3x10 5sec hold with tactile feedback, supinator with elbow extended, lower trap serratus wall slides, deep cervical flexors chin tuck. Stage2 Integrate with movement: ECRB + elbow flexion 90deg + grip, Stage3 Functional: ECRB + microscope instrument handling with scapular setting + cervical retraction + thoracic extension. Frequency 2-3x/day small doses quality>quantity, avoid fatigue."
+        },
+        {
+          "id": "corrective_exercise",
+          "name": "Corrective Exercise Programming CES 4-Phase - Surgeon Elbow",
+          "rationale": "CES algorithm matches LFS perfectly: Findings overactive/weak. Compensation observed shoulder shrug upper trap overactive vs lower trap serratus inhibited, pronator teres overactive vs supinator ECRB inhibited, finger flexor over-grip vs extensor weak.",
+          "protocol": {
+            "Phase1_Inhibit": "SMR or manual release 90sec overactive: pronator teres, flexor digitorum, upper trap, levator, pec minor, suboccipital",
+            "Phase2_Lengthen": "Static stretch 30sec x2: pronator teres, wrist flexors, pec minor, upper trap, levator, suboccipital, cervical extensors",
+            "Phase3_Activate": "Isolated activation low threshold 10% MVC 3x10 5sec: ECRB middle finger extension, supinator elbow extended, triceps, lower trap, serratus anterior wall slides, deep cervical flexors chin tuck, TVA drawing-in 90/90 breathing",
+            "Phase4_Integrate": "Functional microscope posture: sitting microscope posture with armrests at elbow height 90-110deg flexion supported, shoulder abduction <30deg, scapula posterior tilt, cervical retraction 20deg not 45deg, thoracic extension, grip with neutral wrist + ECRB activation + breathing. Single arm: microscope instrument handling with scapular setting + cervical retraction + lower trap activation"
+          },
+          "retest": "After 1 CES cycle inhibit+lengthen+activate 10min, retest Cozen + grip strength + microscope tolerance >30% = positive"
+        }
+      ],
+      "ManualTherapyOption": "Primary: Mulligan MWM lateral elbow belt-assisted lateral glide during pain-free grip 3x6 + Maitland cervical PA C5-C6 Grade II + thoracic PA T4-6 Grade II-III + Elbow AP glide Grade II + NKT release pronator teres flexor digitorum 60sec FIRST -> Activate ECRB supinator 3x5sec SECOND + radial nerve slider ULNT2b 6-8 reps sliders + kinesio taping ECRB facilitation 25-50% + decompression cross-pattern lateral epicondyle 50% center + scapular lower trap facilitation 25%. Alternative for high irritability: Gentle Maitland Grade I-II + PNE + breathing + light lymphatic taping 10-15%.",
+      "ExerciseIntegration": "In clinic: Cervical SNAG C5-C6 + thoracic PA T4-6 + Mulligan MWM lateral elbow pain-free grip + NKT release pronator teres 60sec pin-stretch + immediate ECRB activation middle finger extension 5sec x4 + supinator activation + lower trap serratus wall slides + deep cervical flexor chin tuck + 90/90 breathing. Home CES 4-phase: Phase1 Inhibit SMR 90sec pronator teres flexor digitorum upper trap pec minor suboccipital, Phase2 Lengthen static 30sec x2 same, Phase3 Activate isolated low threshold 10% MVC 3x10 5sec ECRB supinator triceps lower trap serratus deep cervical flexors TVA, Phase4 Integrate functional microscope posture with armrests elbow 90-110deg supported shoulder <30deg abduction scapula posterior tilt cervical retraction 20deg thoracic extension grip neutral wrist + breathing. Microbreaks every 30min 20sec cervical retraction + thoracic extension over chair + elbow extension pronation stretch + wrist extensor stretch + diaphragmatic breathing 3 breaths + scapular setting. Ergonomics: Microscope oculars height adjustable reduce cervical flexion 45deg->20deg, armrests at elbow height support 90-110deg flexion reducing static load, forearm support reduces pronator overload, lightweight instruments 0.2kg ergonomic grip diameter 8-12mm, neutral wrist. Progression criteria: When Cozen pain 8/10->2/10 (75% improvement) + grip strength 28kg->38kg +35% + microscope tolerance 20min->90min +350% + supination +25deg, progress to loaded grip + instrument handling with scapular control.",
+      "ReportSummary": {
+        "SOAP": "S: 38M surgeon microsurgery 10H sustained microscope posture elbow flexion 90-110deg pronation 70% shoulder abduction 30-45deg cervical flexion 20-30deg, c/o lateral elbow pain after 3-4H microscope forearm fatigue grip weakness 28kg vs 40kg contralateral -30%, Cozen positive 8/10 middle finger extension positive, eases rest but returns next day, previous massage temporary 1 day aggressive stretch aggravates, no systemic red flags, occasional radial forearm tingling after 10H. O: Comparable = Elbow Gripping Microscope Instrument Handling Sitting microscope posture 10H simulated sustained grip 0.2kg pronation 70% flexion 90-110deg cervical protraction bias - painful weak compensation baseline grip tolerance 20min pain 7/10 lateral epicondyle grip 28kg Cozen 8/10. Red flags cleared, neuro cleared with radial bias ULNT2b positive reproduces lateral elbow 6/10 sensitizes cervical sidebend away = radial mechanosensitivity, median slight positive pronator teres syndrome, adjacent cervical C5-C6 extension limited painful thoracic T4-6 extension limited shoulder scapular upward rotation deficit serratus inhibition vs upper trap overactive wrist ECRB tight, compensation shoulder shrug upper trap overactive vs lower trap serratus inhibited cervical flexion 45deg forward head thoracic kyphosis trunk lean over microscope wrist flexion substitution finger flexor over-grip breath holding Valsalva elbow valgus ulnar deviation, dependency dependent_on_cervical_C5C6_and_thoracic_T4T6_and_scapular_and_pronator_teres cervical retraction + SNAG C5-C6 + thoracic PA T4-6 improves Cozen 8/10->4/10 50% and grip tolerance 20->45min, scapular assistance +30% tolerance, NKT ECRB weak->pronator teres rub->strong reactive pair confirmed, supinator weak->pronator teres rub->strong, radial slider reduces pain 40%, irritability medium pain mid-range lingers <few hours no constant night pain. A: Primary Lateral elbow pain driver = synergistic dominance pronator teres + flexor digitorum over ECRB + supinator inhibition with cervical C5-C6 thoracic T4-6 extension driver and scapular upward rotation deficit serratus inhibition. Evidence NKT ECRB weak->pronator teres rub->strong reactive pair confirmed supinator weak->pronator teres rub->strong cervical retraction thoracic PA improves Cozen 50% grip tolerance 20->45min radial ULNT2b positive 40% improvement slider. Secondary Cervical C5-C6 extension limitation + thoracic T4-6 stiffness driver forward head 45deg thoracic kyphosis 10H microscope posture driving C6-C7 inhibition triceps ECRB. Third Scapular upward rotation deficit serratus inhibition vs upper trap levator overactive causing shoulder shrug compensation elbow valgus reducing proximal stability distal precision grip. Confidence 82% Safety proceed_with_caution. P: Manual Primary Mulligan MWM lateral elbow belt-assisted lateral glide during pain-free grip 3x6 PILL rule 100% pain-free during + Maitland cervical PA C5-C6 Grade II 30sec x2-3 + thoracic PA T4-6 Grade II-III 30sec x3 + elbow AP glide Grade II 30sec x2 + NKT release pronator teres flexor digitorum 60sec pin-stretch FIRST -> Activate ECRB supinator 3x5sec SECOND within 30-60sec window + radial nerve slider ULNT2b 6-8 reps sliders + median slider + kinesio taping ECRB facilitation 25-50% Origin->Insertion + pronator teres inhibition 0-15% Insertion->Origin + decompression cross-pattern lateral epicondyle 50% center + scapular lower trap serratus facilitation 25%. Alternative high irrit gentle Grade I-II + PNE + breathing + light lymphatic taping 10-15%. Exercise In clinic cervical SNAG + thoracic PA + Mulligan MWM pain-free grip + NKT release pronator teres 60sec + immediate ECRB activation middle finger extension 5sec x4 + supinator + lower trap serratus wall slides + deep cervical flexor chin tuck + 90/90 breathing. Home CES 4-phase Inhibit SMR 90sec pronator teres flexor digitorum upper trap pec minor suboccipital, Lengthen static 30sec x2 same, Activate isolated low threshold 10% MVC 3x10 5sec ECRB supinator triceps lower trap serratus deep cervical flexors TVA, Integrate functional microscope posture armrests elbow 90-110deg supported shoulder <30deg scapula posterior tilt cervical retraction 20deg thoracic extension grip neutral wrist + breathing. Microbreaks every 30min 20sec cervical retraction + thoracic extension over chair + elbow extension pronation stretch + wrist extensor stretch + diaphragmatic breathing 3 breaths + scapular setting. Ergonomics oculars height adjustable reduce cervical flexion 45->20deg armrests at elbow height support 90-110deg flexion reducing static load forearm support reduces pronator overload lightweight instruments 0.2kg ergonomic grip 8-12mm neutral wrist. Progression When Cozen 8->2 75% + grip 28->38kg +35% + microscope tolerance 20->90min +350% + supination +25deg progress to loaded grip + instrument handling scapular control. Monitor 24hr pain. FU 3 days.",
+        "PatientFriendlyEN": "Your lateral elbow pain is linked to forearm muscle imbalance from 10H microscope work. Your pronator teres (pronation muscle) is overactive and tight, inhibiting your wrist extensors (ECRB) and supinator. Also your neck C5-C6 and mid-back T4-6 are stiff from microscope posture forward head, and your shoulder blade stabilizers (serratus, lower trap) are weak vs upper trap shrug. Good news red flags cleared, nerve test shows some radial nerve sensitivity but no progressive damage. When we corrected neck/mid-back and released pronator teres and activated ECRB, your Cozen pain improved 50% and grip tolerance doubled 20->45min. Plan: gentle hands-on for neck/mid-back + Mulligan elbow pain-free MWM + NKT release pronator teres 60sec then activate ECRB supinator 5sec holds + radial nerve sliders + taping to hold gains + ergonomic armrest adjustment + microbreaks every 30min. Home 4-phase program: release tight forearm upper trap pec minor 90sec, stretch 30sec x2, activate weak ECRB supinator lower trap serratus deep neck flexors 3x10 5sec, integrate into microscope posture with supported elbows 90-110deg shoulder <30deg. Expected after 2 weeks Cozen pain 8->2, grip 28->38kg, microscope tolerance 20->90min.",
+        "PatientFriendlyAR": "ألم المرفق الجانبي مرتبط بخلل عضلي من العمل 10 ساعات تحت المجهر. عضلة المدورة الكابة (pronator teres) مشدودة ونشطة بزيادة وتثبط عضلات الرسغ الباسطة (ECRB) والعضلة الاستلقائية. أيضا فقرات الرقبة C5-C6 ومنتصف الظهر T4-6 متيبسة بسبب وضعية المجهر وانحناء الرأس للأمام، وعضلات لوح الكتف (المسننة الأمامية والشبه المنحرفة السفلية) ضعيفة مقابل العلوية التي ترفع الكتف. الأخبار الجيدة لا توجد علامات خطيرة، واختبار العصب يظهر بعض حساسية العصب الكعبري لكن بدون ضرر متزايد. عند تصحيح الرقبة ومنتصف الظهر وتحرير العضلة المدورة وتنشيط الباسطة، تحسن ألم اختبار Cozen بنسبة 50% وتحمل القبضة تضاعف من 20 إلى 45 دقيقة. الخطة: علاج يدوي لطيف للرقبة ومنتصف الظهر + تحريك مولجان للمرفق بدون ألم + تحرير العضلة المدورة 60 ثانية ثم تنشيط الباسطة والاستلقائية 5 ثواني + تمارين انزلاق العصب الكعبري + لصق طبي للحفاظ على التحسن + تعديل مسند الذراعين + استراحات قصيرة كل 30 دقيقة. البرنامج المنزلي 4 مراحل: تحرير العضلات المشدودة 90 ثانية، إطالة 30 ثانية مرتين، تنشيط العضلات الضعيفة 3×10 بثبات 5 ثواني، دمج في وضعية المجهر مع دعم المرفقين 90-110 درجة والكتف أقل من 30 درجة. المتوقع بعد أسبوعين ألم Cozen من 8 إلى 2، قوة القبضة من 28 إلى 38 كجم، تحمل المجهر من 20 إلى 90 دقيقة."
+      }
+    }
+  },
+  "ergonomics_microscope": {
+    "workstation_height": "Microscope oculars adjustable height to reduce cervical flexion 45deg->20deg, armrests at elbow height support 90-110deg flexion reducing biceps/brachialis static load, forearm support reduces pronator teres overload",
+    "microbreaks_protocol": "Every 30min: 20sec cervical retraction + thoracic extension over chair + elbow extension pronation stretch + wrist extensor stretch + diaphragmatic breathing 3 breaths + scapular setting lower trap activation + shake hands",
+    "instrument": "Lightweight instruments 0.2kg, ergonomic grip diameter 8-12mm to reduce flexor digitorum overuse, neutral wrist splint if needed during non-surgical tasks, avoid over-grip",
+    "posture_cues": "Elbow flexion 90-110deg supported, shoulder abduction <30deg, scapula posterior tilt, lumbar neutral with footrest, avoid trunk lean over microscope, head balanced not forward 45deg, breathing diaphragmatic",
+    "progression_criteria": "Cozen pain 8/10->2/10 75% improvement + grip strength 28kg->38kg +35% + microscope tolerance 20min->90min +350% + supination ROM +25deg + confidence >80% to perform 10H with microbreaks"
+  },
+  "techniques_directory_mapping": {
+    "finding_weak": ["nkt", "motor_control", "pnf", "dry_needling_trigger ECRB pronator teres", "kinesio_taping ECRB facilitation", "corrective_exercise", "therapeutic_exercise"],
+    "finding_painful": ["mulligan_mwm lateral elbow pain-free grip", "maitland cervical C5-C6 thoracic T4-6 elbow AP glide", "mckenzie_mdt if cervical directional preference centralization", "neurodynamics radial ULNT2b slider median slider", "fascial_manipulation CC antemotion retromotion elbow", "kinesio_taping mechanical correction decompression cross-pattern", "pne bps if chronic central sensitization"],
+    "finding_limited": ["kaltenborn_evjenth elbow traction Grade II-III + humeroradial glide", "maitland Grade III-IV elbow", "myofascial_release forearm extensor", "fdm triggerband lateral elbow", "pnf hold-relax wrist extensors"],
+    "compensation": ["corrective_exercise CES inhibit pronator teres flexor digitorum upper trap pec minor suboccipital lengthen same activate ECRB supinator lower trap serratus deep cervical flexors integrate microscope posture", "nkt release pronator teres 60sec FIRST activate ECRB SECOND", "functional_movement SFMA", "gait_training analogy for upper limb microscope posture", "anatomy_trains arm lines"]
+  }
+}
