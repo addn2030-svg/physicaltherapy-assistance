@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دليل العلاج الطبيعي</title>
+    <title>دليل العلاج - بسيط وسهل</title>
     <style>
         * {
             margin: 0;
@@ -13,107 +13,208 @@
         
         body {
             font-family: Arial, sans-serif;
-            background: #667eea;
-            padding: 20px;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-        
-        .link-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            border-radius: 25px;
             padding: 25px;
-            margin: 15px 0;
-            border-radius: 15px;
-            text-decoration: none;
-            display: block;
-            transition: transform 0.3s;
-            cursor: pointer;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
         }
         
-        .link-box:hover {
-            transform: scale(1.05);
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
         }
         
-        .link-box h2 {
-            font-size: 1.5em;
+        .header h1 {
+            color: #667eea;
+            font-size: 1.8em;
             margin-bottom: 10px;
         }
         
-        .link-box p {
-            font-size: 1em;
-            opacity: 0.9;
+        .header p {
+            color: #666;
+            font-size: 1.1em;
         }
         
-        .footer {
-            text-align: center;
-            margin-top: 30px;
+        .big-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 20px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .big-button:active {
+            transform: scale(0.98);
+        }
+        
+        .big-button:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            transform: translateY(-3px);
+        }
+        
+        .icon {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .button-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .button-desc {
+            font-size: 1.1em;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+        
+        .help-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid #28a745;
+        }
+        
+        .help-box h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .help-box p {
             color: #666;
-            font-size: 0.9em;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+        
+        .contact {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .contact h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .contact p {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+        
+        .contact a {
+            color: white;
+            text-decoration: underline;
         }
         
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
+                border-radius: 20px;
             }
             
-            h1 {
+            .header h1 {
                 font-size: 1.5em;
             }
             
-            .link-box h2 {
-                font-size: 1.2em;
+            .big-button {
+                padding: 25px;
+            }
+            
+            .icon {
+                font-size: 2.5em;
+            }
+            
+            .button-title {
+                font-size: 1.3em;
+            }
+            
+            .button-desc {
+                font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏥 دليل العلاج الطبيعي بالذكاء الاصطناعي</h1>
+        <!-- Header -->
+        <div class="header">
+            <h1>🏥 دليل العلاج الطبيعي</h1>
+            <p>اضغط على أي زر للوصول للمحتوى</p>
+        </div>
         
-        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/AI-CLINICAL-WORKFLOW.md" class="link-box">
-            <h2>📄 سير العمل السريري</h2>
-            <p>دليل شامل لاستخدام الذكاء الاصطناعي في العيادة</p>
+        <!-- Help Box -->
+        <div class="help-box">
+            <h3>💡 كيف تستخدم هذه الصفحة؟</h3>
+            <p>
+                <strong>1.</strong> اضغط على الزر الذي تريده<br>
+                <strong>2.</strong> سيفتح المحتوى في صفحة جديدة<br>
+                <strong>3.</strong> اقرأ المعلومات بسهولة<br>
+                <strong>4.</strong> ارجع لهذه الصفحة للمزيد
+            </p>
+        </div>
+        
+        <!-- Big Buttons -->
+        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/AI-CLINICAL-WORKFLOW.md" class="big-button" target="_blank">
+            <span class="icon">📖</span>
+            <div class="button-title">دليل العمل اليومي</div>
+            <div class="button-desc">كيف تستخدم النظام في عملك اليومي</div>
         </a>
         
-        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/PILOT-TESTING-PLAN.md" class="link-box">
-            <h2>🧪 خطة الاختبار</h2>
-            <p>خطة تفصيلية لمدة 8 أسابيع</p>
+        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/MOBILE-TESTING-GUIDE.md" class="big-button" target="_blank">
+            <span class="icon">📱</span>
+            <div class="button-title">دليل الجوال</div>
+            <div class="button-desc">كيف تستخدم النظام من جوالك</div>
         </a>
         
-        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/MOBILE-TESTING-GUIDE.md" class="link-box">
-            <h2>📱 دليل الجوال</h2>
-            <p>إرشادات الاستخدام من الجوال</p>
+        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/INDEX.md" class="big-button" target="_blank">
+            <span class="icon">📚</span>
+            <div class="button-title">قائمة التقنيات</div>
+            <div class="button-desc">جميع طرق العلاج المتاحة (32 تقنية)</div>
         </a>
         
-        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/INDEX.md" class="link-box">
-            <h2>📚 فهرس التقنيات</h2>
-            <p>32 تقنية علاجية شاملة</p>
+        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/PILOT-TESTING-PLAN.md" class="big-button" target="_blank">
+            <span class="icon">✅</span>
+            <div class="button-title">خطة التدريب</div>
+            <div class="button-desc">برنامج التدريب لمدة 8 أسابيع</div>
         </a>
         
-        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance" class="link-box">
-            <h2>🔗 جميع الملفات</h2>
-            <p>المستودع الكامل على GitHub</p>
+        <a href="https://github.com/addn2030-svg/physicaltherapy-assistance" class="big-button" target="_blank">
+            <span class="icon">🗂️</span>
+            <div class="button-title">جميع الملفات</div>
+            <div class="button-desc">كل المحتوى في مكان واحد</div>
         </a>
         
-        <div class="footer">
-            <p>© 2026 RCH Rehabilitation</p>
-            <p>للدعم: support@clinic.com</p>
+        <!-- Contact Box -->
+        <div class="contact">
+            <h3>📞 تحتاج مساعدة؟</h3>
+            <p><strong>اتصل بنا:</strong></p>
+            <p>📧 البريد: <a href="mailto:support@clinic.com">support@clinic.com</a></p>
+            <p>📱 الجوال: +964-XXX-XXX-XXXX</p>
+            <p>⏰ متاح: 8 صباحاً - 8 مساءً</p>
         </div>
     </div>
 </body>
