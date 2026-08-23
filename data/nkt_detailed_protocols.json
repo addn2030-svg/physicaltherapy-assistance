@@ -1,0 +1,400 @@
+{
+  "version": "3.0.0",
+  "source_files": [
+    "nkt_learning_module.html",
+    "nkt_video_library.html",
+    "nkt_master_training_suite.html",
+    "nkt_level2_level3_manual.html"
+  ],
+  "technique_id": "nkt",
+  "name": "NeuroKinetic Therapy (NKT) - Complete Clinical Resource",
+  "origin": "David Weinstock, USA",
+  "overview": {
+    "paradigm": "The site of pain is rarely the site of cause. Motor Control Center in cerebellum creates compensations to protect body after trauma, fatigue, repetitive strain. Unless neurological relationship between compensating structure and inhibited structure is reprogrammed in cerebellum, soft tissue release and strength training yield temporary relief.",
+    "mcc_definition": "Motor Control Center located in cerebellum organizes individual muscular contractions into smooth coordinated multi-joint movement synergies (motor engrams) and automates execution.",
+    "learning_mechanism": "MCC learns through trial, error, adaptive failure. Infant learning to walk: attempts, fails, sensory reports failure to cerebellum, adjusts recruitment, burns successful sequence as automated engram.",
+    "traumatic_substitution": "After acute injury (ankle sprain, disc herniation) or chronic fatigue, injured muscle inhibited to prevent damage, MCC recruits synergists/antagonists. Even after tissue heals histologically, compensation remains burned in cerebellar memory. Compensating structure becomes hypertonic overloaded, inhibited remains dormant. Treating only tight painful compensator without reactivating inhibited yields fleeting relief.",
+    "neuroplastic_window": "When movement test fails, MCC opened to new learning for 30-60 seconds. Failed manual muscle test is deliberate neurological probe unlocking window to release overactive driver and re-train inhibited receiver."
+  },
+  "hierarchy": {
+    "cortex": "Voluntary Intent - executive planning",
+    "limbic": "Emotional & Survival Priming - autonomic tone, pain perception, protective threat reflexes, fear-avoidance",
+    "cerebellum_mcc": "Coordination & Storage - organizes muscle contractions into synergies (engrams)",
+    "basal_ganglia_brainstem": "Regulation & Postural Tone - modulates amplitude, fluidity, postural equilibrium, APAs anticipatory postural adjustments",
+    "spinal_peripheral": "Execution - efferent alpha/gamma to muscle spindles and motor units, afferents from GTO, Ruffini, Pacinian"
+  },
+  "muscle_testing": {
+    "vs_orthopedic": {
+      "objective": "Not orthopedic strength 0-5 Kendall, but real-time binary neurological test assessing instantaneous recruitment, rate coding, central firing within first 1-2 seconds",
+      "contraction": "Strictly isometric with subtle gradual ramp, not isotonic dynamic break",
+      "metric": "Instantaneous lock (facilitated) vs delayed spongy give (inhibited)",
+      "interpretation": "Weak = functionally inhibited by overactive partner, not structural atrophy"
+    },
+    "rules": [
+      {
+        "rule": "Exact Vector & Joint Isolation",
+        "detail": "Place joint in precise plane of target fibers. E.g., Gluteus Medius requires 30deg hip abduction, slight extension, slight ER. If hip flexes during test, TFL assumes load false positive strong."
+      },
+      {
+        "rule": "Shortened Range Starting Position",
+        "detail": "Position muscle in fully shortened or mid-range before pressure. Tests ability to maintain active tension where leverage lowest, exposing subtle deficits."
+      },
+      {
+        "rule": "Clear Cueing",
+        "detail": "\"Hold, Don't Let Me Push You\" - Hold position, match pressure, do not push through, just lock and hold. Prevents violent concentric counter-attack recruiting global prime movers."
+      },
+      {
+        "rule": "2-3 Second Pressure Ramp",
+        "detail": "Ramp 0% ->50% ->100% over 2sec, hold 1sec. Never jerk. Healthy facilitated = crisp immediate lock. Inhibited = spongy yield or whole-body substitution."
+      },
+      {
+        "rule": "Vigilance Against Substitution",
+        "detail": "Watch cheat: trunk rotation, breath-holding Valsalva, foot gripping, shoulder hiking, limb repositioning. Any alteration confirms target failed and synergist intervened."
+      }
+    ],
+    "binary_classification": {
+      "facilitated": "Hypertonic/Overactive/Driver - fires instantaneously, excessive tone, overpowers synergists/antagonists",
+      "inhibited": "Hypotonic/Underactive/Receiver - delayed latency, fails to lock isometrically, suppressed by dominant counterpart"
+    }
+  },
+  "compensation_taxonomy": {
+    "synergistic_dominance": {
+      "definition": "Secondary/accessory muscle takes over primary role of weak inhibited prime mover. Synergist smaller or inferior leverage, suffers overuse, trigger points, tendinopathies.",
+      "classic_pairs": [
+        {"facilitated": "TFL", "inhibited": "Gluteus Medius", "consequence": "IT band syndrome, lateral hip bursitis, pelvic drop in single leg stance"},
+        {"facilitated": "Hamstrings & Erector Spinae", "inhibited": "Gluteus Maximus", "consequence": "Hamstring strains, facet joint impingement, lumbar extension substitution"},
+        {"facilitated": "Upper Trapezius & Levator Scapulae", "inhibited": "Lower Trapezius / Serratus Anterior", "consequence": "Neck stiffness, subacromial impingement, scapular elevation compensation"}
+      ]
+    },
+    "reciprocal_inhibition": {
+      "definition": "Sherrington's law: when agonist contracts, antagonist receives inhibitory signal via Ia inhibitory interneurons. Pathological: chronically hypertonic facilitated creates sustained reciprocal inhibition of opposing antagonist.",
+      "classic_pairs": [
+        {"hypertonic": "Psoas Major / Iliacus", "inhibits": "Gluteus Maximus", "consequence": "Anterior pelvic tilt, lumbar shear, hip impingement"},
+        {"hypertonic": "Pectoralis Minor", "inhibits": "Lower Trapezius / Rhomboids", "consequence": "Scapula protracted anterior tilt, impingement"},
+        {"hypertonic": "Gastrocnemius / Soleus", "inhibits": "Tibialis Anterior", "consequence": "Foot drop tendency, reduced dorsiflexion, knee hyperextension gait"}
+      ]
+    },
+    "kinetic_slings": {
+      "POS": {
+        "name": "Posterior Oblique Sling",
+        "anatomy": "Latissimus Dorsi -> Thoracolumbar Fascia -> Contralateral Gluteus Maximus",
+        "function": "Force transfer propulsion push-off gait, rotational power, SI joint force closure",
+        "dysfunction": "Hyperactive right lat inhibits left glute max, rotational pelvic torsion, chronic SI instability",
+        "test": "Supine POS Integration Test: Right shoulder extended/IR pressed to table, left leg extended slight ER heel pressed to table, clinician attempts to flex right arm while lifting left leg. Spongy give = POS failure."
+      },
+      "AOS": {
+        "name": "Anterior Oblique Sling",
+        "anatomy": "External Oblique -> Abdominal Fascia / Linea Alba -> Contralateral Internal Oblique & Adductor Longus/Magnus",
+        "function": "Forward torso rotation, deceleration throwing/swinging, pubic symphysis stabilization",
+        "dysfunction": "Overactive adductor inhibits contralateral core rotators, athletic pubalgia sports hernia, groin strains",
+        "test": "Supine AOS Diagonal Vector: Right shoulder flexed across chest toward left ASIS, left hip flexed 45deg adducted midline, clinician pries right shoulder back and pushes left knee into abduction. Common: Overactive Adductor Longus driving inhibition of contralateral External Oblique."
+      },
+      "DLS": {
+        "name": "Deep Longitudinal Subsystem",
+        "anatomy": "Erector Spinae -> Sacrotuberous Ligament -> Biceps Femoris -> Peroneus Longus -> Tibialis Anterior",
+        "function": "Ground reaction force transmission foot to cranium",
+        "test": "Prone straight-leg hip extension coupled with ipsilateral foot eversion/plantarflexion. Test hamstring dominance over gluteals and sacrotuberous tension."
+      },
+      "Lateral": {
+        "name": "Lateral Subsystem",
+        "anatomy": "Gluteus Medius / Minimus -> TFL -> Contralateral QL & Adductors",
+        "function": "Frontal plane pelvic stabilization single-limb stance",
+        "test": "Sidelying hip abduction against ipsilateral QL lateral trunk flexion. Common: Hypertonic QL compensating for inhibited contralateral Glute Med.",
+        "dysfunction": "Pelvic drop, hip hiking compensation observed in LFS driver checks"
+      }
+    },
+    "specialized_drivers": {
+      "scars": {
+        "description": "Surgical incisions (C-section Pfannenstiel, appendectomy, arthroscopy portals, laparoscopy, episiotomy, navel) disrupt thousands of cutaneous/fascial mechanoreceptors. Scar acts as focal site constant nociceptive/proprioceptive noise, causing MCC to shut down underlying and adjacent stabilization.",
+        "examples": [
+          "C-section scar -> TVA, rectus abdominis, gluteal inhibition - most common driver of core inhibition",
+          "Appendectomy -> psoas, glute med",
+          "Arthroscopy portal -> quadriceps inhibition",
+          "Navel scar -> visceral fascia urachus/median umbilical ligament -> deep lumbar/pelvic floor inhibition",
+          "Episiotomy/perineal -> coccygeus, piriformis, obturator internus hypertonicity"
+        ],
+        "multi_vector_protocol": {
+          "note": "Level 3 tests scars in 8 distinct directional planes and scar-to-scar, scar-to-ligament relationships",
+          "vectors": [
+            {"vector": "1 N", "direction": "Superior Cephalad Traction", "technique": "Push scar tissue upward toward head"},
+            {"vector": "2 S", "direction": "Inferior Caudad Traction", "technique": "Push scar downward toward feet"},
+            {"vector": "3 E", "direction": "Right Lateral Shear", "technique": "Shift scar to patient's right"},
+            {"vector": "4 W", "direction": "Left Lateral Shear", "technique": "Shift scar to patient's left"},
+            {"vector": "5 CW", "direction": "Clockwise Rotation / Torsion", "technique": "Two-finger rotational torsion clockwise"},
+            {"vector": "6 CCW", "direction": "Counter-Clockwise Rotation", "technique": "Two-finger rotational torsion counter-clockwise"},
+            {"vector": "7 Comp", "direction": "Direct Compression", "technique": "Direct perpendicular pressure into deep scar bed"},
+            {"vector": "8 Pinch", "direction": "Skin Roll / Distraction Pinch", "technique": "Lift and pinch scar away from underlying fascia"}
+          ],
+          "treatment": "45-60sec manual cross-fiber mobilization precisely along vector that restored muscle strength, followed immediately by 3-5 reps isolated activation for inhibited muscle",
+          "scar_to_scar": "C-section scar can be reactive to older appendectomy scar or laparoscopic portal. Test TL on Scar A while challenging Scar B."
+        }
+      },
+      "ligamentous_interlinks": {
+        "description": "Ligaments rich in mechanoreceptors Ruffini, Pacinian, free nerve endings. When sprained or lax, CNS initiates protective splinting elsewhere while inhibiting muscles crossing unstable joint to prevent shear. Ligamento-muscular reflex.",
+        "inventory": {
+          "pelvic_lumbar": [
+            {"ligament": "Sacrotuberous", "test": "Ischial tuberosity to sacral shear", "compensates_for": "Biceps Femoris / Glute Max", "linked_muscle": "Glute Max inhibition"},
+            {"ligament": "Sacrospinous", "test": "Deep palpation medial to ischial spine", "linked": "Pudendal nerve irritation"},
+            {"ligament": "Iliolumbar", "test": "L5 transverse process to iliac crest glide", "compensates_for": "QL / Psoas"},
+            {"ligament": "Dorsal Sacroiliac", "test": "Posterior SIJ seam distraction"}
+          ],
+          "ankle_foot": [
+            {"ligament": "ATFL Anterior Talofibular", "test": "Plantarflexion + Inversion stress", "drives": "Peroneus & Glute Med inhibition - most common", "compensation": "Contralateral glute med"},
+            {"ligament": "CFL Calcaneofibular", "test": "Pure Inversion in neutral dorsiflexion"},
+            {"ligament": "Deltoid Complex", "test": "Eversion stress", "drives": "Tibialis Posterior & Core inhibition"},
+            {"ligament": "Bifurcate", "test": "Palpated sinus tarsi", "key": "Chronic lateral foot pain"},
+            {"ligament": "Spring Plantar Calcaneonavicular", "test": "Stress", "drives": "Medial longitudinal arch collapse"}
+          ],
+          "knee": [
+            {"ligament": "ACL", "test": "Anterior drawer Lachman"},
+            {"ligament": "MCL", "test": "Valgus stress"},
+            {"ligament": "ATFL etc already"}
+          ],
+          "upper_cervical": [
+            {"ligament": "Alar", "test": "Upper cervical sidebend rotation stress", "linked": "Deep cervical flexors inhibition"}
+          ]
+        },
+        "ligament_to_ligament": {
+          "protocol": "Ligaments can compensate for other ligaments! e.g., Chronic ATFL sprain compensated by ipsilateral Sacrotuberous ligament.",
+          "test": "Challenge Ligament A (stress ATFL) -> Test indicator -> Weak. Challenge Ligament B (Sacrotuberous) -> Retest indicator -> Locks Strong! Correction: Friction release compensating ligament 30sec -> Proprioceptively stimulate lax ligament tap/vibrate 15sec."
+        }
+      },
+      "cranio_cervical": {
+        "suboccipital": {
+          "description": "Suboccipital triangle (rectus capitis posterior, obliquus capitis) contains highest density muscle spindles in human body (200-500 spindles/gram). Suboccipital hypertonicity frequently compensates for inhibited deep cervical flexors or intrinsic core stabilizers, driven by visual fixation and forward head posture.",
+          "pairing": "Hypertonic Suboccipitals -> inhibits Deep Cervical Flexors Longus Colli/Capitis",
+          "spindle_density": "Highest in body, ultra-sensitive proprioceptive monitors"
+        },
+        "extraocular": {
+          "description": "Extraocular muscles have direct neural connections via tectospinal and vestibulospinal tracts to suboccipital complex.",
+          "table": [
+            {"CN": "III Oculomotor", "muscle": "Superior Rectus", "gaze": "Up & Out", "reflex": "Posterior chain extension tone (Suboccipitals, Erectors)"},
+            {"CN": "III Oculomotor", "muscle": "Inferior Rectus", "gaze": "Down & Out", "reflex": "Anterior chain flexion tone (Deep neck flexors, Abdominals)"},
+            {"CN": "III Oculomotor", "muscle": "Medial Rectus", "gaze": "Medially Inward", "reflex": "Adductor line / Deep Front Line"},
+            {"CN": "III Oculomotor", "muscle": "Inferior Oblique", "gaze": "Up & In", "reflex": "Contralateral cervical rotation & lateral sling"},
+            {"CN": "IV Trochlear", "muscle": "Superior Oblique", "gaze": "Down & In", "reflex": "Ipsilateral vestibular balance & core"},
+            {"CN": "VI Abducens", "muscle": "Lateral Rectus", "gaze": "Laterally Outward", "reflex": "Lateral subsystem / Glute Med / SCM coupling"}
+          ],
+          "protocol": "Identify inhibited muscle (Deep Cervical Flexors or Glute Med). Have patient hold max gaze in specific quadrant (e.g., Eyes hard Up Right). Retest inhibited muscle while gaze held. If locks strong -> Extraocular Muscle is reactive driver! Correct by eye-tracking smooth pursuit/saccade drills coupled with neck stabilizer activation."
+        },
+        "tmj": {
+          "description": "Jaw muscles act as primary somatic default for whole-body overcompensation. Jaw clenching provides emergency bracing when spinal stabilizers dormant.",
+          "table": [
+            {"muscle": "Temporalis", "action": "Elevation & Retrusion", "test_vector": "Bite down posterior molars, resistance against jaw opening", "compensation": "Compensates for Superficial Front Line (Deep Neck Flexors, TVA) & Superficial Back Line (Gluteals)"},
+            {"muscle": "Masseter", "action": "Elevation & Ipsilateral Translation", "test_vector": "Clench jaw, clinician applies lateral shearing", "compensation": "Compensates for Lateral Subsystem (Glute Med, QL, Peroneals)"},
+            {"muscle": "Medial Pterygoid", "action": "Elevation & Contralateral Deviation", "test_vector": "Deviate jaw to opposite side against resistance", "compensation": "Compensates for Contralateral Oblique slings and intrinsic pelvic floor, associated with Tinnitus"},
+            {"muscle": "Lateral Pterygoid", "action": "Depression, Protrusion & Contralateral Deviation", "test_vector": "Open jaw and protrude forward against chin resistance", "compensation": "Compensates for inhibited Deep Cervical Flexors and Upper Cervical Ligaments"},
+            {"muscle": "Digastric & Suprahyoids", "action": "Jaw Depression / Hyoid Elevation", "test_vector": "Open mouth wide against upward force under chin", "compensation": "Braces with Diaphragm & Pelvic floor during Valsalva"}
+          ],
+          "protocol": "Find inhibited muscle anywhere (e.g., Left Glute Med). Have client clench jaw or deviate right -> Retest Glute Med. If glute locks strong -> TMJ is primary reactive driver! Release facilitated pterygoid/masseter intra-oral or extra-oral 45sec -> Activate glute."
+        },
+        "hyoid": {
+          "description": "Hyoid bone free-floating suspension bridge connecting cranium, mandible, cervical spine, thorax.",
+          "suprahyoids": "Mylohyoid, Geniohyoid, Stylohyoid, Digastric - tested via resisted hyoid depression / jaw opening, hypertonicity leads to anterior neck tension and thoracic outlet compression",
+          "infrahyoids": "Sternohyoid, Omohyoid, Sternothyroid, Thyrohyoid - tested via resisted swallowing or cervical extension, linked directly to fascial tension clavicle and first rib"
+        }
+      }
+    }
+  },
+  "corrective_protocol": {
+    "six_steps": [
+      {
+        "step": 1,
+        "name": "Baseline Muscle Test",
+        "action": "Test suspected victim muscle in isolated shortened range.",
+        "result": "Weak / Inhibited (Spongy give). Failure registers in cerebellar MCC.",
+        "example": "Right Gluteus Maximus fails to hold isometric"
+      },
+      {
+        "step": 2,
+        "name": "Therapy Localization (TL) / Tactile Challenge",
+        "action": "Apply sensory stimulation to hypothesized compensating driver. Patient places two fingers directly on suspected tissue (TL) or practitioner briskly rubs muscle belly, tendon, scar, ligament. Sensory input floods MCC with afferent mechanoreceptive feedback.",
+        "types": ["TL patient touch", "Rub muscle belly 2-3sec", "Pinch scar", "Stress ligament", "Gaze hold for eyes"]
+      },
+      {
+        "step": 3,
+        "name": "Immediate Retest - Verifying Reactive Pair",
+        "action": "While sensory challenge active or within 2 seconds of rubbing, immediately re-test weak muscle. If previously weak muscle suddenly rock solid strong, you have verified Reactive Pair. Sensory challenge temporarily neutralized hypertonic inhibition allowing MCC to fire inhibited muscle.",
+        "key": "Weak -> Strong shift = REACTIVE PAIR CONFIRMED"
+      },
+      {
+        "step": 4,
+        "name": "Release the Facilitated Driver",
+        "action": "Apply targeted manual therapy, ischemic compression, IASTM 30-60deg bevel, deep friction, pin-and-stretch, dry needling to facilitated driver for 30-60 seconds. Mechanically downregulates muscle spindle sensitivity and resets hyperactive afferent tone.",
+        "duration": "30-60 seconds to optimize spindle reset within cerebellar plasticity window",
+        "modalities": ["Ischemic compression", "Myofascial release", "IASTM stainless steel", "Deep friction", "Dry needling", "Scar mobilization cross-fiber", "Tuning fork 128Hz vibration over lax ligament"]
+      },
+      {
+        "step": 5,
+        "name": "Immediately Activate / Strengthen Inhibited Muscle",
+        "action": "Without delay leveraging 30-60sec plasticity window, have patient perform isolated isometric activation of previously inhibited muscle (3-5 reps of 5-second isometric hold with light-to-moderate resistance). Burns newly restored neural pathway into MCC.",
+        "dosage": "3-5 reps x 5sec isometric hold, light-moderate resistance, high precision, avoid fatigue"
+      },
+      {
+        "step": 6,
+        "name": "Retest & Prescribe Corrective Homework",
+        "action": "Retest inhibited muscle in isolation (no touch). Should hold crisp neurological strength. Prescribe specific self-care homework with strict sequence: 1. Release Driver FIRST -> 2. Activate Inhibited SECOND performed 2-3x daily for 2-4 weeks to establish permanent synaptic consolidation.",
+        "golden_rule": "If patient performs strengthening on inhibited muscle WITHOUT first releasing compensating driver, MCC will immediately bypass weak muscle and reinforce pre-existing compensation! Driver must always be downregulated immediately before receiver is upregulated."
+      }
+    ],
+    "reverse_TL": {
+      "when": "When you have client with severe pain in hypertonic/facilitated tissue, but cannot easily find what is inhibited.",
+      "steps": [
+        "Touch painful hypertonic tissue (Driver)",
+        "Scan through potential inhibited muscles across kinetic chain (e.g., Glute Max, TVA, Lower Trap)",
+        "When you test muscle normally strong but breaks weak when touching driver, you have found inhibited receiver!",
+        "Release painful driver -> Activate newly uncovered inhibited muscle"
+      ]
+    },
+    "homework_prescription": {
+      "frequency": "2-3 times daily for 2-4 weeks",
+      "sequence": "Release FIRST -> Activate SECOND - strict",
+      "purpose": "Synaptic consolidation in cerebellum, permanent engram storage",
+      "compliance_note": "Frequent low-dose repetition required to replace old compensation pattern"
+    }
+  },
+  "clinical_cases": [
+    {
+      "case": 1,
+      "title": "Chronic Low Back Pain & Lumbar Extension Impingement",
+      "profile": "42yo desk worker recreational runner 2yr bilateral lumbar facet pain standing and running",
+      "traditional": "Tight erector spinae, tight psoas, weak glutes. Previous PT core planks and glute bridges minimal relief",
+      "nkt_assessment": [
+        "Test Right Gluteus Maximus -> inhibited",
+        "Challenge Rub Right Lumbar Erector -> Retest Glute Max -> remains weak (not primary)",
+        "Challenge Rub Right Psoas Major -> Retest Glute Max -> instantly rock solid strong!"
+      ],
+      "diagnosis": "Reciprocal Inhibition of Right Glute Max driven by Hypertonic Ipsilateral Psoas Major",
+      "protocol": "45sec deep release Right Psoas -> Immediate isolated prone hip extension isometric activation 5sec hold x4 reps. Homework 2x/day"
+    },
+    {
+      "case": 2,
+      "title": "Lateral Knee Pain & IT Band Friction Syndrome",
+      "profile": "28yo female marathon runner severe lateral right knee pain mile 4",
+      "traditional": "Tenderness lateral femoral condyle, positive Ober, tight IT band",
+      "nkt_assessment": [
+        "Test Right Gluteus Medius 30deg abduction slight extension slight ER -> inhibited",
+        "Observation hip unconsciously flexes internally rotates to utilize TFL",
+        "Challenge Firm tactile challenge rubbing over Right TFL belly -> Retest Glute Med -> immediately locks strong!"
+      ],
+      "diagnosis": "Synergistic Dominance of Right TFL over Right Gluteus Medius",
+      "protocol": "Myofascial release / foam rolling Right TFL 45sec -> Immediate sidelying pure glute med abduction holds with wall slide to eliminate hip flexion. Patient pain-free 10-mile trial run."
+    },
+    {
+      "case": 3,
+      "title": "Post-Cesarean Pelvic Instability & Core Weakness",
+      "profile": "34yo female 14 months post-cesarean persistent LBP, abdominal distension, inability to engage core",
+      "nkt_assessment": [
+        "Test Bilateral TVA and Rectus Abdominis -> inhibited",
+        "Challenge Rubbing hip flexors or thoracolumbar erectors -> TVA remains weak",
+        "Challenge Patient TL two fingers touching Pfannenstiel C-section scar -> Retest TVA -> instantly maximum strength!"
+      ],
+      "diagnosis": "Neurological core inhibition driven by afferent nociceptive/mechanoreceptive disruption at surgical scar",
+      "protocol": "60sec multidirectional cross-friction scar mobilization -> Immediate quadruped drawing-in abdominal activation. Core restored within 2 weeks."
+    },
+    {
+      "case": 4,
+      "title": "Cervicogenic Headaches & Scapular Dyskinesis",
+      "profile": "39yo software architect chronic suboccipital throbbing headaches and burning medial scapular pain",
+      "nkt_assessment": [
+        "Test Deep Cervical Flexors Longus Colli/Capitis -> inhibited, Lower Trap -> inhibited",
+        "Challenge Rubbing bilateral Suboccipital muscles -> Retest Deep Neck Flexors -> immediately locks strong!",
+        "Kinetic Sling Retest Rubbing Upper Trap -> Retest Lower Trap -> locks strong!"
+      ],
+      "diagnosis": "Multi-tiered compensation: Suboccipitals driving Deep Neck Flexor inhibition; Upper Trap driving Lower Trap inhibition",
+      "protocol": "Suboccipital release -> Supine chin tuck isometric holds Phase1; Upper Trap release -> Prone Y-raise isometric holds Phase2"
+    }
+  ],
+  "level2_modules": {
+    "kinetic_subsystems": ["POS", "AOS", "DLS", "Lateral"],
+    "core_cylinder": {
+      "roof": "Respiratory Diaphragm",
+      "anterior_lateral": "TVA & Internal Obliques",
+      "posterior": "Lumbar Multifidi & QL",
+      "floor": "Pelvic Floor Levator Ani, Coccygeus, Pubococcygeus",
+      "diaphragm_assessment": {
+        "step1": "Baseline indicator muscle strong (e.g., Anterior Deltoid or Psoas)",
+        "step2_inhalation": "Patient inhales deeply holds breath, retest indicator, if breaks -> Inhalation Diaphragm Facilitation",
+        "step3_exhalation": "Patient exhales completely holds breath out, retest indicator, if breaks -> Exhalation Diaphragm Facilitation",
+        "step4": "Palpate subcostal margin / crus, 45sec manual subcostal release, followed immediately by 3-5 exhalation core drawing-in activations"
+      },
+      "pelvic_floor_via_coupling": "Pelvic floor cannot be tested directly; evaluate via Obturator Internus, Adductor Magnus, Adductor Longus. Test prone hip ER at 90deg knee flexion Obturator Internus. Challenge lower abdominal wall or perineal reflex to identify core-pelvic floor reactive pairs."
+    },
+    "tmj_stomatognathic": "See cranio_cervical TMJ table - Masseter, Temporalis, Medial/Lateral Pterygoids, Digastric, Suprahyoids",
+    "perturbation": {
+      "ap": "Patient standing or seated tall, clinician delivers sudden gentle sternal push posterior perturbation or thoracic pull anterior perturbation. Observe whether trunk corrects via intrinsic core vs superficial neck/hip gripping.",
+      "rotational": "Gentle rotational displacement at shoulders/pelvis, test contralateral oblique sling engagement"
+    },
+    "joint_compression_decompression": {
+      "compression": "Patient supine flex hip 90deg, apply axial compressive force down shaft femur into acetabulum 2sec, retest key indicator e.g., Psoas or Glute Med, if weakens -> pathological capsule compression sensitivity hypertonic deep rotators",
+      "decompression": "Apply gentle axial long-axis traction to joint hip ankle GH, retest indicator, if weakens -> ligamentous instability or capsular laxity driving protective splinting"
+    }
+  },
+  "level3_modules": {
+    "advanced_gait": {
+      "phase_matrix": "Heel Strike Initial Contact -> Ankle DF + Contralat Arm Extension; Loading Response Mid-Stance -> Glute Med + Contralat QL; Terminal Stance Push-Off -> Glute Max + Contralat Lat POS; Swing Phase -> Iliopsoas + Contralat Shoulder Extension",
+      "tests": {
+        "reciprocal_humeral_femoral": "Supine: Flex Right Humerus 90deg while simultaneously extending Left Hip pressing heel down into table. MMT: Clinician attempts to push right arm into extension while lifting left leg into flexion. Assess opposite pair Left Humerus Flexion + Right Hip Extension. Uncovers cross-body sling breakdown undetectable isolated single-joint testing.",
+        "propulsion_vector": "Prone: Patient terminal knee extension ankle plantarflexion/inversion hip extension. Test against resisted contralateral lat extension. Identifies loss push-off force transmission."
+      }
+    },
+    "multi_vector_scars": "See specialized_drivers.scars.multi_vector_protocol - 8 vectors N,S,E,W,CW,CCW,Comp,Pinch, plus scar-to-scar, navel, episiotomy",
+    "ligamentous_interlinks": "See inventory pelvic_lumbar ankle_foot knee upper_cervical + ligament-to-ligament interlink protocol",
+    "eyes_cranio_cervical": "See extraocular table 6 CN III, IV, VI muscles gaze vectors reflex connections + clinical testing protocol + hyoid musculature",
+    "hyoid_deglutition": "Suprahyoids Mylohyoid Geniohyoid Stylohyoid Digastric tested via resisted hyoid depression / jaw opening hypertonicity leads anterior neck tension thoracic outlet compression; Infrahyoids Sternohyoid Omohyoid Sternothyroid Thyrohyoid tested via resisted swallowing or cervical extension linked fascial tension clavicle first rib"
+  },
+  "master_decision_hierarchy": {
+    "flow": [
+      "STEP 1 CLEAR SURGICAL SCARS & RECENT TRAUMAS Level3 - C-sections, Appendectomies, Portals, Navel, Episiotomies. If scar active it will continually reset all downstream corrections!",
+      "STEP 2 CLEAR LIGAMENTOUS INSTABILITY Level3 - Check history ankle sprains ATFL/CFL, pelvic trauma Sacrotuberous, SIJ. Restore ligamento-muscular baseline.",
+      "STEP 3 ASSESS MASTER CRANIO-RESPIRATORY DRIVERS Level2 - Diaphragm Inhalation/Exhalation challenge, TMJ Masseter Temporalis Pterygoids & Hyoid system",
+      "STEP 4 EVALUATE FUNCTIONAL KINETIC SUBSYSTEMS Level2 - POS, AOS, DLS, Lateral Subsystem",
+      "STEP 5 REFINE LOCAL AGONIST-ANTAGONIST / SYNERGIST PAIRS Level1 - Local muscle-to-muscle tests joint isolation vectors",
+      "STEP 6 ADVANCED GAIT INTEGRATION & HOMEWORK PRESCRIPTION - Multi-phasic gait pattern activation, Enforce homework rule Release Culprit FIRST -> Activate Victim SECOND"
+    ],
+    "reverse_TL": "Touch painful hypertonic tissue Driver, Scan through potential inhibited muscles across chain Glute Max TVA Lower Trap, When you test muscle normally strong but breaks weak when touching driver you have found inhibited receiver! Release painful driver -> Activate newly uncovered inhibited muscle"
+  },
+  "equipment_taping": {
+    "kinesio_taping": {
+      "facilitation_inhibited": "25-50% tension Origin to Insertion along fibers to enhance spindle recruitment",
+      "inhibition_facilitated": "0-15% light tension Insertion to Origin to downregulate hyperactive spindle discharge",
+      "decompression_scar": "Cross-pattern two intersecting strips 50% center tension over reactive surgical scar to reduce fascial tension"
+    },
+    "iastm": {
+      "angle": "30-60deg bevel edge contact",
+      "duration": "30-60 seconds per reactive site aligned with 30-60s cerebellar learning window"
+    },
+    "tuning_fork": "128 Hz vibrating tuning fork over lax ligament e.g., ATFL or Sacrotuberous provides immediate high-frequency Pacinian corpuscle stimulation re-awakening proprioceptive afferents prior to motor re-education"
+  },
+  "certification": {
+    "level1": {"hours": "15 Contact Hours", "cases": "3 Written Clinical Case Studies", "practical": "1-on-1 Practical Examination In-Person or Zoom with approved certifier"},
+    "level2": {"hours": "15 Contact Hours", "cases": "6 Written Clinical Case Studies Subsystems, TMJ, Diaphragm, Perturbation", "practical": "1-on-1 Practical Examination covering whole-body functional chains"},
+    "level3_master": {"hours": "15 Contact Hours", "cases": "5 Written Clinical Case Studies Scars, Ligaments, Eyes, Multi-Phasic Gait", "practical": "Advanced Master Practical Examination"},
+    "rubric": ["Patient Demographics & Chief Complaint Age activity level onset prior treatments", "Global Movement Screen Gait assessment postural deviations AROM limitations", "NKT Protocol Breakdown Exact muscle tested weak -> Specific tissue challenged -> Immediate retest verification -> Identified Reactive Pair", "Corrective Intervention Exact release modality & duration 30-60sec -> Exact isolated isometric activation prescribed", "Sequential Homework Clear evidence Release FIRST -> Activate SECOND prescription", "2-Week Objective Follow-Up Pre vs post outcome measures functional retest status pain score changes"]
+  },
+  "video_library": {
+    "demo1": {"title": "David Weinstock Live Seminar Workshop", "focus": "Exact biomechanical vector positioning, client coaching, differentiating structural weakness from central neurological inhibition", "cues": ["Position hip 110deg flexion 15deg abduction slight ER. If drop to neutral Rectus Femoris takes over false positive", "Pressure ramp 2 seconds 0-50-100%. Spongy yield = MCC failing to recruit"]},
+    "demo2": {"title": "Frame-by-Frame 4-Step NKT Corrective Sequence Anterior Shoulder Impingement", "panels": ["Panel1 Baseline MMT Middle Trap isolated prone/supine delayed recruitment spongy collapse", "Panel2 TL Patient touches ipsilateral Pec Minor belly or clinician rubs origin ribs 3-5 Retesting Middle Trap immediately rock solid strong Reactive Pair confirmed", "Panel3 45-Second Manual Myofascial Release targeted deep tissue ischemic compression pin-and-stretch Pec Minor 45sec reset spindle", "Panel4 Isolated Isometric Activation 4 reps 5sec isometric Middle Trap retraction hold burn restored engram into cerebellum"]},
+    "official_videos": [
+      {"title": "Low Back Pain & SI Joint Assessment", "description": "Assessing SI joint dysfunction evaluating gluteus maximus amnesia against hypertonic psoas and erector spinae", "url": "https://www.youtube.com/watch?v=2Xaix3lIK8g"},
+      {"title": "IT Band Tightness Relieved by Glute Max", "description": "Lateral thigh/IT band pain runners resolved by restoring gluteal motor control rather than rolling IT band", "url": "https://www.youtube.com/watch?v=pafd2pLLtCU"},
+      {"title": "Exact Manual Muscle Testing Angles", "description": "Avoiding synergistic cheat patterns and positioning joint vectors exact millimeter precision", "url": "https://www.youtube.com/watch?v=V_ubd0XhXOQ"},
+      {"title": "Motor Control Theory & Neuroscience", "description": "Deep-dive lecture cerebellar engram formation mechanism of failure learning limbic-cerebellar-spinal axis", "url": "https://www.youtube.com/watch?v=P1vsqv72_-s"}
+    ]
+  },
+  "msq_exam": {
+    "total_questions": 10,
+    "type": "Multiple-Select Questions MSQs multiple correct options",
+    "topics": ["Neurophysiology Motor Learning", "NKT Muscle Testing Mechanics", "Synergistic Dominance Identification", "Reciprocal Inhibition Dynamics", "Therapy Localization & Challenge Protocol", "Scar Tissue & Surgical Trauma", "Ligamentous Interlinks & Reflexes", "Cranio-Cervical & Postural Reflexes", "NKT Corrective Execution & Homework", "Kinetic Sling & Oblique System Integration"],
+    "scoring": "Fully correct requires exactly matching correct options set, partial considered incorrect for NKT certification style"
+  },
+  "integration_with_lfs": {
+    "comparable_sign": "NKT muscle test is comparable sign equivalent - binary weak/strong immediate retest >30% shift confirms driver. LFS retest comparator % change maps to NKT Weak->Strong shift",
+    "candidate_muscles": "Registry candidate muscles become NKT inhibited candidates. Isolation logic from registry (e.g., prone knee flex 90 reduces hamstring to isolate glute) is NKT precise vector rule",
+    "compensation_watch": "Registry compensation_watch list = NKT substitution watch: trunk rotation, breath-holding Valsalva, foot gripping, shoulder hiking, limb repositioning",
+    "dependency": "Dependency result dependent_on_X = NKT reactive pair. If psoas TL makes glute max strong -> dependent_on_psoas",
+    "irritability": "High irritability -> gentle release only, avoid deep DN, use sliders not tensioners, use PNE/BPS priority per NKT golden rule: release must be tolerable to allow plasticity window",
+    "safety_gate": "Assessment only until confirmed = complete red flag + neuro + scar screening first",
+    "homework": "Release FIRST -> Activate SECOND 2-3x/day 2-4 weeks - same as LFS exercise integration CES 4-phase but with strict sequence"
+  }
+}

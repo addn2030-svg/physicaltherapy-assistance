@@ -1,0 +1,853 @@
+{
+  "version": "2.1.0 - Added Elbow microscope 10H surgeon focus + Wrist",
+  "generated_from": "Clinical_Driver_Console sheet - Dynamic Lookup Panel",
+  "note": "Select region first, then direction/position/bias",
+  "regions": [
+    {
+      "canonical_region": "Cervical",
+      "specific_joints": [
+        "C0-C1",
+        "C1-C2",
+        "C2-C3",
+        "C3-C4",
+        "C4-C5",
+        "C5-C6",
+        "C6-C7",
+        "C7-T1"
+      ],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Sitting",
+            "Supine",
+            "Standing"
+          ],
+          "biases": [
+            "End-range",
+            "With overpressure",
+            "Chin tuck bias",
+            "Combined with rotation"
+          ],
+          "candidate_muscles": [
+            "Longus colli",
+            "Longus capitis",
+            "SCM"
+          ],
+          "isolation_logic": "Supine chin tuck isolates deep flexors vs SCM",
+          "compensation_watch": [
+            "SCM dominance",
+            "Jaw clench",
+            "Shoulders elevation"
+          ],
+          "retest_rule": "Retest after deep flexor activation - >30% neck pain VAS decrease = positive"
+        },
+        {
+          "direction": "Extension",
+          "positions": [
+            "Sitting",
+            "Prone",
+            "Quadruped"
+          ],
+          "biases": [
+            "End-range",
+            "Upper vs Lower cervical bias",
+            "With rotation bias"
+          ],
+          "candidate_muscles": [
+            "Cervical extensors",
+            "Semispinalis",
+            "Multifidus"
+          ],
+          "isolation_logic": "Upper cervical extension vs lower - nod vs whole ext",
+          "compensation_watch": [
+            "Lumbar extension",
+            "Scapular retraction",
+            "Eye movement"
+          ],
+          "retest_rule": "PA mobilization C5-C6 + motor control, retest extension 2min"
+        },
+        {
+          "direction": "Rotation",
+          "positions": [
+            "Sitting",
+            "Supine"
+          ],
+          "biases": [
+            "Flexion biased",
+            "Extension biased",
+            "To left",
+            "To right"
+          ],
+          "candidate_muscles": [
+            "Rotators",
+            "SCM contralateral"
+          ],
+          "isolation_logic": "Flexion-rotation test isolates C1-C2",
+          "compensation_watch": [
+            "Thoracic rotation",
+            "Eye following",
+            "Sidebend substitution"
+          ],
+          "retest_rule": "Upper thoracic manipulation may improve cervical rotation >15deg"
+        },
+        {
+          "direction": "Sidebend",
+          "positions": [
+            "Sitting",
+            "Supine"
+          ],
+          "biases": [
+            "Left",
+            "Right",
+            "With flexion",
+            "With extension"
+          ],
+          "candidate_muscles": [
+            "Scalenes",
+            "Upper trap"
+          ],
+          "isolation_logic": "Check thoracic sidebend dependency",
+          "compensation_watch": [
+            "Shoulder hike",
+            "Rotation substitution"
+          ],
+          "retest_rule": "Retest after first rib mobilization"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Thoracic",
+      "specific_joints": [
+        "T1-T2",
+        "T2-T3",
+        "T3-T4",
+        "T4-T5",
+        "T5-T6",
+        "T6-T7",
+        "T7-T8",
+        "T8-T9",
+        "T9-T10",
+        "T10-T11",
+        "T11-T12"
+      ],
+      "directions": [
+        {
+          "direction": "Extension",
+          "positions": [
+            "Sitting",
+            "Prone",
+            "Standing",
+            "Quadruped"
+          ],
+          "biases": [
+            "End-range over foam roller",
+            "Segmental T6-8 bias",
+            "Loaded arms overhead",
+            "Breathing bias"
+          ],
+          "candidate_muscles": [
+            "Thoracic extensors",
+            "Erector spinae"
+          ],
+          "isolation_logic": "Foam roller isolates thoracic vs lumbar; arms overhead biases upper T",
+          "compensation_watch": [
+            "Lumbar extension",
+            "Rib flare",
+            "Neck extension"
+          ],
+          "retest_rule": "Retest cervical rotation or shoulder flexion or lumbar extension after PA T6-8 - need >20% improvement"
+        },
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Sitting",
+            "Quadruped",
+            "Standing"
+          ],
+          "biases": [
+            "Segmental",
+            "Combined with rotation"
+          ],
+          "candidate_muscles": [
+            "Intercostals",
+            "Abs as antagonist"
+          ],
+          "isolation_logic": "Check if limited by extension driver",
+          "compensation_watch": [
+            "Lumbar flexion dominance"
+          ],
+          "retest_rule": "After extension mobilization, flexion often improves automatically"
+        },
+        {
+          "direction": "Rotation",
+          "positions": [
+            "Sitting",
+            "Sidelying",
+            "Quadruped"
+          ],
+          "biases": [
+            "Left",
+            "Right",
+            "Half kneeling chop"
+          ],
+          "candidate_muscles": [
+            "Rotators",
+            "Obliques"
+          ],
+          "isolation_logic": "Sitting rotation vs lumbar locked",
+          "compensation_watch": [
+            "Lumbar rotation",
+            "Hip rotation",
+            "Scapular move"
+          ],
+          "retest_rule": "Open book test retest after thoracic PA"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Lumbar",
+      "specific_joints": [
+        "T12-L1",
+        "L1-L2",
+        "L2-L3",
+        "L3-L4",
+        "L4-L5",
+        "L5-S1"
+      ],
+      "directions": [
+        {
+          "direction": "Extension",
+          "positions": [
+            "Standing",
+            "Prone",
+            "Sitting",
+            "Quadruped",
+            "Single Leg Stance"
+          ],
+          "biases": [
+            "End-range overpressure",
+            "Mid-range",
+            "Sustained 5sec",
+            "Loaded 5kg",
+            "Knee flex 90 reduces hamstring"
+          ],
+          "candidate_muscles": [
+            "Multifidus L4-L5",
+            "Erector spinae",
+            "Glute Max",
+            "Hamstring as synergist"
+          ],
+          "isolation_logic": "Prone knee flex 90deg reduces hamstring -> isolates glute vs erector; Single leg stance isolates glute med control; Hook lying draw in isolates multifidus",
+          "compensation_watch": [
+            "Lumbar shift left/right",
+            "Hip extension substitution",
+            "Knee flexion",
+            "Breath holding",
+            "Rib flare"
+          ],
+          "retest_rule": "Retest standing extension pain/ROM AND sitting flexion after multifidus facilitation + thoracic mobilization - needs >50% change to confirm primary driver",
+          "irritability_note": "High irrit -> test prone mid-range only, no standing overpressure"
+        },
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Standing",
+            "Sitting",
+            "Supine",
+            "Long sitting"
+          ],
+          "biases": [
+            "End-range",
+            "With posterior pelvic tilt bias",
+            "Combined with rotation",
+            "Under load"
+          ],
+          "candidate_muscles": [
+            "Multifidus eccentric",
+            "Transverse abdominis",
+            "Hamstring",
+            "Psoas"
+          ],
+          "isolation_logic": "Long sitting flex isolates hamstring length vs lumbar; Supine knee to chest isolates lumbar vs hip",
+          "compensation_watch": [
+            "Hip flexion early",
+            "Thoracic flexion",
+            "Neck flexion",
+            "Knee bending"
+          ],
+          "retest_rule": "After hamstring length or psoas release, retest lumbar flex 2min - >30% improvement = hip driver"
+        },
+        {
+          "direction": "Rotation",
+          "positions": [
+            "Sitting",
+            "Standing",
+            "Sidelying",
+            "Half kneeling"
+          ],
+          "biases": [
+            "Left",
+            "Right",
+            "Combined with ext/flex"
+          ],
+          "candidate_muscles": [
+            "Multifidus rotation",
+            "Obliques",
+            "Glute med"
+          ],
+          "isolation_logic": "Sitting rotation blocks hip, isolates lumbar",
+          "compensation_watch": [
+            "Hip rotation",
+            "Thoracic rotation dominates",
+            "Pelvic shift"
+          ],
+          "retest_rule": "Retest rotation after SIJ mobilization or hip rotator activation"
+        },
+        {
+          "direction": "Sidebend",
+          "positions": [
+            "Standing",
+            "Sitting",
+            "Side plank"
+          ],
+          "biases": [
+            "Left",
+            "Right",
+            "With overpressure hip"
+          ],
+          "candidate_muscles": [
+            "Quadratus lumborum",
+            "Glute med",
+            "Obliques"
+          ],
+          "isolation_logic": "Side plank isolates QL vs glute",
+          "compensation_watch": [
+            "Hip hiking",
+            "Shoulder lateral shift"
+          ],
+          "retest_rule": "Check hip abductor strength effect on lumbar sidebend pain"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Shoulder",
+      "specific_joints": [
+        "GH",
+        "AC",
+        "SC",
+        "Scapulothoracic",
+        "C5-C6 contribution"
+      ],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Supine",
+            "Standing",
+            "Sidelying",
+            "Prone"
+          ],
+          "biases": [
+            "With scapular assistance",
+            "Without scapula assist",
+            "External rotation bias",
+            "Thumb up vs neutral",
+            "Loaded 1kg"
+          ],
+          "candidate_muscles": [
+            "Anterior Deltoid",
+            "Serratus Anterior",
+            "Upper Trap",
+            "Lower Trap",
+            "Rotator cuff"
+          ],
+          "isolation_logic": "Supine eliminates trunk compensation; Scapular assistance test isolates scapular driver vs GH; ER bias checks rotator cuff control",
+          "compensation_watch": [
+            "Scapular elevation",
+            "Trunk extension/lean",
+            "Elbow flexion",
+            "Forward head",
+            "Rib flare"
+          ],
+          "retest_rule": "If flexion improves >30deg with scapular assistance or thoracic PA T4-6, driver = scapular/thoracic not GH"
+        },
+        {
+          "direction": "Abduction",
+          "positions": [
+            "Standing",
+            "Supine",
+            "Scapular plane"
+          ],
+          "biases": [
+            "Empty can",
+            "Full can",
+            "External rotation",
+            "Scapular setting"
+          ],
+          "candidate_muscles": [
+            "Supraspinatus",
+            "Deltoid",
+            "Serratus"
+          ],
+          "isolation_logic": "Scaption 30deg forward reduces impingement; Empty can isolates supraspinatus",
+          "compensation_watch": [
+            "Shrug",
+            "Trunk sidebend",
+            "Internal rotation"
+          ],
+          "retest_rule": "GH inferior glide + serratus activation, retest painful arc"
+        },
+        {
+          "direction": "External Rotation",
+          "positions": [
+            "Sidelying",
+            "Standing at 0deg",
+            "Abducted 90deg"
+          ],
+          "biases": [
+            "At side",
+            "90-90 position",
+            "With scapular assistance"
+          ],
+          "candidate_muscles": [
+            "Infraspinatus",
+            "Teres minor",
+            "Posterior deltoid"
+          ],
+          "isolation_logic": " sidelying ER isolates cuff vs deltoid",
+          "compensation_watch": [
+            "Scapular retraction too much",
+            "Trunk rotation",
+            "Wrist extension"
+          ],
+          "retest_rule": "After thoracic extension + posterior GH mobilization, ER should improve >20%"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Hip",
+      "specific_joints": [
+        "Femoroacetabular",
+        "SIJ contribution",
+        "Lumbar contribution"
+      ],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Supine",
+            "Standing",
+            "Deep squat"
+          ],
+          "biases": [
+            "Knee to chest",
+            "With overpressure",
+            "Internal rotation bias",
+            "With lumbar neutral cue"
+          ],
+          "candidate_muscles": [
+            "Iliopsoas",
+            "Rectus femoris",
+            "Glute max antagonist",
+            "Deep hip flexors"
+          ],
+          "isolation_logic": "Thomas test isolates rectus vs psoas; Supine with lumbar neutral isolates hip vs lumbar",
+          "compensation_watch": [
+            "Lumbar posterior tilt",
+            "Pelvic rotation",
+            "Knee valgus"
+          ],
+          "retest_rule": "After psoas release + glute activation, retest squat depth"
+        },
+        {
+          "direction": "Extension",
+          "positions": [
+            "Prone",
+            "Standing",
+            "Quadruped",
+            "Single leg stance"
+          ],
+          "biases": [
+            "Knee flex 90",
+            "Knee extended",
+            "With abduction bias",
+            "Loaded"
+          ],
+          "candidate_muscles": [
+            "Glute Max",
+            "Hamstring",
+            "Erector spinae"
+          ],
+          "isolation_logic": "Knee flexed isolates glute vs hamstring; Prone hip ext with palpation",
+          "compensation_watch": [
+            "Lumbar extension",
+            "Pelvic rotation",
+            "Knee flexion substitution"
+          ],
+          "retest_rule": "If lumbar pain reduces after glute facilitation, primary = glute inhibition driver"
+        },
+        {
+          "direction": "Abduction",
+          "positions": [
+            "Sidelying",
+            "Standing",
+            "Single leg stance"
+          ],
+          "biases": [
+            "External rotation",
+            "Internal rotation",
+            "With pelvic neutral"
+          ],
+          "candidate_muscles": [
+            "Glute Med",
+            "Glute Min",
+            "TFL"
+          ],
+          "isolation_logic": "Sidelying abduction with slight ER isolates glute med vs TFL; Standing checks functional control",
+          "compensation_watch": [
+            "Pelvic hiking",
+            "Trunk lean",
+            "Hip external rotation",
+            "Lumbar sidebend"
+          ],
+          "retest_rule": "After glute med facilitation, retest single leg stance pelvic drop - <50% drop = positive"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Knee",
+      "specific_joints": [
+        "Tibiofemoral",
+        "Patellofemoral",
+        "Proximal tib-fib"
+      ],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Prone",
+            "Supine",
+            "Sitting"
+          ],
+          "biases": [
+            "Active",
+            "Passive",
+            "With overpressure",
+            "With patellar bias"
+          ],
+          "candidate_muscles": [
+            "Quads eccentrically",
+            "Hamstring",
+            "Popliteus"
+          ],
+          "isolation_logic": "Passive vs active to separate joint vs muscle; Check hip flex influence",
+          "compensation_watch": [
+            "Hip external rotation",
+            "Pelvic rotation"
+          ],
+          "retest_rule": "After patellar mobilization + quad activation, retest flexion pain"
+        },
+        {
+          "direction": "Extension",
+          "positions": [
+            "Supine",
+            "Standing"
+          ],
+          "biases": [
+            "Terminal extension",
+            "With overpressure",
+            "Long sit"
+          ],
+          "candidate_muscles": [
+            "VMO",
+            "Quads",
+            "Hamstring length"
+          ],
+          "isolation_logic": "Terminal knee ext isolates VMO",
+          "compensation_watch": [
+            "Hip hike",
+            "Lumbar extension"
+          ],
+          "retest_rule": "Immediate improvement after patella medial glide = PF driver"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Ankle",
+      "specific_joints": [
+        "Talocrural",
+        "Subtalar",
+        "Midfoot"
+      ],
+      "directions": [
+        {
+          "direction": "Dorsiflexion",
+          "positions": [
+            "Standing lunge",
+            "Supine",
+            "Sitting"
+          ],
+          "biases": [
+            "Knee extended",
+            "Knee flexed",
+            "With overpressure",
+            "Loaded"
+          ],
+          "candidate_muscles": [
+            "Tibialis anterior",
+            "Gastrocnemius",
+            "Soleus"
+          ],
+          "isolation_logic": "Knee flexed isolates soleus vs gastrocnemius; Lunge test functional",
+          "compensation_watch": [
+            "Foot pronation",
+            "Knee valgus",
+            "Early heel rise",
+            "Hip adduction"
+          ],
+          "retest_rule": "After calf length + talocrural AP mobilization, retest lunge knee-to-wall >2cm improvement = positive"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Wrist",
+      "specific_joints": [
+        "Radiocarpal",
+        "Midcarpal",
+        "Distal Radioulnar",
+        "TFCC",
+        "C6-C7 contribution"
+      ],
+      "directions": [
+        {
+          "direction": "Extension",
+          "positions": [
+            "Sitting microscope posture",
+            "Elbow 90deg pronated"
+          ],
+          "biases": [
+            "Resisted middle finger extension (ECRB test)",
+            "With elbow flexion 90deg",
+            "Sustained 10H"
+          ],
+          "candidate_muscles": [
+            "ECRB",
+            "ECRL",
+            "EDC"
+          ],
+          "isolation_logic": "Cozen test: Resisted wrist extension with elbow extended pronated, pain lateral epicondyle = ECRB driver. Middle finger extension test isolates ECRB.",
+          "compensation_watch": [
+            "Elbow flexion to avoid stretch",
+            "Shoulder elevation",
+            "Finger extension substitution"
+          ],
+          "retest_rule": "After ECRB NKT protocol + Cyriax deep friction 10min + Mulligan MWM lateral elbow, retest Cozen pain -50% = positive"
+        },
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Sitting",
+            "Microscope posture"
+          ],
+          "biases": [
+            "Resisted",
+            "Sustained"
+          ],
+          "candidate_muscles": [
+            "FCR",
+            "FCU",
+            "Flexor Digitorum"
+          ],
+          "isolation_logic": "Check median nerve pronator teres syndrome vs carpal tunnel",
+          "compensation_watch": [
+            "Elbow flexion",
+            "Pronation substitution"
+          ],
+          "retest_rule": "After median nerve slider + pronator teres release, retest wrist flexion pain"
+        }
+      ]
+    },
+    {
+      "canonical_region": "Elbow",
+      "specific_joints": [
+        "Humeroulnar",
+        "Humeroradial",
+        "Proximal Radioulnar",
+        "C5-C6 contribution",
+        "C6-C7 contribution",
+        "Radial nerve bias",
+        "Median nerve bias"
+      ],
+      "directions": [
+        {
+          "direction": "Flexion",
+          "positions": [
+            "Sitting microscope posture",
+            "Standing",
+            "Supine",
+            "Prone microscope simulated 10H"
+          ],
+          "biases": [
+            "Sustained 10H microscope flexion 90-110deg",
+            "With overpressure",
+            "With shoulder protraction bias",
+            "With cervical flexion bias",
+            "Loaded 0.5kg instrument"
+          ],
+          "candidate_muscles": [
+            "Biceps Brachii",
+            "Brachialis",
+            "Brachioradialis",
+            "Pronator Teres as synergist",
+            "Deep Cervical Flexors as proximal driver"
+          ],
+          "isolation_logic": "Microscope posture isolates sustained flexion: If elbow flexion pain in microscope posture but full pain-free supine, driver = sustained postural + cervical/thoracic driver not local joint. Test supine pure flexion vs sitting microscope posture with cervical flexion 20deg + shoulder protraction. NKT: Biceps Brachii vs Brachialis isolation - Brachialis tested with forearm pronated, Biceps supinated. If Brachialis weak and Pronator Teres overactive, synergistic dominance.",
+          "compensation_watch": [
+            "Shoulder elevation shrug",
+            "Cervical flexion 45deg forward head",
+            "Thoracic kyphosis",
+            "Wrist flexion substitution",
+            "Scapular protraction",
+            "Breath holding Valsalva",
+            "Trunk lean over microscope",
+            "Ulnar deviation"
+          ],
+          "retest_rule": "After cervical SNAG C5-C6 + thoracic extension PA T4-6 + biceps/brachialis NKT release facilitated pronator teres 45sec + activate brachialis 3x5sec, retest microscope posture elbow flexion tolerance time: baseline 20min pain 7/10 -> target >60min pain <3/10 = >50% improvement driver confirmed. Also retest elbow flexion ROM pain-free supine vs microscope posture.",
+          "microscope_ergonomics": "Surgeon 10H microscope: Elbow flexion sustained 90-110deg, forearm pronation 70%, shoulder abduction 30-45deg, cervical flexion 20-30deg, static load. Check workstation height, armrest support, oculars adjustment to reduce cervical flexion."
+        },
+        {
+          "direction": "Extension",
+          "positions": [
+            "Sitting",
+            "Standing",
+            "Prone",
+            "Supine"
+          ],
+          "biases": [
+            "Terminal extension with overpressure",
+            "With shoulder internal rotation bias",
+            "With wrist extension bias",
+            "After 10H flexion sustained - extension deficit"
+          ],
+          "candidate_muscles": [
+            "Triceps Brachii",
+            "Anconeus",
+            "Biceps antagonist",
+            "Lower Trap as proximal stability driver"
+          ],
+          "isolation_logic": "If elbow extension limited after 10H sustained flexion, check triceps inhibition due to biceps hypertonicity reciprocal inhibition. NKT: Test triceps long head vs biceps. If triceps weak and biceps strong, reciprocal inhibition. Also check radial nerve mechanosensitivity - extension with wrist flexion sensitizes radial.",
+          "compensation_watch": [
+            "Shoulder extension substitution",
+            "Scapular anterior tilt",
+            "Wrist flexion to avoid triceps stretch",
+            "Lumbar extension"
+          ],
+          "retest_rule": "After triceps NKT release biceps 45sec + activate triceps 3x5sec + radial nerve slider median bias, retest terminal extension pain/ROM - >20deg gain or pain -3/10 = positive"
+        },
+        {
+          "direction": "Pronation",
+          "positions": [
+            "Sitting microscope posture",
+            "Elbow 90deg flexion",
+            "Standing",
+            "With shoulder neutral"
+          ],
+          "biases": [
+            "Sustained pronation 10H instrument handling",
+            "With overpressure",
+            "With wrist flexion bias",
+            "With elbow flexion 90deg vs extended",
+            "Resisted pronation 1kg"
+          ],
+          "candidate_muscles": [
+            "Pronator Teres",
+            "Pronator Quadratus",
+            "Biceps as supinator antagonist",
+            "Flexor Carpi Radialis synergist"
+          ],
+          "isolation_logic": "Pronator Teres vs Pronator Quadratus isolation: Teres tested elbow flexed 90deg, Quadratus tested elbow extended pronation only. If pronator teres overactive and supinator (Biceps + Supinator muscle) inhibited, synergistic dominance drives lateral epicondylalgia. Surgeon microscope pronation 70% sustained drives pronator teres hypertonicity. NKT: Test supinator weak -> challenge pronator teres rub -> supinator strong = reactive pair confirmed. Also check median nerve pronator teres syndrome - median nerve compression between two heads pronator teres.",
+          "compensation_watch": [
+            "Shoulder internal rotation substitution",
+            "Wrist flexion ulnar deviation",
+            "Elbow valgus",
+            "Cervical sidebend",
+            "Grip overuse flexor digitorum"
+          ],
+          "retest_rule": "After pronator teres release 60sec pin-stretch + supinator activation 3x5sec + median nerve slider, retest pronation ROM pain and microscope instrument handling tolerance - >30% improvement pain reduction = positive. Also retest lateral epicondyle palpation pain."
+        },
+        {
+          "direction": "Supination",
+          "positions": [
+            "Sitting",
+            "Elbow 90deg flexion",
+            "Elbow extended",
+            "With arm at side"
+          ],
+          "biases": [
+            "With overpressure",
+            "With biceps bias supinated",
+            "With wrist neutral",
+            "Resisted 1kg",
+            "After sustained pronation 10H - supination deficit"
+          ],
+          "candidate_muscles": [
+            "Supinator Muscle",
+            "Biceps Brachii supination",
+            "Brachioradialis",
+            "Pronator Teres antagonist"
+          ],
+          "isolation_logic": "Supinator muscle isolated with elbow extended pronation to supination (biceps less active when elbow extended). Biceps supination tested elbow flexed 90deg supinated. If supinator weak and pronator teres hypertonic, synergistic dominance. Surgeon loses supination after 10H pronation sustained. Check radial nerve supinator tunnel - radial nerve passes through supinator muscle (Arcade of Frohse) - radial tunnel syndrome can mimic lateral epicondylalgia. NKT: Test supinator weak -> rub pronator teres -> supinator strong = reactive pair.",
+          "compensation_watch": [
+            "Shoulder external rotation substitution",
+            "Wrist extension",
+            "Elbow flexion to recruit biceps",
+            "Trunk rotation"
+          ],
+          "retest_rule": "After pronator teres release 60sec + supinator activation + radial nerve slider (radial bias ULNT2b), retest supination ROM pain - >25deg gain or pain -3/10 = positive. Retest lateral epicondyle pain with Cozen test."
+        },
+        {
+          "direction": "Gripping - Microscope Instrument Handling",
+          "positions": [
+            "Sitting microscope posture 10H simulated",
+            "Standing",
+            "Elbow 90deg flexion forearm pronated"
+          ],
+          "biases": [
+            "Sustained grip 10H microsurgery instruments 0.2kg",
+            "Pinch grip vs power grip",
+            "With wrist extension bias",
+            "With elbow flexion 90-110deg",
+            "With cervical protraction bias"
+          ],
+          "candidate_muscles": [
+            "Flexor Digitorum Superficialis/Profundus",
+            "Extensor Carpi Radialis Brevis ECRB (lateral epicondylalgia)",
+            "Flexor Carpi Radialis",
+            "Pronator Teres",
+            "Biceps Brachii stabilization",
+            "Serratus Anterior / Lower Trap proximal stability"
+          ],
+          "isolation_logic": "Surgeon microscope 10H: Sustained low-load grip + pronation + elbow flexion + shoulder protraction + cervical flexion = cumulative overload. ECRB is key lateral epicondylalgia driver - weak and painful resisted wrist extension middle finger extension. NKT: Test ECRB weak -> challenge flexor digitorum or pronator teres -> ECRB strong = synergistic dominance flexors over extensors. Also check C6-C7 contribution cervical driver: cervical flexion 20-30deg sustained 10H compresses C6-C7, inhibits triceps ECRB. Test dependency: Does cervical retraction + thoracic extension improve grip pain? If yes, cervical driver. Does scapular setting improve elbow pain? If yes, scapular driver.",
+          "compensation_watch": [
+            "Finger flexor over-grip",
+            "Wrist extension compensation for grip",
+            "Shoulder shrug upper trap overactive vs lower trap serratus inhibited",
+            "Cervical forward head 45deg",
+            "Thoracic kyphosis",
+            "Elbow valgus/varus",
+            "Breath holding",
+            "Static postural bracing global"
+          ],
+          "retest_rule": "Microscope posture retest protocol: Baseline grip tolerance 20min pain 7/10 lateral epicondyle + Cozen test positive. Intervention sequence per Master Hierarchy: 1 Clear scars if any (e.g., previous elbow surgery), 2 Clear ligamentous ATFL analogy for elbow: check lateral collateral ligament laxity, 3 Cranio-respiratory: cervical SNAG C5-C6 + diaphragm breathing 90/90, 4 Subsystems: POS/AOS? For elbow: Posterior Oblique? Actually check thoracic extension, 5 Local NKT: Release pronator teres flexor digitorum 60sec FIRST -> Activate ECRB supinator triceps 3x5sec SECOND, 6 Taping: ECRB facilitation Origin->Insertion 25-50% + pronator teres inhibition Insertion->Origin 0-15% + decompression over lateral epicondyle cross-pattern 50% center. Retest microscope grip tolerance >60min pain <3/10 + Cozen pain -50% + grip strength dynamometer +20% = positive driver confirmed.",
+          "microscope_ergonomics_detailed": {
+            "workstation": "Microscope oculars height adjustable to reduce cervical flexion from 45deg to 20deg, armrests at elbow height to support 90-110deg flexion reducing biceps/brachialis static load, forearm support reduces pronator teres overload",
+            "microbreaks": "Every 30min: 20sec cervical retraction + thoracic extension over chair + elbow extension pronation stretch + wrist extensor stretch + diaphragmatic breathing 3 breaths + scapular setting lower trap activation",
+            "instrument": "Lightweight instruments 0.2kg, ergonomic grip diameter 8-12mm to reduce flexor digitorum overuse, neutral wrist splint if needed during non-surgical tasks",
+            "posture": "Elbow flexion 90-110deg supported, shoulder abduction <30deg, scapula posterior tilt, lumbar neutral with footrest, avoid trunk lean"
+          }
+        }
+      ]
+    }
+  ]
+}
