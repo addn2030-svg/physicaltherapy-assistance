@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التقييم والعلاج الذكي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; min-height: 100vh; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #667eea; }
+        .header h1 { color: #667eea; font-size: 2em; margin-bottom: 10px; }
+        .qr-section { text-align: center; background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 30px; }
+        .qr-section h3 { color: #667eea; margin-bottom: 15px; }
+        .qr-code { background: white; padding: 15px; border-radius: 10px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .progress-bar { background: #e9ecef; height: 40px; border-radius: 20px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { background: linear-gradient(90deg, #28a745 0%, #20c997 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 0.5s; font-size: 1.1em; }
+        .step { background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px; border-right: 5px solid #667eea; display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .step h2 { color: #667eea; margin-bottom: 20px; font-size: 1.8em; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: #333; font-weight: bold; margin-bottom: 8px; font-size: 1.1em; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #667eea; }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 1.2em; cursor: pointer; transition: all 0.3s; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); margin: 10px 5px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6); }
+        .btn:active { transform: translateY(0); }
+        .btn-secondary { background: #6c757d; }
+        .recommendation-box { background: white; padding: 20px; border-radius: 10px; margin: 15px 0; border-right: 5px solid #28a745; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+        .recommendation-box h3 { color: #28a745; margin-bottom: 10px; }
+        .recommendation-box p { color: #666; line-height: 1.6; }
+        .test-item { background: white; padding: 15px; border-radius: 8px; margin: 10px 0; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .test-item input[type="checkbox"] { width: 25px; height: 25px; margin-left: 15px; cursor: pointer; }
+        .test-item label { flex: 1; cursor: pointer; font-size: 1.1em; }
+        .test-item input[type="text"], .test-item input[type="number"], .test-item select { width: 120px; padding: 8px; border: 2px solid #ddd; border-radius: 5px; margin-right: 10px; }
+        .soap-note { background: white; padding: 20px; border-radius: 10px; margin: 15px 0; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+        .soap-note h3 { color: #667eea; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        .soap-note p { color: #333; line-height: 1.8; margin-bottom: 15px; }
+        .alert { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border-right: 5px solid #17a2b8; }
+        .alert-warning { background: #fff3cd; color: #856404; border-right: 5px solid #ffc107; }
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.5em; }
+            .step h2 { font-size: 1.4em; }
+            .btn { width: 100%; margin: 5px 0; }
+            .button-group { flex-direction: column; }
+        }
+        .tech-box { margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .tech-box h4 { color: #667eea; margin-bottom: 8px; }
+        .tech-box p { color: #666; margin-bottom: 8px; }
+        .tech-box a { color: #667eea; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 نظام التقييم والعلاج الذكي</h1>
+            <p>نظام متكامل بالذكاء الاصطناعي</p>
+        </div>
+
+        <div class="qr-section">
+            <h3>📱 امسح الباركود للوصول السريع</h3>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://github.com/addn2030-svg/physicaltherapy-assistance" alt="QR Code">
+            </div>
+            <p style="margin-top: 10px; color: #666;">شارك هذا الرابط مع الزملاء</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 20%;">الخطوة 1 من 5</div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="step active" id="step1">
+            <h2>📋 الخطوة 1: معلومات المريض</h2>
+            <div class="form-group">
+                <label>اسم المريض:</label>
+                <input type="text" id="patientName" placeholder="أدخل اسم المريض">
+            </div>
+            <div class="form-group">
+                <label>العمر:</label>
+                <input type="number" id="patientAge" placeholder="أدخل العمر">
+            </div>
+            <div class="form-group">
+                <label>الجنس:</label>
+                <select id="patientGender">
+                    <option value="">اختر...</option>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>الشكوى الرئيسية:</label>
+                <textarea id="chiefComplaint" placeholder="مثال: ألم في الكتف الأيمن منذ 3 أشهر، يزداد مع رفع الذراع للأعلى..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>التاريخ المرضي:</label>
+                <textarea id="medicalHistory" placeholder="الأمراض السابقة، العمليات، الأدوية الحالية..."></textarea>
+            </div>
+            <div class="alert alert-info">
+                💡 <strong>نصيحة:</strong> كلما كانت المعلومات أكثر تفصيلاً، كانت التوصيات أدق!
+            </div>
+            <button class="btn" onclick="analyzeCase()">🤖 تحليل بالذكاء الاصطناعي</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step" id="step2">
+            <h2>🤖 الخطوة 2: التحليل والتوصيات</h2>
+            <div id="analysisResults"></div>
+            <div class="button-group">
+                <button class="btn" onclick="goToStep(3)">التالي: التقييم</button>
+                <button class="btn btn-secondary" onclick="goToStep(1)">رجوع</button>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step" id="step3">
+            <h2>📊 الخطوة 3: الاختبارات والتقييم</h2>
+            <div class="alert alert-info">
+                ✅ قم بإجراء الاختبارات المقترحة وسجل النتائج
+            </div>
+            <div id="assessmentTests"></div>
+            <div class="button-group">
+                <button class="btn" onclick="goToStep(4)">التالي: العلاج</button>
+                <button class="btn btn-secondary" onclick="goToStep(2)">رجوع</button>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step" id="step4">
+            <h2>💊 الخطوة 4: تطبيق العلاج</h2>
+            <div id="treatmentPlan"></div>
+            <div class="form-group">
+                <label>ملاحظات العلاج:</label>
+                <textarea id="treatmentNotes" placeholder="سجل ملاحظاتك أثناء تطبيق العلاج..."></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn" onclick="generateSOAP()">التالي: التقرير النهائي</button>
+                <button class="btn btn-secondary" onclick="goToStep(3)">رجوع</button>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step" id="step5">
+            <h2>📄 الخطوة 5: تقرير SOAP Note</h2>
+            <div id="soapNote"></div>
+            <div class="button-group">
+                <button class="btn" onclick="printSOAP()">🖨️ طباعة</button>
+                <button class="btn" onclick="saveSOAP()">💾 حفظ</button>
+                <button class="btn" onclick="startNew()">🔄 حالة جديدة</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let patientData = {};
+        let analysisData = {};
+        let assessmentData = {};
+        let treatmentData = {};
+
+        function goToStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            currentStep = step;
+            const progress = (step / 5) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = 'الخطوة ' + step + ' من 5';
+            window.scrollTo(0, 0);
+        }
+
+        function analyzeCase() {
+            patientData = {
+                name: document.getElementById('patientName').value,
+                age: document.getElementById('patientAge').value,
+                gender: document.getElementById('patientGender').value,
+                chiefComplaint: document.getElementById('chiefComplaint').value,
+                medicalHistory: document.getElementById('medicalHistory').value
+            };
+
+            if (!patientData.name || !patientData.chiefComplaint) {
+                alert('⚠️ الرجاء إدخال اسم المريض والشكوى الرئيسية على الأقل');
+                return;
+            }
+
+            const analysis = performAIAnalysis(patientData);
+            displayAnalysis(analysis);
+            goToStep(2);
+        }
+
+        function performAIAnalysis(data) {
+            const complaint = data.chiefComplaint.toLowerCase();
+            let diagnosis = '', techniques = [], tests = [], precautions = [];
+
+            if (complaint.includes('كتف') || complaint.includes('shoulder')) {
+                diagnosis = 'اشتباه في متلازمة انحشار الكتف (Subacromial Impingement)';
+                techniques = [
+                    {name: 'Maitland Mobilization', desc: 'تحريك مفصلي Grade III-IV للانزلاق السفلي', link: 'manual-therapy/maitland-mobilization.md'},
+                    {name: 'Mulligan MWM', desc: 'تحريك مع الحركة لتحسين مدى الحركة', link: 'manual-therapy/mulligan-concept.md'},
+                    {name: 'PNF Patterns', desc: 'أنماط D2 للكتف لتقوية العضلات', link: 'neuromuscular-movement/proprioceptive-neuromuscular-facilitation.md'}
+                ];
+                tests = [
+                    {name: 'Hawkins-Kennedy Test', type: 'special'},
+                    {name: 'Neer Test', type: 'special'},
+                    {name: 'ROM Flexion', type: 'rom', unit: '°'},
+                    {name: 'ROM Abduction', type: 'rom', unit: '°'}
+                ];
+                precautions = ['تجنب التمدد العدواني', 'راقب علامات الألم الشديد'];
+            } else if (complaint.includes('ظهر') || complaint.includes('back') || complaint.includes('قطني')) {
+                diagnosis = 'ألم أسفل الظهر (Low Back Pain)';
+                techniques = [
+                    {name: 'McKenzie Method', desc: 'تقييم التفضيل الاتجاهي وتمارين الامتداد', link: 'manual-therapy/mckenzie-method.md'},
+                    {name: 'Maitland Mobilization', desc: 'تحريك الفقرات القطنية', link: 'manual-therapy/maitland-mobilization.md'}
+                ];
+                tests = [
+                    {name: 'Straight Leg Raise', type: 'special'},
+                    {name: 'ROM Flexion', type: 'rom', unit: '°'}
+                ];
+                precautions = ['استبعد الأعلام الحمراء', 'تحقق من العلامات العصبية'];
+            } else {
+                diagnosis = 'يحتاج لتقييم شامل';
+                techniques = [{name: 'تقييم شامل', desc: 'يرجى إجراء تقييم تفصيلي', link: 'INDEX.md'}];
+                tests = [{name: 'Observation', type: 'general'}];
+                precautions = ['تقييم شامل مطلوب'];
+            }
+
+            return {diagnosis, techniques, tests, precautions};
+        }
+
+        function displayAnalysis(analysis) {
+            analysisData = analysis;
+            let html = '<div class="recommendation-box"><h3>🎯 التشخيص المبدئي</h3><p><strong>' + analysis.diagnosis + '</strong></p></div>';
+            html += '<div class="recommendation-box"><h3>💡 التقنيات الموصى بها</h3>';
+            analysis.techniques.forEach((tech, i) => {
+                html += '<div class="tech-box"><h4>' + (i+1) + '. ' + tech.name + '</h4><p>' + tech.desc + '</p><a href="https://github.com/addn2030-svg/physicaltherapy-assistance/blob/main/' + tech.link + '" target="_blank">📖 عرض البروتوكول</a></div>';
+            });
+            html += '</div>';
+            if (analysis.precautions.length > 0) {
+                html += '<div class="alert alert-warning"><h4 style="margin-bottom:10px;">⚠️ احتياطات:</h4><ul style="margin-right:20px;">';
+                analysis.precautions.forEach(p => html += '<li>' + p + '</li>');
+                html += '</ul></div>';
+            }
+            document.getElementById('analysisResults').innerHTML = html;
+        }
+
+        function goToStep(step) {
+            if (step === 3) generateAssessmentForm();
+            if (step === 4) generateTreatmentPlan();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            currentStep = step;
+            const progress = (step / 5) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = 'الخطوة ' + step + ' من 5';
+            window.scrollTo(0, 0);
+        }
+
+        function generateAssessmentForm() {
+            let html = '';
+            analysisData.tests.forEach((test, i) => {
+                html += '<div class="test-item"><input type="checkbox" id="test' + i + '"><label for="test' + i + '">' + test.name + '</label>';
+                if (test.type === 'rom') {
+                    html += '<input type="number" id="testValue' + i + '" placeholder="القيمة"><span>' + (test.unit || '') + '</span>';
+                } else if (test.type === 'special') {
+                    html += '<select id="testValue' + i + '"><option value="">النتيجة</option><option value="positive">إيجابي</option><option value="negative">سلبي</option></select>';
+                }
+                html += '</div>';
+            });
+            document.getElementById('assessmentTests').innerHTML = html;
+        }
+
+        function generateTreatmentPlan() {
+            let html = '<div class="recommendation-box"><h3>📋 خطة العلاج</h3>';
+            analysisData.techniques.forEach((tech, i) => {
+                html += '<div class="tech-box"><h4>' + (i+1) + '. ' + tech.name + '</h4><p>' + tech.desc + '</p><label style="display:block;margin-top:10px;"><input type="checkbox" id="tech' + i + '"> تم التطبيق</label><input type="text" id="techNotes' + i + '" placeholder="ملاحظات" style="width:100%;padding:8px;border:2px solid #ddd;border-radius:5px;margin-top:5px;"></div>';
+            });
+            html += '</div>';
+            document.getElementById('treatmentPlan').innerHTML = html;
+        }
+
+        function generateSOAP() {
+            assessmentData = {};
+            analysisData.tests.forEach((test, i) => {
+                const cb = document.getElementById('test' + i);
+                const val = document.getElementById('testValue' + i);
+                if (cb && cb.checked) assessmentData[test.name] = val ? val.value : 'تم';
+            });
+
+            treatmentData = {};
+            analysisData.techniques.forEach((tech, i) => {
+                const cb = document.getElementById('tech' + i);
+                const notes = document.getElementById('techNotes' + i);
+                if (cb && cb.checked) treatmentData[tech.name] = notes ? notes.value : '';
+            });
+
+            const treatmentNotes = document.getElementById('treatmentNotes').value;
+
+            let html = '<div class="soap-note"><h3>S - SUBJECTIVE</h3><p><strong>المريض:</strong> ' + patientData.name + ', ' + patientData.age + ' سنة</p><p><strong>الشكوى:</strong> ' + patientData.chiefComplaint + '</p></div>';
+            html += '<div class="soap-note"><h3>O - OBJECTIVE</h3><p><strong>التشخيص:</strong> ' + analysisData.diagnosis + '</p><p><strong>الاختبارات:</strong></p><ul style="margin-right:20px;">';
+            Object.entries(assessmentData).forEach(([test, val]) => html += '<li>' + test + ': ' + val + '</li>');
+            html += '</ul></div>';
+            html += '<div class="soap-note"><h3>A - ASSESSMENT</h3><p>المريض يعاني من ' + analysisData.diagnosis + '. التوقعات جيدة للتحسن مع الالتزام بالخطة العلاجية.</p></div>';
+            html += '<div class="soap-note"><h3>P - PLAN</h3><p><strong>العلاج المطبق:</strong></p><ul style="margin-right:20px;">';
+            Object.entries(treatmentData).forEach(([tech, notes]) => html += '<li>' + tech + (notes ? ': ' + notes : '') + '</li>');
+            html += '</ul><p><strong>ملاحظات:</strong> ' + (treatmentNotes || 'لا يوجد') + '</p><p><strong>الخطة:</strong> متابعة بعد أسبوع، الالتزام بالتمارين المنزلية</p></div>';
+
+            document.getElementById('soapNote').innerHTML = html;
+            goToStep(5);
+        }
+
+        function printSOAP() {
+            window.print();
+        }
+
+        function saveSOAP() {
+            const content = document.getElementById('soapNote').innerHTML;
+            const blob = new Blob([content], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'soap-note-' + patientData.name + '.html';
+            a.click();
+            alert('✅ تم حفظ التقرير!');
+        }
+
+        function startNew() {
+            if (confirm('هل تريد بدء حالة جديدة؟ سيتم فقدان البيانات الحالية.')) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
