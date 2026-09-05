@@ -27,7 +27,7 @@ Wire `TelegramProjectCommands.handle(String(message.chat.id), message.text)` int
 
 ## MoneyPrinterTurbo boundary
 
-Deploy the official MoneyPrinterTurbo container as a separate private service. Set `app.api_key` in its `config.toml`, pin a tested container release instead of `latest`, keep `/tasks` protected, and expose it over HTTPS. The adapter calls the upstream `/api/v1/videos` and `/api/v1/tasks/{task_id}` endpoints and sends the API key as a bearer token.
+Deploy the official MoneyPrinterTurbo container as a separate private service. Set `app.api_key` in its `config.toml`, pin a tested container release instead of `latest`, keep `/tasks` protected, and expose it over HTTPS. The adapter calls the upstream `/api/v1/videos` and `/api/v1/tasks/{task_id}` endpoints and sends the API key in the upstream `x-api-key` header.
 
 ## Smallest safe acceptance test
 
