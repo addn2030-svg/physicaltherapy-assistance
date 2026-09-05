@@ -111,3 +111,7 @@ These techniques should be applied by qualified healthcare professionals with ap
 **Last Updated**: 2026
 **Version**: 1.0
 **Maintained by**: International Rehabilitation Techniques Collaborative
+
+## Optional agent integrations
+
+Guarded Telegram commands for Google Drive project memory and a separate MoneyPrinterTurbo video service are documented in [docs/TELEGRAM_PROJECT_MEMORY_AND_VIDEO.md](./docs/TELEGRAM_PROJECT_MEMORY_AND_VIDEO.md).
