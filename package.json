@@ -7,7 +7,8 @@
     "dev": "ts-node src/console/index.ts",
     "build": "tsc",
     "start": "node dist/console/index.js",
-    "test": "jest",
+    "test": "npm run build && node --test dist/src/tests/*.test.js",
+    "test:acceptance": "npm run build && node --test --test-name-pattern=acceptance dist/src/tests/*.test.js",
     "lookup": "ts-node src/engine/lookup.ts",
     "reasoning": "ts-node src/engine/reasoning.ts"
   },
