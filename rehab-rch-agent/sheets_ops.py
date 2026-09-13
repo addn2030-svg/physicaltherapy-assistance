@@ -165,6 +165,11 @@ class SheetBackend(ABC):
         """Append one row (creates the tab + header from SCHEMAS if needed)."""
 
     @abstractmethod
+    def update_rows(self, tab: str, key_col: str, key_val: str,
+                    updates: dict[str, str]) -> int:
+        """Update rows where key_col == key_val. Returns rows updated."""
+
+    @abstractmethod
     def ensure_tabs(self, schemas: dict[str, list[str]]) -> dict[str, str]:
         """Create missing tabs + headers. Returns {tab: created|exists}."""
 
@@ -233,6 +238,33 @@ class GSpreadBackend(SheetBackend):
             ws.update("A1", [headers])
         ws.append_row([_s(row.get(h, "")) for h in headers])
 
+    def update_rows(self, tab: str, key_col: str, key_val: str,
+                    updates: dict[str, str]) -> int:
+        ws = self._ws(tab)
+        if ws is None:
+            return 0
+        values = ws.get_all_values()
+        if not values:
+            return 0
+        headers = [_s(h) for h in values[0]]
+        if key_col not in headers:
+            return 0
+        key_idx = headers.index(key_col)
+        targets = {h: headers.index(h) for h in updates if h in headers}
+        if not targets:
+            return 0
+        want = _s(key_val).lower()
+        updated = 0
+        for i, record in enumerate(values[1:], start=2):
+            cells = [_s(c) for c in record]
+            current = cells[key_idx] if key_idx < len(cells) else ""
+            if current.lower() != want:
+                continue
+            for header, col_idx in targets.items():
+                ws.update_cell(i, col_idx + 1, _s(updates[header]))
+            updated += 1
+        return updated
+
     def ensure_tabs(self, schemas: dict[str, list[str]]) -> dict[str, str]:
         book = self._open()
         existing = {ws.title for ws in book.worksheets()}
@@ -266,6 +298,19 @@ class MemoryBackend(SheetBackend):
         if not headers:
             raise ValueError(f"Unknown tab: {tab}")
         self.tabs.setdefault(tab, []).append({h: _s(row.get(h, "")) for h in headers})
+
+    def update_rows(self, tab: str, key_col: str, key_val: str,
+                    updates: dict[str, str]) -> int:
+        want = _s(key_val).lower()
+        updated = 0
+        for row in self.tabs.get(tab, []):
+            if _s(row.get(key_col)).lower() != want:
+                continue
+            for header, value in updates.items():
+                if header in SCHEMAS.get(tab, []):
+                    row[header] = _s(value)
+            updated += 1
+        return updated
 
     def ensure_tabs(self, schemas: dict[str, list[str]]) -> dict[str, str]:
         status: dict[str, str] = {}
@@ -532,6 +577,54 @@ class OpsDB:
         if not active_only:
             return rows
         return [r for r in rows if _s(r.get("Active")).lower() in ACTIVE_MARKERS]
+
+    def chat_id_for(self, staff_name: str) -> str:
+        """Active Chat ID for a staff name ('' when unknown/inactive)."""
+        want = _s(staff_name).lower()
+        for r in self.telegram_users(active_only=True):
+            if _s(r.get("Staff_Name")).lower() == want:
+                chat = _s(r.get("Telegram_Chat_ID"))
+                return chat if chat.lstrip("-").isdigit() else ""
+        return ""
+
+    def pending_telegram_users(self) -> list[dict[str, str]]:
+        """Rows awaiting admin approval (Active flag off but Chat ID present)."""
+        return [r for r in self.b.read_tab("Telegram_Users")
+                if _s(r.get("Active")).lower() not in ACTIVE_MARKERS
+                and _s(r.get("Telegram_Chat_ID"))]
+
+    def upsert_telegram_user(self, staff_name: str, unit: str, username: str,
+                             chat_id: str, active: str = "FALSE") -> None:
+        """Insert or update a Telegram_Users row by staff name (for /register)."""
+        updated = self.b.update_rows("Telegram_Users", "Staff_Name", staff_name, {
+            "Unit": unit, "Telegram_Username": username,
+            "Telegram_Chat_ID": chat_id, "Active": active,
+        })
+        if not updated:
+            self.b.append_row("Telegram_Users", {
+                "Staff_Name": staff_name, "Unit": unit,
+                "Telegram_Username": username,
+                "Telegram_Chat_ID": chat_id, "Active": active,
+            })
+
+    def set_user_active(self, staff_name: str, active: bool = True) -> bool:
+        """Approve/suspend a user. Returns True when a row was updated."""
+        return self.b.update_rows(
+            "Telegram_Users", "Staff_Name", staff_name,
+            {"Active": "TRUE" if active else "FALSE"}) > 0
+
+    def supervisor_reports_between(self, unit_id: str,
+                                   start: date, end: date) -> list[dict[str, str]]:
+        """Supervisor reports for one unit in [start, end] (inclusive)."""
+        out = []
+        for r in self.b.read_tab("Daily_Supervisor_Reports"):
+            day = _parse_date(r.get("Date"))
+            if not day or not (start <= day <= end):
+                continue
+            unit = self.resolve_unit(_s(r.get("Unit")))
+            if unit and _s(unit.get("Unit_ID")).upper() == unit_id.upper():
+                out.append(r)
+        return out
 
     # -- dashboard ---------------------------------------------------------
     def dashboard(self) -> dict[str, str]:

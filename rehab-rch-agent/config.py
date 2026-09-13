@@ -64,6 +64,26 @@ class Settings:
     staff_sheet_id: str = field(default_factory=lambda: _env("STAFF_SHEET_ID"))
     staff_sheet_tab: str = field(default_factory=lambda: _env("STAFF_SHEET_TAB", "Staff"))
     ops_sheet_id: str = field(default_factory=lambda: _env("OPS_SHEET_ID"))
+
+    # -- Proactive orchestra (Agent v4) -------------------------------------
+    sched_enabled: bool = field(
+        default_factory=lambda: _env("SCHED_ENABLED", "true").lower() not in {"0", "false", "no"}
+    )
+    sched_tz: str = field(default_factory=lambda: _env("SCHED_TZ", "Asia/Riyadh"))
+    briefing_time: str = field(default_factory=lambda: _env("BRIEFING_TIME", "07:30"))
+    rollup_time: str = field(default_factory=lambda: _env("ROLLUP_TIME", "17:00"))
+    gap_scan_times: list[str] = field(
+        default_factory=lambda: [t.strip() for t in _env("GAP_SCAN_TIMES", "09:00,12:00,15:00").split(",") if t.strip()]
+    )
+    report_cutoff: str = field(default_factory=lambda: _env("REPORT_CUTOFF", "15:00"))
+    watchdog_minutes: int = field(default_factory=lambda: _env_int("WATCHDOG_MINUTES", 30))
+    weekly_day: str = field(default_factory=lambda: _env("WEEKLY_DAY", "SUN").upper())
+    weekly_time: str = field(default_factory=lambda: _env("WEEKLY_TIME", "08:00"))
+    quiet_hours: str = field(default_factory=lambda: _env("QUIET_HOURS", "22:00-06:30"))
+    alert_dedup_hours: int = field(default_factory=lambda: _env_int("ALERT_DEDUP_HOURS", 6))
+    higher_admin_chat_ids: list[str] = field(
+        default_factory=lambda: _env_list("HIGHER_ADMIN_CHAT_IDS")
+    )
     audit_sheet_tab: str = field(default_factory=lambda: _env("AUDIT_SHEET_TAB", "AuditLog"))
     audit_sheet_enabled: bool = field(
         default_factory=lambda: _env("AUDIT_SHEET_ENABLED", "true").lower() not in {"0", "false", "no"}

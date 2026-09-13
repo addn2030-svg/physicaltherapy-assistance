@@ -60,7 +60,11 @@ rehab-rch-agent/
 ├── bot.py               # Telegram entry point (commands + conversations)
 ├── ops_handlers.py      # Agent v3 ops commands (/briefing, /daily, ...)
 ├── sheets_ops.py        # Rehab_Operations_Master_v2 workbook layer
+├── agents.py            # Agent v4 orchestra (6 support agents + escalator)
+├── messenger.py         # Escalation routing + delivery (live/demo)
+├── scheduler.py         # 24/7 proactive timetable + heartbeat
 ├── demo_ops.py          # Zero-credential ops demo (in-memory sheet)
+├── demo_orchestra.py    # Full proactive-day simulation (no keys)
 ├── gemini_client.py     # Gemini AI wrapper (operational prompts, demo fallback)
 ├── google_drive.py      # Drive folder tree + dated uploads
 ├── knowledge_base.py    # Approved-docs index + keyword search + manifest governance
@@ -158,6 +162,10 @@ Blocked (bot rejects + asks for de-identified resubmission):
 | `/units` | Units + supervisors |
 | `/datahealth` | Sheet data-quality check |
 | `/setup` | Create ops tabs (admins only) |
+| `/register` | Self-register for alerts (admin `/approve`) |
+| `/digest` | Your personal ops slice |
+| `/watchdog` | Run gap scan now (admins only) |
+| `/schedule` | Proactive timetable |
 | `/cancel` | Cancel current flow |
 
 ### Example — announcement
@@ -263,6 +271,15 @@ with every event mirrored to the `Agent_Audit_Log` tab.
 
 Setup: [docs/SHEETS_OPS.md](docs/SHEETS_OPS.md) · Zero-key preview:
 `python demo_ops.py`
+
+## Proactive orchestra (Agent v4)
+
+Six support agents run 24/7 inside the bot: gap finder, watchdog, cutoff
+escalator (therapist → supervisor → head → higher admin), briefing pusher,
+report automator (evening rollup + weekly auto-fill into the sheet and
+Drive), and a Gemini insight narrator. Dedup windows, quiet hours, full
+audit. Manual: [docs/ORCHESTRA.md](docs/ORCHESTRA.md) · Simulation:
+`python demo_orchestra.py`
 
 ## Before launch
 

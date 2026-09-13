@@ -115,6 +115,10 @@ HELP_TEXT = """🏥 *Rehab RCH Agent — Commands*
 /units — Units + supervisors
 /datahealth — Sheet data-quality check
 /setup — Create ops tabs (admins only)
+/register — Register for alerts (then admin /approve)
+/digest — Your personal ops slice
+/watchdog — Run gap scan now (admins only)
+/schedule — Proactive timetable
 /cancel — Cancel current flow
 
 *Free text:* just ask, e.g.
@@ -574,12 +578,38 @@ async def on_error(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
 # ----------------------------------------------------------------------------
 # App factory
 # ----------------------------------------------------------------------------
+async def _post_init(app: Application) -> None:
+    """Start heartbeat + proactive orchestra scheduler (Agent v4)."""
+    import asyncio
+
+    async def _heartbeat_loop() -> None:
+        from scheduler import write_heartbeat
+
+        while True:
+            write_heartbeat()
+            await asyncio.sleep(60)
+
+    try:
+        from scheduler import write_heartbeat
+
+        write_heartbeat()
+        app.create_task(_heartbeat_loop(), name="heartbeat")
+    except Exception as exc:
+        log.debug("Heartbeat not started: %s", exc)
+    try:
+        from scheduler import start_scheduler
+
+        await start_scheduler(app)
+    except Exception as exc:
+        log.warning("Scheduler not started: %s", exc)
+
+
 def build_app() -> Application:
     if not settings.has_telegram:
         raise RuntimeError(
             "TELEGRAM_BOT_TOKEN is not set. Copy .env.example to .env and add your token."
         )
-    app = Application.builder().token(settings.telegram_bot_token).build()
+    app = Application.builder().token(settings.telegram_bot_token).post_init(_post_init).build()
 
     report_conv = ConversationHandler(
         entry_points=[CommandHandler("report", report_start)],

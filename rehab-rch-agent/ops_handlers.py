@@ -738,6 +738,211 @@ async def equip_add_sev(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 
 # ----------------------------------------------------------------------------
+# /register — self-provisioning (+ admin /approve)
+# ----------------------------------------------------------------------------
+(R_NAME, R_UNIT) = range(140, 142)
+
+
+async def register_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """/register works WITHOUT prior auth — it IS the enrollment."""
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "📲 *Register for Rehab RCH alerts*\n\n"
+        "Full name exactly as in Staff_Register?\n(/cancel to stop)")
+    return R_NAME
+
+
+async def register_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = get_ops_db()
+    assert db is not None
+    name = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if not db.find_staff(name) and not any(
+            _s2(s.get("Name")) == _s2(name) for s in db.staff()):
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"'{name}' is not in Staff_Register. Check spelling or ask your "
+            f"supervisor to add you, then try again.")
+        return ConversationHandler.END
+    context.user_data["reg_name"] = next(
+        _s2(s.get("Name")) for s in db.staff()
+        if _s2(s.get("Name")) == _s2(name) or _s2(name) in _s2(s.get("Name")))
+    await update.message.reply_text("Your unit? (U01–U08 or name)")  # type: ignore[union-attr]
+    return R_UNIT
+
+
+def _s2(value) -> str:
+    return str(value or "").strip()
+
+
+async def register_unit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = get_ops_db()
+    assert db is not None
+    unit = db.resolve_unit(update.message.text or "")  # type: ignore[union-attr]
+    if unit is None:
+        await update.message.reply_text("Unknown unit — reply U01–U08 or the unit name.")  # type: ignore[union-attr]
+        return R_UNIT
+    user = update.effective_user
+    assert user is not None
+    name = context.user_data.get("reg_name", "")
+    existing = [r for r in db.telegram_users(active_only=False)
+                if _s2(r.get("Staff_Name")).lower() == name.lower()]
+    already_active = existing and _s2(existing[0].get("Active")).lower() in {
+        "true", "yes", "active", "1", "y"}
+    db.upsert_telegram_user(
+        name, unit["Unit_ID"], f"@{user.username}" if user.username else "",
+        str(user.id), active="TRUE" if already_active else "FALSE")
+    from auth import staff_auth as _auth
+    _auth.reload()  # pick up chat-id changes immediately
+    if already_active:
+        audit.log("user_reregistered", user.id, name,
+                  f"unit={unit['Unit_ID']} chat updated")
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"✅ {name}, your Telegram chat is updated — alerts will reach you here.")
+    else:
+        audit.log("user_registered", user.id, name, f"unit={unit['Unit_ID']} pending")
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"✅ Registered, {name} — *pending admin approval*.\n"
+            f"You'll get a message once approved. (Your chat ID: `{user.id}`)")
+        # Nudge configured bot admins (best-effort).
+        try:
+            from config import settings as _settings
+            for admin_id in _settings.telegram_admin_ids:
+                await context.bot.send_message(
+                    chat_id=int(admin_id),
+                    text=f"📲 Approval needed: {name} ({unit['Unit_ID']}) "
+                         f"registered. Approve: /approve {name}")
+        except Exception as exc:
+            log.debug("Admin nudge skipped: %s", exc)
+    context.user_data.clear()
+    return ConversationHandler.END
+
+
+async def cmd_approve(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    if not is_admin(update.effective_user.id):  # type: ignore[union-attr]
+        await update.message.reply_text("🔒 Admins only.")  # type: ignore[union-attr]
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    name = " ".join(context.args or []).strip()
+    if not name:
+        pending = db.pending_telegram_users()
+        if not pending:
+            await update.message.reply_text("No pending registrations. ✅")  # type: ignore[union-attr]
+            return
+        lines = ["📲 *Pending approvals:*"]
+        for r in pending:
+            lines.append(f"• {r.get('Staff_Name')} ({r.get('Unit')}) — "
+                         f"/approve {r.get('Staff_Name')}")
+        await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+        return
+    if not db.set_user_active(name, True):
+        await update.message.reply_text(f"No Telegram_Users row for '{name}'.")  # type: ignore[union-attr]
+        return
+    from auth import staff_auth as _auth
+    _auth.reload()
+    audit.log("user_approved", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update), f"approved={name}")
+    await update.message.reply_text(f"✅ {name} approved.")  # type: ignore[union-attr]
+    try:  # tell the user they're live
+        chat = db.chat_id_for(name)
+        if chat:
+            await context.bot.send_message(
+                chat_id=int(chat),
+                text=f"✅ {name}, you're approved! Send /briefing to start, "
+                     f"/help for all commands.")
+    except Exception as exc:
+        log.debug("Approval DM skipped: %s", exc)
+
+
+# ----------------------------------------------------------------------------
+# /digest — personal ops slice · /watchdog — run tick now · /schedule
+# ----------------------------------------------------------------------------
+async def cmd_digest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    from datetime import date as _date
+    today = _date.today()
+    my = [s for s in db.staff() if _s2(s.get("Name")).lower() == staff.name.lower()]
+    my_unit = db.resolve_unit(my[0].get("Unit", "")) if my else None
+    uid = str(my_unit.get("Unit_ID")).upper() if my_unit else ""
+    lines = [f"📌 *Your digest — {today:%d %b %Y}*"]
+    if my_unit:
+        reps = [r for r in db.supervisor_reports(today)
+                if (db.resolve_unit(str(r.get("Unit", ""))) or {}).get("Unit_ID") == uid]
+        if reps:
+            r = reps[0]
+            lines.append(f"🏥 {uid}: {r.get('Readiness')} | present {r.get('Present')} | "
+                         f"attendance {r.get('Attendance_Rate')}%")
+        else:
+            lines.append(f"🏥 {uid}: no supervisor report filed yet today.")
+    filed = any(_s2(r.get("Staff_Name")).lower() == staff.name.lower()
+                for r in db.staff_reports(today))
+    lines.append(f"📝 Your /daily report: {'filed ✅' if filed else 'MISSING ❌ — file with /daily'}")
+    mine = [r for r in db.open_actions()
+            if staff.name.lower() in _s2(r.get("Owner")).lower()]
+    if mine:
+        lines.append(f"📌 Your open actions ({len(mine)}):")
+        for r in mine[:5]:
+            lines.append(f"• {r.get('Action_ID')} — {r.get('Title')} (due {r.get('Due_Date')})")
+    if my_unit:
+        issues = [r for r in db.open_equipment_issues()
+                  if str(r.get("Unit", "")).upper() == uid]
+        if issues:
+            lines.append(f"🔧 {uid} open equipment ({len(issues)}):")
+            for r in issues[:4]:
+                lines.append(f"• {r.get('Equipment')}: {r.get('Issue')} ({r.get('Severity')})")
+    await _send_long(update, "\n".join(lines))
+
+
+async def cmd_watchdog(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Admin: run gap scan + watchdog tick immediately and deliver here."""
+    staff = await _me(update)
+    if staff is None:
+        return
+    if not is_admin(update.effective_user.id):  # type: ignore[union-attr]
+        await update.message.reply_text("🔒 Admins only.")  # type: ignore[union-attr]
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    from agents import Orchestrator  # lazy
+    from scheduler import tz_now  # lazy
+
+    await update.message.reply_text("🛰️ Running gap scan + watchdog…")  # type: ignore[union-attr]
+    outbox = Orchestrator(db).tick(tz_now(), ["gaps", "watchdog"])
+    if not outbox:
+        await update.message.reply_text("✅ No findings — all quiet.")  # type: ignore[union-attr]
+        return
+    lines = [f"🛰️ *{len(outbox)} routed alert(s)* (also sent to owners):"]
+    for m in outbox[:12]:
+        first = m.text.splitlines()[0][:90]
+        lines.append(f"• [{m.level}/{m.meta.get('severity')}] → {m.meta.get('to')}: {first}")
+    if len(outbox) > 12:
+        lines.append(f"_+{len(outbox) - 12} more_")
+    await _send_long(update, "\n".join(lines))
+    from messenger import TelegramMessenger  # lazy
+    messenger = TelegramMessenger(context.bot)
+    for m in outbox:
+        await messenger.send(m)
+
+
+async def cmd_schedule(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    from scheduler import describe_schedule  # lazy
+    await update.message.reply_text(describe_schedule())  # type: ignore[union-attr]
+
+
+# ----------------------------------------------------------------------------
 # Registration (called from bot.py — keeps bot.py diff to 2 lines)
 # ----------------------------------------------------------------------------
 def register_ops_handlers(app) -> None:
@@ -797,6 +1002,19 @@ def register_ops_handlers(app) -> None:
     app.add_handler(CommandHandler("equipment", cmd_equipment))
     app.add_handler(CommandHandler("datahealth", cmd_datahealth))
     app.add_handler(CommandHandler("setup", cmd_setup))
+    app.add_handler(CommandHandler("approve", cmd_approve))
+    app.add_handler(CommandHandler("digest", cmd_digest))
+    app.add_handler(CommandHandler("watchdog", cmd_watchdog))
+    app.add_handler(CommandHandler("schedule", cmd_schedule))
+    register_conv = ConversationHandler(
+        entry_points=[CommandHandler("register", register_start)],
+        states={
+            R_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_name)],
+            R_UNIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, register_unit)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
+    app.add_handler(register_conv)
     app.add_handler(daily_conv)
     app.add_handler(sup_conv)
     app.add_handler(action_conv)
