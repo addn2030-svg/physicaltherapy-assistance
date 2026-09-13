@@ -5,11 +5,12 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-# Adjust user + paths to your Oracle Cloud VM:
+# Template paths for user 'ubuntu' + default clone location.
+# scripts/setup_oracle.sh rewrites User/paths for your VM automatically.
 User=ubuntu
-WorkingDirectory=/home/ubuntu/rehab-rch-agent
-EnvironmentFile=/home/ubuntu/rehab-rch-agent/.env
-ExecStart=/home/ubuntu/rehab-rch-agent/.venv/bin/python /home/ubuntu/rehab-rch-agent/bot.py
+WorkingDirectory=/home/ubuntu/physicaltherapy-assistance/rehab-rch-agent
+EnvironmentFile=/home/ubuntu/physicaltherapy-assistance/rehab-rch-agent/.env
+ExecStart=/home/ubuntu/physicaltherapy-assistance/rehab-rch-agent/.venv/bin/python /home/ubuntu/physicaltherapy-assistance/rehab-rch-agent/bot.py
 Restart=always
 RestartSec=10
 StandardOutput=journal

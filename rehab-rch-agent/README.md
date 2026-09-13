@@ -250,8 +250,8 @@ Best free option: **Oracle Cloud Free Tier**. Full guide: [DEPLOY_ORACLE.md](DEP
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip git -y
-git clone https://github.com/<yourname>/rehab-rch-agent.git
-cd rehab-rch-agent && bash scripts/setup_oracle.sh
+git clone https://github.com/addn2030-svg/physicaltherapy-assistance.git
+cd physicaltherapy-assistance/rehab-rch-agent && bash scripts/setup_oracle.sh
 sudo systemctl enable rehab-agent   # auto-restart on reboot
 ```
 

@@ -48,7 +48,8 @@ class GeminiClient:
     """Thin wrapper around google-generativeai with safe defaults."""
 
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None) -> None:
-        self.api_key = api_key or settings.gemini_api_key
+        # Explicit "" forces demo mode (used by tests); None falls back to env.
+        self.api_key = settings.gemini_api_key if api_key is None else api_key
         self.model_name = model or settings.gemini_model
         self._model = None
         if self.api_key:

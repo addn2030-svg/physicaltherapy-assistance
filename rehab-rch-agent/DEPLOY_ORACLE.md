@@ -1,78 +1,84 @@
-# 24/7 Hosting — Oracle Cloud Free Tier
+# Go Live — Oracle Cloud Free Tier (24/7, $0/month)
 
 Best free option: Oracle Cloud **Always Free** VM (Ampere A1 or E2 Micro),
 Ubuntu 22.04/24.04. Estimated cost: **$0/month** for department usage.
 
-## 1. Create the VM
+> Why Oracle and not "one click" here? The bot needs outbound access to
+> `api.telegram.org` and Google APIs. Any normal server or laptop works;
+> Oracle's free tier is simply the best always-on free home for it.
+
+## 0. Collect 3 secrets (5 min, on your phone/laptop)
+
+1. **Telegram token** — message [@BotFather](https://t.me/BotFather) → `/newbot` →
+   name it `Rehab RCH Agent` → copy the `123456:AAH...` token.
+2. **Gemini key** — https://aistudio.google.com/app/apikey → Create API key → copy.
+3. **Your Telegram ID** — message [@userinfobot](https://t.me/userinfobot) → copy the number.
+
+⛔ Paste secrets **only** into `.env` on your server. Never into chat, email, or GitHub.
+
+## 1. Create the VM (10 min)
+
 1. Sign up at https://cloud.oracle.com (Always Free account).
 2. Compute → Create Instance:
    - Image: **Ubuntu 22.04** (or 24.04)
    - Shape: **Ampere A1** (free: up to 4 OCPU / 24 GB) or E2 Micro
-   - Add your SSH public key.
+   - Add your SSH public key (or choose "paste public key" and generate one).
 3. Note the public IP.
 
-## 2. First login
-```bash
-ssh ubuntu@<VM-PUBLIC-IP>
-sudo apt update && sudo apt upgrade -y
-sudo apt install python3 python3-pip python3-venv git -y
-```
+## 2. Go live (10 min — copy/paste runbook)
 
-## 3. Clone + install
 ```bash
-git clone https://github.com/<yourname>/rehab-rch-agent.git
-cd rehab-rch-agent
+# --- on the VM ---
+ssh ubuntu@<VM-PUBLIC-IP>
+
+git clone https://github.com/addn2030-svg/physicaltherapy-assistance.git
+cd physicaltherapy-assistance/rehab-rch-agent
+git checkout arena/01a09ac7-physicaltherapy-assistance   # until merged to main
 bash scripts/setup_oracle.sh
 ```
 
-Or manually:
-```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-cp .env.example .env
-nano .env   # TELEGRAM_BOT_TOKEN, GEMINI_API_KEY, STAFF_SHEET_ID...
-```
+The script installs everything, runs the 26-test self-check, and registers
+the auto-restart service. Then:
 
-Copy credentials:
 ```bash
-# from your laptop:
-scp credentials.json ubuntu@<VM-IP>:~/rehab-rch-agent/
-scp staff_allowlist.json ubuntu@<VM-IP>:~/rehab-rch-agent/   # if not using Sheets
-```
+nano .env
+# Set exactly these 3 lines (no spaces around =):
+#   TELEGRAM_BOT_TOKEN=123456:AAH...
+#   GEMINI_API_KEY=AIza...
+#   ALLOWED_TELEGRAM_IDS=123456789     (your Telegram ID; comma-separated for more staff)
 
-Copy knowledge files:
-```bash
-scp SOP.pdf "Department Guideline.docx" ubuntu@<VM-IP>:~/rehab-rch-agent/knowledge/
-```
-
-## 4. Test run
-```bash
 .venv/bin/python bot.py
-# In Telegram: /start → welcome. Ctrl+C to stop.
+# Now send /start to your bot in Telegram. Welcome message = LIVE. Ctrl+C to stop the test.
+
+sudo systemctl start rehab-agent          # 24/7 mode
+sudo journalctl -u rehab-agent -f         # watch live logs
 ```
 
-## 5. Run 24/7 with systemd (auto-restart on reboot/crash)
-```bash
-sudo cp systemd/rehab-agent.service /etc/systemd/system/rehab-agent.service
-sudo systemctl daemon-reload
-sudo systemctl enable rehab-agent
-sudo systemctl start rehab-agent
-sudo systemctl status rehab-agent
-sudo journalctl -u rehab-agent -f   # live logs
-```
+The bot now runs 24/7 and **automatically restarts** after reboots, crashes,
+or power outages. Add more staff anytime: append their Telegram IDs to
+`ALLOWED_TELEGRAM_IDS` and `sudo systemctl restart rehab-agent`.
 
-The bot automatically restarts after power outages, reboots, or updates.
+## 3. Later upgrades (optional, no code changes)
 
-## 6. Updates
+- **Google Drive auto-save + Sheets auth:** follow [docs/GOOGLE_SETUP.md](docs/GOOGLE_SETUP.md),
+  copy `credentials.json` to the folder (`scp credentials.json ubuntu@<VM-IP>:~/physicaltherapy-assistance/rehab-rch-agent/`),
+  set `STAFF_SHEET_ID` in `.env`, restart the service.
+- **Approved SOPs:** copy files into `knowledge/` (or Drive Knowledge Base folder), then `/kb reload` in Telegram.
+- **Pre-launch gate:** work through [docs/PRELAUNCH_CHECKLIST.md](docs/PRELAUNCH_CHECKLIST.md)
+  (adversarial PHI tests, approvals, pilot testers).
+
+## 4. Operate
+
 ```bash
-cd ~/rehab-rch-agent
-git pull
-.venv/bin/pip install -r requirements.txt
-sudo systemctl restart rehab-agent
+sudo systemctl status rehab-agent     # health
+sudo journalctl -u rehab-agent -n 100 # recent logs
+cd ~/physicaltherapy-assistance/rehab-rch-agent && git pull && .venv/bin/pip install -r requirements.txt && sudo systemctl restart rehab-agent  # update
 ```
 
 ## Security checklist
-- [ ] `.env`, `credentials.json` present on VM, never committed to GitHub
-- [ ] VM firewall: outbound HTTPS only needed (Telegram/Google); no inbound ports required for polling
-- [ ] `sudo apt upgrade` monthly; `systemctl status rehab-agent` after reboot
-- [ ] Staff offboarding: remove row from the access Sheet (takes effect on next `/start` after `/kb reload` or restart)
+
+- [ ] `.env`, `credentials.json` on the VM only, never committed to GitHub
+- [ ] GitHub repository set to **private**
+- [ ] VM firewall: outbound HTTPS only needed (Telegram/Google polling — no inbound ports required)
+- [ ] `sudo apt upgrade` monthly; verify `systemctl status rehab-agent` after reboot
+- [ ] Staff offboarding: remove their ID from `.env` (or set `Status=Suspended` in the Sheet) + restart

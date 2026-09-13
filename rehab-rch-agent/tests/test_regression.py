@@ -15,8 +15,9 @@ from gemini_client import GeminiClient
 from knowledge_base import KnowledgeBase, coverage_label, tokenize
 
 
-def test_kb_context_with_phi_words_does_not_block():
-    gemini = GeminiClient(api_key="")  # force demo mode
+def test_kb_context_with_phi_words_does_not_block(monkeypatch):
+    monkeypatch.setattr("config.settings.gemini_api_key", "")  # hermetic: ignore local .env
+    gemini = GeminiClient()  # no key -> demo mode
     assert gemini.demo_mode
     out = gemini.generate(
         "What is the process for equipment request?",
