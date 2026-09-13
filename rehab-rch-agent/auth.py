@@ -233,6 +233,28 @@ class StaffAuth:
             return False
 
 
+def is_private_chat(update) -> bool:
+    """True only for one-to-one private chats (staff-only policy).
+
+    Groups, supergroups, channels, and missing chats are all rejected —
+    department data must never render where non-staff can see it.
+    """
+    chat = getattr(update, "effective_chat", None)
+    return getattr(chat, "type", "") == "private"
+
+
+def check_enroll_code(provided: str) -> bool:
+    """Validate the staff enrollment code for /register.
+
+    Fail-closed: when ENROLL_CODE is not configured, registration is
+    closed (returns False) until the Section Head sets a code.
+    """
+    expected = (settings.enroll_code or "").strip()
+    if not expected:
+        return False
+    return (provided or "").strip() == expected
+
+
 # Singleton used by bot.py
 staff_auth = StaffAuth()
 

@@ -51,10 +51,12 @@ therapist → unit supervisor → section head → higher admin
 
 ## Provisioning flow
 
-1. Staff send `/register` → name + unit → row in `Telegram_Users`
-   (`Active=FALSE`, pending).
+1. Staff send `/register <code>` (code from supervisors) → name + unit →
+   row in `Telegram_Users` (`Active=FALSE`, pending, **zero access**).
 2. Admins get a nudge → `/approve` lists pending → `/approve <name>`.
 3. User gets a ✅ DM and can immediately use the bot + receive alerts.
+4. Full policy: `docs/SECURITY.md` (private chats only, BotFather group
+   block, offboarding checklist).
 4. Offboard: set `Active=FALSE` in the sheet (or `/approve` only approves —
    suspension is a sheet edit), access drops on next message.
 

@@ -30,6 +30,9 @@ generates operational reports, searches approved documents, and
   out-of-scope answers are labelled general guidance and flagged for human review
 - 🔐 **Access review** — `Status` + `Valid Until` columns suspend/expire staff
   without deleting rows
+- 🛡️ **Staff-only lockdown** — private chats enforced (bot auto-leaves
+  groups), code-gated `/register` + admin approval, hourly access refresh.
+  Policy: [docs/SECURITY.md](docs/SECURITY.md)
 
 ## Architecture
 

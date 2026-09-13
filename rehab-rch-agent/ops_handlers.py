@@ -50,7 +50,13 @@ log = logging.getLogger("ops")
 # Shared helpers
 # ----------------------------------------------------------------------------
 async def _me(update: Update):
-    """Authorized staff member or None (with denial reply + audit)."""
+    """Authorized staff member or None (private staff chats only)."""
+    from auth import is_private_chat  # local: staff-only gate
+
+    if not is_private_chat(update):
+        audit.log("group_blocked", getattr(update.effective_user, "id", "?"),
+                  "", "flow=ops")
+        return None  # silent in groups/channels: no data, no hints
     user = update.effective_user
     if user is None or not staff_auth.is_authorized(user.id):
         audit.log("auth_denied", getattr(user, "id", "?"),
@@ -744,7 +750,19 @@ async def equip_add_sev(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 
 async def register_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """/register works WITHOUT prior auth — it IS the enrollment."""
+    """/register <code> — code-gated self-enrollment (no prior auth needed)."""
+    from auth import check_enroll_code, is_private_chat  # local: staff-only gates
+
+    if not is_private_chat(update):
+        return ConversationHandler.END  # silent outside private chats
+    code = " ".join(context.args or []).strip()
+    if not check_enroll_code(code):
+        audit.log("enroll_denied", getattr(update.effective_user, "id", "?"),
+                  getattr(update.effective_user, "full_name", ""))
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "🔒 Registration requires a staff enrollment code.\n\n"
+            "Ask your supervisor for the code, then send:\n/register <code>")
+        return ConversationHandler.END
     db = await _db_or_msg(update)
     if db is None:
         return ConversationHandler.END

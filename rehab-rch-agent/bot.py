@@ -148,6 +148,20 @@ def authorized_only(handler: Callable) -> Callable:
 
     @wraps(handler)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs):
+        from auth import is_private_chat  # local: staff-only gate
+
+        if not is_private_chat(update):
+            # Staff-only bot: never operate in groups/channels. Stay silent
+            # (no data, no hints) and leave the chat.
+            chat = update.effective_chat
+            audit.log("group_blocked", getattr(update.effective_user, "id", "?"),
+                      "", f"chat_type={getattr(chat, 'type', '?')}")
+            try:
+                if chat is not None:
+                    await context.bot.leave_chat(chat.id)
+            except Exception:
+                pass
+            return ConversationHandler.END if "END" in str(handler) else None
         user = update.effective_user
         if user is None or not staff_auth.is_authorized(user.id):
             log.warning("Denied access for telegram_id=%s", getattr(user, "id", "?"))
@@ -652,6 +666,16 @@ def build_app() -> Application:
 
 
 def main() -> None:
+    try:  # staff-only: secrets file must not be world-readable
+        import os as _os
+        import stat as _stat
+
+        if _os.stat(settings.base_dir / ".env").st_mode & (_stat.S_IROTH | _stat.S_IWOTH):
+            log.warning("INSECURE: .env is world-readable — run: chmod 600 .env")
+    except FileNotFoundError:
+        pass
+    except Exception as exc:
+        log.debug("Permission check skipped: %s", exc)
     log.info("Starting Rehab RCH Agent v2 | dept=%s | kb_files=%d | gemini_demo=%s | drive_demo=%s",
              settings.department_name, len(kb.files_indexed), gemini.demo_mode, drive.demo_mode)
     log.info("Staff source=%s count=%d active=%d", staff_auth.source, staff_auth.count(),

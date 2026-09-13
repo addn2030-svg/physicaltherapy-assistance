@@ -46,6 +46,7 @@ class Settings:
     # -- Telegram ---------------------------------------------------------
     telegram_bot_token: str = field(default_factory=lambda: _env("TELEGRAM_BOT_TOKEN"))
     telegram_admin_ids: list[str] = field(default_factory=lambda: _env_list("TELEGRAM_ADMIN_IDS"))
+    enroll_code: str = field(default_factory=lambda: _env("ENROLL_CODE"))
 
     # -- Gemini -----------------------------------------------------------
     gemini_api_key: str = field(default_factory=lambda: _env("GEMINI_API_KEY"))

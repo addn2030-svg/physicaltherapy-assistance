@@ -12,6 +12,9 @@ Status key: ✅ built in repo · 🔧 human action required before launch.
 - [ ] ✅ PHI blocking rules implemented → `safety.py`; test with adversarial prompts below
 - [ ] 🔧 Oracle Cloud Ubuntu instance running + systemd service enabled → [DEPLOY_ORACLE.md](../DEPLOY_ORACLE.md)
 - [ ] 🔧 GitHub repository set to **private**
+- [ ] 🔧 BotFather: `/setjoingroups` DISABLED for the bot (staff-only)
+- [ ] 🔧 `ENROLL_CODE` set in `.env`, shared with supervisors only
+- [ ] 🔧 `chmod 600 .env credentials.json` on the server
 
 ## Knowledge base governance
 - [ ] 🔧 Approved documents uploaded to `knowledge/` (SOP, guidelines, structure, contacts)

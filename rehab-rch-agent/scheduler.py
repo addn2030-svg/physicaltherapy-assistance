@@ -142,11 +142,21 @@ async def _tick(app, last: dict[str, datetime]) -> None:
 
 async def _loop(app) -> None:
     last: dict[str, datetime] = {}
+    ticks = 0
     log.info("Proactive scheduler started (tz=%s).", settings.sched_tz)
     while True:
         try:
             write_heartbeat()
             await _tick(app, last)
+            ticks += 1
+            if ticks % 60 == 0:
+                # Hourly access refresh: suspensions/offboarding apply ≤60 min.
+                from audit import audit
+                from auth import staff_auth
+
+                n = staff_auth.reload()
+                audit.log("auth_refresh", "", "",
+                          f"staff={n} active={staff_auth.active_count()}")
         except Exception as exc:
             log.exception("Scheduler tick failed: %s", exc)
         await asyncio.sleep(60)
