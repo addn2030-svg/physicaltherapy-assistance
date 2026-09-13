@@ -254,7 +254,7 @@ var, then local `staff_allowlist.json` (see `staff_allowlist.example.json`).
 cd rehab-rch-agent
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # add TELEGRAM_BOT_TOKEN + GEMINI_API_KEY
+python setup_wizard.py   # answers a few questions, creates .env for you
 python bot.py
 ```
 
