@@ -313,6 +313,14 @@ to the sheet and optionally fanned out by **email** (any SMTP provider)
 and **Google Calendar** (same service account as Drive) — both off by
 default until configured. Setup: [docs/COMMS.md](docs/COMMS.md)
 
+## Notes archive (Agent v4.3)
+
+Memos, agendas, evaluation digests, and weekly summaries are auto-saved
+as tagged Markdown notes — browseable in Obsidian (open `output/notes/`
+as a vault, or set `NOTES_VAULT_PATH`) and mirrored to Drive under
+`Notes/...`. Sheet stays the live database; notes are the readable
+archive. No setup needed.
+
 ## Before launch
 
 Work through [docs/PRELAUNCH_CHECKLIST.md](docs/PRELAUNCH_CHECKLIST.md):

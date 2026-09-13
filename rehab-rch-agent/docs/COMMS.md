@@ -42,3 +42,20 @@ Event IDs are stored back (`Calendar_Event_ID` columns).
 
 Without these, the bot replies "not connected" and continues normally —
 nothing breaks, nothing is retried silently.
+
+## Notes archive (v4.3: Obsidian vault + Drive)
+
+Every memo, agenda, evaluation digest, and weekly summary is also saved
+as a Markdown note with tags + id + date, in two places:
+
+1. **Local vault** — `output/notes/` on the server (or set
+   `NOTES_VAULT_PATH=` to any folder). Open that folder in
+   [Obsidian](https://obsidian.md/) via "Open folder as vault" to
+   browse/search/link everything. Tip: point it at a cloud-synced
+   folder (OneDrive/Drive-Desktop/iCloud) to read notes on your phone.
+2. **Google Drive** — `Notes/Memos|Agendas|Evaluations|Weekly/YYYY/Month`
+   (same service account as reports; set `NOTES_DRIVE_UPLOAD=false`
+   to keep notes local-only).
+
+No setup needed — archiving starts on the next memo/agenda/evaluation.
+Sheet stays the live database; notes are the readable archive.

@@ -480,6 +480,12 @@ class ReportAgent:
             body += f"\n\nArchived: {res.get('filename')}"
         except Exception as exc:
             log.warning("Weekly archive failed: %s", exc)
+        try:
+            from notes_export import archive_note, render_weekly_note  # lazy
+            archive_note("weekly", f"{week_tag}.md",
+                         render_weekly_note(week_tag, body))
+        except Exception as exc:
+            log.warning("Weekly note archive skipped: %s", exc)
 
         return [
             Alert(key=f"weekly:{week_tag}:head", severity="info", level="head",
@@ -643,6 +649,11 @@ class EvaluationAgent:
         from staff_eval import (format_head_summary, format_unit_digest,
                                 month_label, month_range, previous_month,
                                 run_monthly_evaluation)
+        try:
+            from notes_export import (archive_note, render_eval_note,  # lazy
+                                      slug)
+        except Exception:
+            archive_note = None  # type: ignore[assignment]
         year, month = previous_month(ctx.today)
         label = month_label(year, month)
         if ctx.db.evaluations_for(label):
@@ -666,6 +677,9 @@ class EvaluationAgent:
             by_unit.setdefault(str(r.get("Unit", "—")), []).append(r)
         for unit_name, urows in sorted(by_unit.items()):
             digest = format_unit_digest(unit_name, urows)
+            if archive_note:
+                archive_note("evaluations", f"{label} {slug(unit_name)}.md",
+                             render_eval_note(label, unit_name, digest))
             unit = ctx.db.resolve_unit(unit_name)
             uid = str(unit.get("Unit_ID")).upper() if unit else ""
             alerts.append(Alert(
@@ -680,6 +694,9 @@ class EvaluationAgent:
                 except Exception as exc:
                     log.debug("Eval email skipped: %s", exc)
         summary = format_head_summary(rows)
+        if archive_note:
+            archive_note("evaluations", f"{label} head-summary.md",
+                         render_eval_note(label, "all-units", summary))
         alerts.append(Alert(
             key=f"eval:{label}:head", severity="info", level="head",
             title=f"Monthly evaluation summary ({label})",

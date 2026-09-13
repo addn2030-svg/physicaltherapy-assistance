@@ -114,6 +114,12 @@ class Settings:
         default_factory=lambda: _env("CALENDAR_ENABLED", "true").lower() not in {"0", "false", "no"}
     )
 
+    # -- Notes archive (Agent v4.3: Obsidian vault + Drive .md notes) -----------
+    notes_vault_path: str = field(default_factory=lambda: _env("NOTES_VAULT_PATH"))
+    notes_drive_upload: bool = field(
+        default_factory=lambda: _env("NOTES_DRIVE_UPLOAD", "true").lower() not in {"0", "false", "no"}
+    )
+
     # -- Retention / compliance -------------------------------------------
     retention_days: int = field(default_factory=lambda: _env_int("RETENTION_DAYS", 365))
     manifest_file: str = field(

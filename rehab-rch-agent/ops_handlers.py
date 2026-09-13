@@ -53,6 +53,8 @@ from audit import audit
 from auth import is_admin, staff_auth
 from calendar_ops import create_calendar_event
 from mailer import send_staff_email
+from notes_export import (archive_note, render_agenda_note, render_memo_note,
+                          slug)
 from safety import contains_phi
 from sheets_ops import OpsDB, get_ops_db
 from staff_eval import evaluate_staff, format_eval_card, previous_month
@@ -1660,12 +1662,22 @@ async def memo_add_body(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         db, str(data.get("Audience", "")),
         f"Memo: {data.get('Title')}",
         f"{data.get('Title')}\n\n{text}\n\n— {data.get('Author')}")
+    note = archive_note(
+        "memos", f"{date.today().isoformat()} {mid} "
+                 f"{slug(str(data.get('Title', '')))}.md",
+        render_memo_note(mid, str(data.get("Title", "")), text,
+                         str(data.get("Audience", "")),
+                         str(data.get("Author", "")),
+                         date.today().isoformat()))
     audit.log("memo_saved", update.effective_user.id,  # type: ignore[union-attr]
               _staff_name(update), f"id={mid} emailed={emailed}")
     mail = f"📧 Emailed to {emailed} staff." if emailed else \
         "📧 Not emailed (SMTP not configured or no staff emails on file)."
+    note_line = "🗒️ Note archived to Drive + vault." if note["drive_link"] \
+        else ("🗒️ Note saved to vault (Drive not connected)."
+              if note["local"] else "")
     await update.message.reply_text(  # type: ignore[union-attr]
-        f"✅ Memo *{mid}* saved to Memo_Log.\n{mail}\nList: /memos")
+        f"✅ Memo *{mid}* saved to Memo_Log.\n{mail}\n{note_line}\nList: /memos")
     return ConversationHandler.END
 
 
@@ -1756,12 +1768,21 @@ async def agenda_add_items(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     if eid:
         db.b.update_rows("Meeting_Agenda", "Meeting_ID", mid,
                          {"Calendar_Event_ID": eid})
+    note = archive_note(
+        "agendas", f"{data.get('Date')} {mid} "
+                   f"{slug(str(data.get('Title', '')))}.md",
+        render_agenda_note(mid, str(data.get("Title", "")), text,
+                           str(data.get("Attendees", "")),
+                           str(data.get("Date", ""))))
     audit.log("agenda_saved", update.effective_user.id,  # type: ignore[union-attr]
               _staff_name(update), f"id={mid}")
     cal = "📅 Calendar event created." if eid else \
         "📅 Calendar not connected (set GOOGLE_CALENDAR_ID to enable)."
+    note_line = "🗒️ Note archived to Drive + vault." if note["drive_link"] \
+        else ("🗒️ Note saved to vault (Drive not connected)."
+              if note["local"] else "")
     await update.message.reply_text(  # type: ignore[union-attr]
-        f"✅ Agenda *{mid}* saved ({data.get('Date')}).\n{cal}\n"
+        f"✅ Agenda *{mid}* saved ({data.get('Date')}).\n{cal}\n{note_line}\n"
         f"Attendees get a bot nudge the day before. List: /agenda")
     return ConversationHandler.END
 

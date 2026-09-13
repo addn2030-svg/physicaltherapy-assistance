@@ -113,10 +113,12 @@ class DriveClient:
         local_path: Path | str,
         folder_key: str = "Reports/Weekly",
         dated_subfolders: bool = True,
+        mimetype: str = "",
     ) -> dict:
         """Upload a local file to Drive.
 
         Returns dict with keys: ok, demo, drive_link, folder, filename.
+        `mimetype` defaults to .docx, or text/markdown for .md files.
         """
         local_path = Path(local_path)
         filename = local_path.name
@@ -137,11 +139,10 @@ class DriveClient:
             from googleapiclient.http import MediaFileUpload
 
             folder_id = self._ensure_path(folder_key.split("/"), dated_subfolders, filename)
-            media = MediaFileUpload(
-                str(local_path),
-                mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                resumable=True,
-            )
+            if not mimetype:
+                mimetype = ("text/markdown" if local_path.suffix.lower() == ".md"
+                            else "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            media = MediaFileUpload(str(local_path), mimetype=mimetype, resumable=True)
             created = (
                 self._service.files()
                 .create(body={"name": filename, "parents": [folder_id]}, media_body=media, fields="id, webViewLink")
