@@ -56,7 +56,12 @@ effect within 60 minutes without a restart.
 
 - Logged: grants, denials, group blocks, PHI blocks (**reason labels only,
   never message content**), questions (first 120 chars), reports generated,
-  alerts routed, approvals, hourly access refreshes.
+  alerts routed, approvals, leave requests/approvals (IDs + names only),
+  incident logs (**metadata only — ID, unit, type, severity**),
+  hourly access refreshes.
+- Incident rule: `Incident_Reports.Description` is **never** read by the bot
+  and never enters Telegram, logs, or alerts — supervisors complete it in
+  the Sheet. `/incidents` and watchdog pages show metadata only.
 - Stored in: `output/audit/*.jsonl` + Sheet `AuditLog` tab +
   ops `Agent_Audit_Log` tab. Review monthly (`/audit`).
 

@@ -267,10 +267,14 @@ saves) so all Telegram flows are testable for free.
 ## Operations workbook (Agent v3)
 
 Mirror `Rehab_Operations_Master_v2.xlsx` to Google Sheets (11 core tabs +
-8 agent tabs) and the bot becomes your daily operations desk: `/briefing`
-morning rollup, `/daily` + `/supervisor` guided reporting, `/actions` and
-`/equipment` tracking, `/dashboard` KPIs, `/datahealth` quality checks —
-with every event mirrored to the `Agent_Audit_Log` tab.
+8 agent tabs + 3 v4.1 tabs) and the bot becomes your daily operations desk:
+`/briefing` morning rollup, `/daily` + `/supervisor` guided reporting,
+`/actions` and `/equipment` tracking, `/dashboard` KPIs, `/datahealth`
+quality checks — plus v4.1 leave management (`/leave`, `/leave_add`,
+`/leave_approve`), incident logging (`/incidents`, `/incident_add`,
+metadata only), capabilities (`/capability`), policies (`/policies`),
+`/status`, `/whoison`, and `/coverage` — with every event mirrored to the
+`Agent_Audit_Log` tab.
 
 Setup: [docs/SHEETS_OPS.md](docs/SHEETS_OPS.md) · Zero-key preview:
 `python demo_ops.py`

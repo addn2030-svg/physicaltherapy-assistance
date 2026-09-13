@@ -11,6 +11,16 @@ Commands (all require ops-sheet connection + staff auth):
     /units        — units + supervisors
     /datahealth   — data-quality findings (missing roles, chat IDs, ...)
     /setup        — create missing tabs + headers (admins only)
+    /leave        — my leave requests (+ pending approvals for managers)
+    /leave_add    — request leave (guided, → Leave_Tracker as Pending)
+    /leave_approve— approve leave (supervisor/head, own unit only)
+    /incidents    — open incidents, metadata only (details live in sheet)
+    /incident_add — log an incident (guided, metadata only, PHI-screened)
+    /capability   — my/team capability & competency status
+    /policies     — policy register + overdue reviews
+    /status       — my staff record, license, leave, capabilities
+    /whoison      — who is on approved leave today (+ cover status)
+    /coverage     — today's coverage vs minimum staffing
 
 Registered into the bot via :func:`register_ops_handlers` (called from
 bot.py). Number formatting is deterministic — Gemini is never asked to
@@ -44,6 +54,8 @@ log = logging.getLogger("ops")
 (S_UNIT, S_READY, S_STAFF, S_ATTEND, S_DOC, S_EQUIP, S_URGENT) = range(110, 117)
 (A_TITLE, A_OWNER, A_DUE, A_PRIORITY) = range(120, 124)
 (E_UNIT, E_EQUIP, E_ISSUE, E_SEV) = range(130, 134)
+(L_TYPE, L_START, L_END, L_NOTES) = range(140, 144)
+(I_UNIT, I_TYPE, I_SEV, I_ACTION) = range(150, 154)
 
 
 # ----------------------------------------------------------------------------
@@ -961,6 +973,471 @@ async def cmd_schedule(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 # ----------------------------------------------------------------------------
+# v4.1: leave, incidents, capability, policies, status, coverage
+# ----------------------------------------------------------------------------
+def _raw_name(update: Update) -> str:
+    """Plain staff name (no role suffix) for sheet lookups."""
+    try:
+        staff = staff_auth.get_staff(update.effective_user.id)  # type: ignore[union-attr]
+        return staff.name if staff else ""
+    except Exception:
+        return ""
+
+
+def _manages_any(db: OpsDB, staff_name: str) -> bool:
+    """Head or supervisor of at least one unit."""
+    if db.is_head(staff_name):
+        return True
+    return any(db.supervises(staff_name, str(u.get("Unit_ID", "")))
+               for u in db.units())
+
+
+def _requester_unit_id(db: OpsDB, staff_name: str) -> str:
+    want = staff_name.strip().lower()
+    for s in db.staff():
+        if str(s.get("Name", "")).strip().lower() == want:
+            u = db.resolve_unit(str(s.get("Unit", "")))
+            return str(u.get("Unit_ID", "")).upper() if u else ""
+    return ""
+
+
+def _staff_unit_name(db: OpsDB, staff_name: str) -> str:
+    want = staff_name.strip().lower()
+    for s in db.staff():
+        if str(s.get("Name", "")).strip().lower() == want:
+            return str(s.get("Unit", "")) or "—"
+    return "—"
+
+
+async def cmd_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    me = staff.name
+    mine = db.leave_for_staff(me)
+    if not mine:
+        lines = ["🏖️ You have no leave requests on file.",
+                 "", "Request one: /leave_add"]
+    else:
+        lines = [f"🏖️ *Your leave ({len(mine)})*"]
+        for r in mine[-10:]:
+            cover = ""
+            if str(r.get("Status", "")).lower() == "approved":
+                cover = f", cover: {r.get('Coverage_Staff') or '⚠️ none'}"
+            lines.append(f"• {r.get('Leave_ID')} {r.get('Leave_Type')} "
+                         f"{r.get('Start_Date')}→{r.get('End_Date')} — "
+                         f"*{r.get('Status')}*{cover}")
+        lines.append("\n_Request: /leave_add_")
+    if _manages_any(db, me):
+        pend = db.pending_leaves()
+        if pend:
+            lines.append(f"\n⏳ *Pending approvals ({len(pend)})*")
+            for r in pend[:10]:
+                lines.append(f"• {r.get('Leave_ID')} {r.get('Staff_Name')} "
+                             f"{r.get('Leave_Type')} "
+                             f"{r.get('Start_Date')}→{r.get('End_Date')}\n"
+                             f"  /leave_approve {r.get('Leave_ID')} "
+                             f"<cover staff name>")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def leave_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if await _me(update) is None:
+        return ConversationHandler.END
+    if await _db_or_msg(update) is None:
+        return ConversationHandler.END
+    context.user_data["ops_leave"] = {}
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "🏖️ New leave request — type?\n(Annual / Sick / Emergency / Unpaid)")
+    return L_TYPE
+
+
+async def leave_add_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data["ops_leave"]["Leave_Type"] = \
+        (update.message.text or "").strip()[:30]  # type: ignore[union-attr]
+    await update.message.reply_text("Start date? (YYYY-MM-DD)")  # type: ignore[union-attr]
+    return L_START
+
+
+def _parse_ymd(text: str):
+    try:
+        return datetime.strptime(text.strip(), "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+async def leave_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    day = _parse_ymd(update.message.text or "")  # type: ignore[union-attr]
+    if day is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Use YYYY-MM-DD please (e.g. 2026-09-20). Start date?")
+        return L_START
+    context.user_data["ops_leave"]["Start_Date"] = day.isoformat()  # type: ignore[index]
+    await update.message.reply_text("End date? (YYYY-MM-DD)")  # type: ignore[union-attr]
+    return L_END
+
+
+async def leave_add_end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    day = _parse_ymd(update.message.text or "")  # type: ignore[union-attr]
+    start = context.user_data["ops_leave"].get("Start_Date", "")  # type: ignore[index]
+    if day is None or day.isoformat() < start:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"End must be a valid date on/after {start}. End date?")
+        return L_END
+    context.user_data["ops_leave"]["End_Date"] = day.isoformat()  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Notes? (suggested cover, handover — or 'skip')")
+    return L_NOTES
+
+
+async def leave_add_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "leave_notes")
+        return ConversationHandler.END
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    data = context.user_data.get("ops_leave", {})
+    data["Staff_Name"] = _raw_name(update)
+    if not _none(text):
+        data["Notes"] = text[:300]
+    leave_id = db.add_leave_request(data)
+    audit.log("leave_requested", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update), f"id={leave_id} {data.get('Start_Date')}→"
+              f"{data.get('End_Date')}")
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ Leave request *{leave_id}* recorded as Pending.\n"
+        f"{data.get('Leave_Type')} {data.get('Start_Date')}→"
+        f"{data.get('End_Date')} ({data.get('Duration_Days', '?')} days).\n"
+        f"Your supervisor will approve in the Leave_Tracker tab or via "
+        f"/leave_approve.")
+    return ConversationHandler.END
+
+
+async def cmd_leave_approve(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    me = staff.name
+    args = context.args or []
+    if not args:
+        if not _manages_any(db, me):
+            await update.message.reply_text("🔒 Supervisors/head only.")  # type: ignore[union-attr]
+            return
+        pend = [r for r in db.pending_leaves()
+                if db.can_manage(me, _requester_unit_id(db, str(r.get("Staff_Name", ""))))]
+        if not pend:
+            await update.message.reply_text(  # type: ignore[union-attr]
+                "No pending leave requests in your scope. ✅")
+            return
+        lines = ["⏳ *Pending in your scope:*"]
+        for r in pend[:10]:
+            lines.append(f"• {r.get('Leave_ID')} {r.get('Staff_Name')} "
+                         f"{r.get('Leave_Type')} "
+                         f"{r.get('Start_Date')}→{r.get('End_Date')}\n"
+                         f"  /leave_approve {r.get('Leave_ID')} <cover name>")
+        await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+        return
+    leave_id = args[0].strip().upper()
+    coverage = " ".join(args[1:]).strip()[:100]
+    if contains_phi(coverage).blocked:
+        await _phi_block(update, coverage, "leave_approve")
+        return
+    want = leave_id.lower()
+    row = next((r for r in db.b.read_tab("Leave_Tracker")
+                if str(r.get("Leave_ID", "")).strip().lower() == want), None)
+    if row is None:
+        await update.message.reply_text(f"No leave request '{leave_id}'.")  # type: ignore[union-attr]
+        return
+    if str(row.get("Status", "")).lower() != "pending":
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"{leave_id} is already {row.get('Status')}.")
+        return
+    unit_id = _requester_unit_id(db, str(row.get("Staff_Name", "")))
+    if not db.can_manage(me, unit_id):
+        audit.log("leave_approve_denied", update.effective_user.id,  # type: ignore[union-attr]
+                  _staff_name(update), f"id={leave_id}")
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "🔒 You can only approve leave for your own unit.")
+        return
+    db.approve_leave(leave_id, me, coverage)
+    audit.log("leave_approved", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update),
+              f"id={leave_id} staff={row.get('Staff_Name')} cover={coverage or 'none'}")
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ {leave_id} approved for {row.get('Staff_Name')}.\n"
+        f"Cover: {coverage or '⚠️ none named — arrange cover in Leave_Tracker'}.")
+    try:  # tell the requester they're approved
+        chat = db.chat_id_for(str(row.get("Staff_Name", "")))
+        if chat:
+            await context.bot.send_message(
+                chat_id=int(chat),
+                text=f"✅ Your leave {leave_id} "
+                     f"({row.get('Start_Date')}→{row.get('End_Date')}) was "
+                     f"approved by {me}.")
+    except Exception as exc:
+        log.debug("Leave-approval DM skipped: %s", exc)
+
+
+async def cmd_incidents(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    open_ = db.open_incidents()
+    if not open_:
+        await update.message.reply_text("🚨 No open incidents. ✅")  # type: ignore[union-attr]
+        return
+    lines = [f"🚨 *Open incidents ({len(open_)}) — metadata only*"]
+    for r in open_[:15]:
+        m = OpsDB.incident_public(r)
+        icon = "🔴" if m["Severity"].lower() in {"serious", "critical"} else "🟡"
+        lines.append(f"{icon} {m['Incident_ID']} [{m['Severity']}] "
+                     f"{m['Incident_Type']} — {m['Unit']}\n"
+                     f"  {m['Date']} | {m['Status']} | reported by "
+                     f"{m['Reported_By']}")
+    if len(open_) > 15:
+        lines.append(f"_+{len(open_) - 15} more_")
+    lines.append("\n_Details live in the Incident_Reports tab only — "
+                 "never in chat._\n_Log: /incident_add_")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def incident_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if await _me(update) is None:
+        return ConversationHandler.END
+    if await _db_or_msg(update) is None:
+        return ConversationHandler.END
+    context.user_data["ops_inc"] = {}
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "🚨 New incident — which unit? (U01–U08 or unit name)")
+    return I_UNIT
+
+
+async def incident_add_unit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    unit = db.resolve_unit((update.message.text or "").strip())  # type: ignore[union-attr]
+    if unit is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Unknown unit — use U01–U08 or the unit name. Which unit?")
+        return I_UNIT
+    context.user_data["ops_inc"]["Unit"] = unit.get("Unit_ID")  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Type? (Fall / Medication / Equipment / Behavioural / Near-miss / Other)")
+    return I_TYPE
+
+
+async def incident_add_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "incident_type")
+        return ConversationHandler.END
+    context.user_data["ops_inc"]["Incident_Type"] = text[:60]  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Severity? (Minor / Moderate / Serious / Critical)")
+    return I_SEV
+
+
+_SEV_MAP = {"minor": "Minor", "moderate": "Moderate", "serious": "Serious",
+            "critical": "Critical"}
+
+
+async def incident_add_sev(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    sev = _SEV_MAP.get((update.message.text or "").strip().lower())  # type: ignore[union-attr]
+    if sev is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Choose: Minor / Moderate / Serious / Critical.")
+        return I_SEV
+    context.user_data["ops_inc"]["Severity"] = sev  # type: ignore[index]
+    extra = ("\n⚠️ Serious/Critical pages the supervisor + head automatically."
+             if sev in {"Serious", "Critical"} else "")
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Immediate action taken? (operational only — no patient details)" + extra)
+    return I_ACTION
+
+
+async def incident_add_action(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "incident_action")
+        return ConversationHandler.END
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    data = context.user_data.get("ops_inc", {})
+    if not _none(text):
+        data["Immediate_Action"] = text[:300]
+    data["Reported_By"] = _raw_name(update)
+    data["Supervisor_Notified"] = ("Auto" if data.get("Severity")
+                                    in {"Serious", "Critical"} else "No")
+    if "Time" not in data:
+        data["Time"] = datetime.now().strftime("%H:%M")
+    inc_id = db.add_incident(data)
+    audit.log("incident_logged", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update),
+              f"id={inc_id} sev={data.get('Severity')} unit={data.get('Unit')}")
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ Incident *{inc_id}* logged ({data.get('Severity')}).\n"
+        f"A supervisor must complete the Description + follow-up directly in "
+        f"the Incident_Reports tab — full details are never kept in chat.")
+    return ConversationHandler.END
+
+
+async def cmd_capability(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    name = " ".join(context.args or []).strip() or staff.name
+    rows = db.capabilities_for(name)
+    if not rows:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            f"No capability rows for '{name}'.\n"
+            f"Rows are added by supervisors in the Capability_Matrix tab.")
+        return
+    lines = [f"🎓 *Capabilities — {name}*"]
+    for r in rows[:10]:
+        flag = " ⏳ UNVERIFIED" if str(r.get("Verification_Status", "")).lower() \
+            in {"pending_verification", "pending"} else ""
+        lines.append(f"• {r.get('Primary_Capability')} "
+                     f"({r.get('Competency_Level') or 'no level'}){flag}\n"
+                     f"  2nd: {r.get('Secondary_Capability') or '—'} | "
+                     f"assessed: {r.get('Assessment_Date') or '—'} | "
+                     f"expires: {r.get('Expiry_Date') or '—'}")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def cmd_policies(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    rows = db.policies()
+    if not rows:
+        await update.message.reply_text("📜 No policies registered.")  # type: ignore[union-attr]
+        return
+    overdue = {r.get("Policy_ID") for r in db.policies_overdue()}
+    lines = [f"📜 *Policies ({len(rows)})*"]
+    for r in rows[:15]:
+        flag = " 🔴 OVERDUE" if r.get("Policy_ID") in overdue else ""
+        lines.append(f"• {r.get('Policy_ID')} v{r.get('Version')} — "
+                     f"{r.get('Title')}\n"
+                     f"  review due: {r.get('Review_Date') or '—'}{flag} | "
+                     f"owner: {r.get('Owner') or '—'} | {r.get('Status')}")
+    if len(rows) > 15:
+        lines.append(f"_+{len(rows) - 15} more_")
+    lines.append("\n_Full text lives in the Policy_Registry tab._")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def cmd_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    me = staff.name
+    want = me.lower()
+    row = next((s for s in db.staff()
+                if str(s.get("Name", "")).strip().lower() == want), {})
+    today = date.today()
+    on_leave_today = any(str(r.get("Staff_Name", "")).strip().lower() == want
+                         for r in db.on_leave(today))
+    upcoming = [r for r in db.leave_for_staff(me)
+                if str(r.get("Status", "")).lower() == "approved"
+                and str(r.get("End_Date", "")) >= today.isoformat()]
+    caps = db.capabilities_for(me)
+    lines = [f"👤 *{me}*",
+             f"Unit: {_staff_unit_name(db, me)} | "
+             f"Role: {row.get('Role', '—')}",
+             f"Status: {row.get('Status', 'Active') or 'Active'} | "
+             f"Contract: {row.get('Contract_Type', '—') or '—'}",
+             f"License expires: {row.get('License_Expiry', '—') or '—'}",
+             f"On leave today: {'Yes 🏖️' if on_leave_today else 'No'}",
+             f"Upcoming approved leave: {len(upcoming)}",
+             f"Capabilities on file: {len(caps)}"]
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def cmd_whoison(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    rows = db.on_leave(date.today())
+    if not rows:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "🏖️ Nobody on approved leave today. ✅")
+        return
+    lines = [f"🏖️ *On leave today ({len(rows)})*"]
+    for r in rows:
+        name = str(r.get("Staff_Name", ""))
+        cover = (r.get("Coverage_Staff") or "").strip()
+        cover_txt = f"cover: {cover}" if cover else "⚠️ NO COVER"
+        lines.append(f"• {name} ({_staff_unit_name(db, name)}) — "
+                     f"{r.get('Leave_Type')} ({cover_txt})")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def cmd_coverage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    today = date.today()
+    lines = [f"🛡️ *Coverage — {today.isoformat()}*"]
+    cov = db.coverage_on(today)
+    if cov:
+        for r in cov[:8]:
+            st = str(r.get("Coverage_Status", "")).lower()
+            icon = "🔴" if st == "uncovered" else ("🟡" if st == "partial"
+                                                  else "🟢")
+            lines.append(f"{icon} {r.get('Unit')}: {r.get('Coverage_Status')} "
+                         f"(absent: {r.get('Absent_Staff') or '—'}; "
+                         f"covering: {r.get('Covering_Staff') or '—'})")
+    else:
+        lines.append("No Coverage_Log rows for today.")
+    under: list[str] = []
+    for r in db.supervisor_reports(today):
+        unit = db.resolve_unit(str(r.get("Unit", "")))
+        if not unit:
+            continue
+        uid = str(unit.get("Unit_ID")).upper()
+        try:
+            present = int(float(str(r.get("Present", "0")).strip()))
+        except ValueError:
+            continue
+        minimum = db.unit_min_staff(uid)
+        if minimum and present < minimum:
+            under.append(f"• {uid}: {present}/{minimum} present ⚠️")
+    if under:
+        lines.append("\n*Below minimum staffing:*")
+        lines.extend(under[:8])
+    uncovered = db.uncovered_leaves(today)
+    if uncovered:
+        lines.append(f"\n*Approved leave without cover ({len(uncovered)}):*")
+        for r in uncovered[:8]:
+            lines.append(f"• {r.get('Staff_Name')} ({r.get('Leave_ID')})")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+# ----------------------------------------------------------------------------
 # Registration (called from bot.py — keeps bot.py diff to 2 lines)
 # ----------------------------------------------------------------------------
 def register_ops_handlers(app) -> None:
@@ -1024,6 +1501,34 @@ def register_ops_handlers(app) -> None:
     app.add_handler(CommandHandler("digest", cmd_digest))
     app.add_handler(CommandHandler("watchdog", cmd_watchdog))
     app.add_handler(CommandHandler("schedule", cmd_schedule))
+    app.add_handler(CommandHandler("leave", cmd_leave))
+    app.add_handler(CommandHandler("leave_approve", cmd_leave_approve))
+    app.add_handler(CommandHandler("incidents", cmd_incidents))
+    app.add_handler(CommandHandler("capability", cmd_capability))
+    app.add_handler(CommandHandler("policies", cmd_policies))
+    app.add_handler(CommandHandler("status", cmd_status))
+    app.add_handler(CommandHandler("whoison", cmd_whoison))
+    app.add_handler(CommandHandler("coverage", cmd_coverage))
+    leave_conv = ConversationHandler(
+        entry_points=[CommandHandler("leave_add", leave_add_start)],
+        states={
+            L_TYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, leave_add_type)],
+            L_START: [MessageHandler(filters.TEXT & ~filters.COMMAND, leave_add_start)],
+            L_END: [MessageHandler(filters.TEXT & ~filters.COMMAND, leave_add_end)],
+            L_NOTES: [MessageHandler(filters.TEXT & ~filters.COMMAND, leave_add_notes)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
+    incident_conv = ConversationHandler(
+        entry_points=[CommandHandler("incident_add", incident_add_start)],
+        states={
+            I_UNIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, incident_add_unit)],
+            I_TYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, incident_add_type)],
+            I_SEV: [MessageHandler(filters.TEXT & ~filters.COMMAND, incident_add_sev)],
+            I_ACTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, incident_add_action)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
     register_conv = ConversationHandler(
         entry_points=[CommandHandler("register", register_start)],
         states={
@@ -1037,3 +1542,5 @@ def register_ops_handlers(app) -> None:
     app.add_handler(sup_conv)
     app.add_handler(action_conv)
     app.add_handler(equip_conv)
+    app.add_handler(leave_conv)
+    app.add_handler(incident_conv)

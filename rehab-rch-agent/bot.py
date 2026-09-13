@@ -119,6 +119,16 @@ HELP_TEXT = """🏥 *Rehab RCH Agent — Commands*
 /digest — Your personal ops slice
 /watchdog — Run gap scan now (admins only)
 /schedule — Proactive timetable
+/leave — My leave (+ pending for managers)
+/leave_add — Request leave
+/leave_approve — Approve leave (own unit)
+/incidents — Open incidents (metadata only)
+/incident_add — Log an incident
+/capability — Capability & competency status
+/policies — Policy register
+/status — My record, license, leave
+/whoison — Who is on leave today
+/coverage — Coverage vs minimum staffing
 /cancel — Cancel current flow
 
 *Free text:* just ask, e.g.

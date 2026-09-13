@@ -37,9 +37,12 @@ log = logging.getLogger(__name__)
 # ----------------------------------------------------------------------------
 SCHEMAS: dict[str, list[str]] = {
     # -- core workbook ---------------------------------------------------
-    "Units": ["Unit_ID", "Unit_Name", "Supervisor"],
+    "Units": ["Unit_ID", "Unit_Name", "Supervisor",
+              "Min_Staff_Required", "Capacity_Daily"],
     "Supervisors": ["Supervisor", "Area"],
-    "Staff_Register": ["Name", "Unit", "Role"],
+    "Staff_Register": ["Name", "Unit", "Role",
+                       # v4.1 additions (all optional, backward compatible):
+                       "Status", "Contract_Type", "License_Expiry"],
     "Daily_Staff_Reports": [
         "Report_Date", "Staff_Name", "Unit", "Patients_Seen", "New_Cases",
         "Follow_Up_Cases", "Documentation_Status", "Issues",
@@ -60,6 +63,8 @@ SCHEMAS: dict[str, list[str]] = {
     "Capability_Matrix": [
         "Staff_Name", "Primary_Capability", "Secondary_Capability",
         "Verification_Status",
+        # v4.1 additions:
+        "Competency_Level", "Assessment_Date", "Assessor", "Expiry_Date",
     ],
     "Data_Dictionary": ["Key", "Value"],
     "Telegram_Users": [
@@ -89,6 +94,22 @@ SCHEMAS: dict[str, list[str]] = {
     ],
     "Agent_Audit_Log": ["Timestamp", "Event", "Telegram_ID", "Name", "Details"],
     "Knowledge_FAQ": ["Question", "Answer", "Source", "Updated"],
+    # -- v4.1 tabs (from gap-analysis feedback) ------------------------------
+    "Leave_Tracker": [
+        "Leave_ID", "Staff_Name", "Leave_Type", "Start_Date", "End_Date",
+        "Duration_Days", "Status", "Approved_By", "Requested_Date",
+        "Approved_Date", "Coverage_Arranged", "Coverage_Staff", "Notes",
+    ],
+    "Incident_Reports": [
+        # Privacy: bot reads metadata only (never Description/Patient fields).
+        "Incident_ID", "Date", "Time", "Unit", "Reported_By", "Incident_Type",
+        "Severity", "Description", "Immediate_Action", "Supervisor_Notified",
+        "Status", "Resolution_Date", "Closed_By",
+    ],
+    "Policy_Registry": [
+        "Policy_ID", "Title", "Version", "Effective_Date", "Review_Date",
+        "Owner", "Status", "Last_Reviewed_By", "Notes",
+    ],
 }
 
 # Units expected to file a daily supervisor report (U08 = section office).
@@ -426,12 +447,65 @@ def seed_demo_tabs(today: Optional[date] = None) -> dict[str, list[dict[str, str
             {"KPI": "Open Issues", "Value": "2"},
             {"KPI": "Pending Actions", "Value": "3"},
         ],
-        "Capability_Matrix": [],
+        "Capability_Matrix": [
+            {"Staff_Name": "Abdulmajeed Mohammed AlJuraid",
+             "Primary_Capability": "Musculoskeletal PT",
+             "Secondary_Capability": "Home Visit Assessment",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P3", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+            {"Staff_Name": "Shahad Abdullah Albalawi",
+             "Primary_Capability": "Neuro PT",
+             "Secondary_Capability": "Paediatric OT",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P3", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+            {"Staff_Name": "Sumaya Abdullah Al Batook",
+             "Primary_Capability": "Inpatient Rehab",
+             "Secondary_Capability": "Early Mobilization",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P3", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+            {"Staff_Name": "Reem Abdulrazeq",
+             "Primary_Capability": "Speech-Language Therapy",
+             "Secondary_Capability": "Dysphagia Management",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P2", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+            {"Staff_Name": "Maryam Naji Ali",
+             "Primary_Capability": "Occupational Therapy",
+             "Secondary_Capability": "ADL Training",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P2", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+            {"Staff_Name": "Shoug Atallah Alanazi",
+             "Primary_Capability": "Cast Application",
+             "Secondary_Capability": "Splinting",
+             "Verification_Status": "Pending_Verification",
+             "Competency_Level": "P2", "Assessment_Date": "",
+             "Assessor": "", "Expiry_Date": ""},
+        ],
         "Data_Dictionary": [
             {"Key": "Core Therapist", "Value": "Permanent therapist"},
             {"Key": "Tamheer Therapist", "Value": "Tamheer trainee therapist"},
             {"Key": "Core Secretary", "Value": "Permanent secretary"},
             {"Key": "Tamheer Secretary", "Value": "Tamheer trainee secretary"},
+            {"Key": "Contractor", "Value": "Agency/locum therapist on fixed-term contract"},
+            {"Key": "Status: Active", "Value": "Currently working, full access"},
+            {"Key": "Status: Leave", "Value": "On approved leave"},
+            {"Key": "Status: Suspended", "Value": "Access revoked, pending review"},
+            {"Key": "Status: Offboarded", "Value": "Left department, no access"},
+            {"Key": "Competency P1", "Value": "Supervised practice — requires oversight"},
+            {"Key": "Competency P2", "Value": "Independent practice — standard caseload"},
+            {"Key": "Competency P3", "Value": "Advanced/supervisory — can mentor & sign off"},
+            {"Key": "Doc_Status: Complete", "Value": "All notes signed within 24h"},
+            {"Key": "Doc_Status: Incomplete", "Value": "Unsigned notes >24h, triggers escalation"},
+            {"Key": "Doc_Status: Overdue", "Value": "Unsigned notes >48h, supervisor action"},
+            {"Key": "Readiness: Ready", "Value": "Full staffing, equipment functional"},
+            {"Key": "Readiness: Partial", "Value": "1 staff short OR 1 equipment issue"},
+            {"Key": "Readiness: Not Ready", "Value": "2+ staff short OR critical equipment down"},
+            {"Key": "Severity: Critical", "Value": "Immediate danger — alert head now"},
+            {"Key": "Leave: Coverage_Required", "Value": "Approved leave needs named cover"},
         ],
         "Telegram_Users": [
             {"Staff_Name": "Abdulrahman Hawsawi", "Unit": "U08",
@@ -447,6 +521,22 @@ def seed_demo_tabs(today: Optional[date] = None) -> dict[str, list[dict[str, str
             {"Service": "Apps_Script_Webhook", "Value": "",
              "Notes": "Deployment URL"},
             {"Service": "Copilot_Agent_ID", "Value": "", "Notes": "Optional"},
+        ],
+        "Leave_Tracker": [
+            {"Leave_ID": "LV-2026-001", "Staff_Name": "Nouf Mohammed Abduldaim",
+             "Leave_Type": "Annual", "Start_Date": day, "End_Date": day,
+             "Duration_Days": "1", "Status": "Approved",
+             "Approved_By": "Shahad Abdullah Albalawi", "Requested_Date": day,
+             "Approved_Date": day, "Coverage_Arranged": "No",
+             "Coverage_Staff": "", "Notes": "Cover not yet arranged"},
+        ],
+        "Incident_Reports": [],
+        "Policy_Registry": [
+            {"Policy_ID": "POL-001", "Title": "Equipment Request Procedure",
+             "Version": "2.1", "Effective_Date": "2026-01-01",
+             "Review_Date": "2020-06-01", "Owner": "Section Head",
+             "Status": "Active", "Last_Reviewed_By": "",
+             "Notes": "Overdue for scheduled review"},
         ],
         "Announcements_Log": [
             {"Date": day, "Title": "Weekly huddle moved to 09:30",
@@ -642,12 +732,20 @@ class OpsDB:
                 if _norm_date(r.get("Date")) == want]
 
     def missing_staff_reports(self, day: date | str) -> list[str]:
-        """Staff expected to file who have no report for `day`."""
-        reported = {_s(r.get("Staff_Name")).lower() for r in self.staff_reports(day)}
+        """Staff expected to file who have no report for `day`.
+
+        Excludes supervisors/head/secretary roles, non-active staff, and
+        anyone on approved leave that day.
+        """
+        day_d = day if isinstance(day, date) else (_parse_date(day) or date.today())
+        reported = {_s(r.get("Staff_Name")).lower() for r in self.staff_reports(day_d)}
+        on_leave = {_s(r.get("Staff_Name")).lower() for r in self.on_leave(day_d)}
         missing: list[str] = []
         for s in self.staff():
             name = _s(s.get("Name"))
-            if not name or name.lower() in reported:
+            if not name or name.lower() in reported or name.lower() in on_leave:
+                continue
+            if _s(s.get("Status")).lower() not in {"", "active"}:
                 continue
             if STAFF_REPORT_EXCLUDED_ROLES.search(_s(s.get("Role"))):
                 continue
@@ -787,6 +885,187 @@ class OpsDB:
             "Name": name,
             "Details": details[:500],
         })
+
+    # -- v4.1: status, licenses, capabilities ------------------------------------
+    def staff_status(self, name: str) -> str:
+        """Status or 'Active' when the column is empty (backward compatible)."""
+        want = _s(name).lower()
+        for s in self.staff():
+            if _s(s.get("Name")).lower() == want:
+                st = _s(s.get("Status"))
+                return st if st else "Active"
+        return "Unknown"
+
+    def active_staff(self) -> list[dict[str, str]]:
+        return [s for s in self.staff()
+                if _s(s.get("Status")).lower() in {"", "active"}]
+
+    def licenses_expiring(self, days: int = 30) -> list[dict[str, str]]:
+        today = date.today()
+        out = []
+        for s in self.staff():
+            exp = _parse_date(s.get("License_Expiry"))
+            if exp and 0 <= (exp - today).days <= days:
+                out.append(s)
+        return out
+
+    def licenses_expired(self) -> list[dict[str, str]]:
+        today = date.today()
+        return [s for s in self.staff()
+                if (_parse_date(s.get("License_Expiry")) or today) < today
+                and _s(s.get("License_Expiry"))]
+
+    def capabilities_for(self, name: str) -> list[dict[str, str]]:
+        want = _s(name).lower()
+        return [r for r in self.b.read_tab("Capability_Matrix")
+                if _s(r.get("Staff_Name")).lower() == want]
+
+    def competency_expiring(self, days: int = 30) -> list[dict[str, str]]:
+        today = date.today()
+        out = []
+        for r in self.b.read_tab("Capability_Matrix"):
+            exp = _parse_date(r.get("Expiry_Date"))
+            if exp and 0 <= (exp - today).days <= days:
+                out.append(r)
+        return out
+
+    def unit_min_staff(self, unit_id: str) -> int:
+        unit = self.unit_by_id(unit_id)
+        return _num(unit.get("Min_Staff_Required")) if unit else 0
+
+    # -- v4.1: leave ------------------------------------------------------------
+    def _leave_covers(self, row: dict[str, str], day: date) -> bool:
+        if _s(row.get("Status")).lower() != "approved":
+            return False
+        start = _parse_date(row.get("Start_Date"))
+        end = _parse_date(row.get("End_Date")) or start
+        return bool(start and end and start <= day <= end)
+
+    def on_leave(self, day: date | str) -> list[dict[str, str]]:
+        day = day if isinstance(day, date) else (_parse_date(day) or date.today())
+        return [r for r in self.b.read_tab("Leave_Tracker")
+                if self._leave_covers(r, day)]
+
+    def leave_for_staff(self, name: str) -> list[dict[str, str]]:
+        want = _s(name).lower()
+        return [r for r in self.b.read_tab("Leave_Tracker")
+                if _s(r.get("Staff_Name")).lower() == want]
+
+    def pending_leaves(self) -> list[dict[str, str]]:
+        return [r for r in self.b.read_tab("Leave_Tracker")
+                if _s(r.get("Status")).lower() in {"pending", "requested"}]
+
+    def uncovered_leaves(self, day: date | str) -> list[dict[str, str]]:
+        day = day if isinstance(day, date) else (_parse_date(day) or date.today())
+        out = []
+        for r in self.on_leave(day):
+            arranged = _s(r.get("Coverage_Arranged")).lower()
+            if arranged not in {"yes", "true", "arranged", "covered"}:
+                out.append(r)
+        return out
+
+    def next_leave_id(self) -> str:
+        year = date.today().year
+        best = 0
+        for r in self.b.read_tab("Leave_Tracker"):
+            m = re.fullmatch(rf"LV-{year}-(\d+)", _s(r.get("Leave_ID")))
+            if m:
+                best = max(best, int(m.group(1)))
+        return f"LV-{year}-{best + 1:03d}"
+
+    def add_leave_request(self, row: dict[str, str]) -> str:
+        row = dict(row)
+        row.setdefault("Leave_ID", self.next_leave_id())
+        row.setdefault("Requested_Date", date.today().isoformat())
+        row.setdefault("Status", "Pending")
+        start = _parse_date(row.get("Start_Date"))
+        end = _parse_date(row.get("End_Date")) or start
+        if start and end:
+            row["Duration_Days"] = str((end - start).days + 1)
+        self.b.append_row("Leave_Tracker", row)
+        return row["Leave_ID"]
+
+    def approve_leave(self, leave_id: str, approver: str,
+                      coverage_staff: str = "") -> bool:
+        updates: dict[str, str] = {
+            "Status": "Approved", "Approved_By": approver,
+            "Approved_Date": date.today().isoformat(),
+        }
+        if coverage_staff.strip():
+            updates["Coverage_Staff"] = coverage_staff.strip()
+            updates["Coverage_Arranged"] = "Yes"
+        return self.b.update_rows("Leave_Tracker", "Leave_ID", leave_id, updates) > 0
+
+    # -- v4.1: incidents (bot surfaces metadata only) ------------------------------
+    def open_incidents(self) -> list[dict[str, str]]:
+        return [r for r in self.b.read_tab("Incident_Reports")
+                if _s(r.get("Status")).lower() not in {"closed", "resolved"}]
+
+    def serious_incidents(self) -> list[dict[str, str]]:
+        return [r for r in self.open_incidents()
+                if str(r.get("Severity", "")).strip().lower()
+                in {"serious", "3_serious", "critical", "4_critical", "3", "4"}]
+
+    def next_incident_id(self) -> str:
+        year = date.today().year
+        best = 0
+        for r in self.b.read_tab("Incident_Reports"):
+            m = re.fullmatch(rf"INC-{year}-(\d+)", _s(r.get("Incident_ID")))
+            if m:
+                best = max(best, int(m.group(1)))
+        return f"INC-{year}-{best + 1:03d}"
+
+    def add_incident(self, row: dict[str, str]) -> str:
+        row = dict(row)
+        row.setdefault("Incident_ID", self.next_incident_id())
+        row.setdefault("Date", date.today().isoformat())
+        row.setdefault("Status", "Open")
+        self.b.append_row("Incident_Reports", row)
+        return row["Incident_ID"]
+
+    @staticmethod
+    def incident_public(r: dict[str, str]) -> dict[str, str]:
+        """Metadata safe for chat: never Description or patient-linked fields."""
+        return {k: _s(r.get(k)) for k in (
+            "Incident_ID", "Date", "Unit", "Incident_Type", "Severity",
+            "Status", "Reported_By")}
+
+    # -- v4.1: policies ------------------------------------------------------------
+    def policies(self) -> list[dict[str, str]]:
+        return self.b.read_tab("Policy_Registry")
+
+    def policies_overdue(self, today: Optional[date] = None) -> list[dict[str, str]]:
+        today = today or date.today()
+        out = []
+        for r in self.policies():
+            if _s(r.get("Status")).lower() not in {"active", ""}:
+                continue
+            review = _parse_date(r.get("Review_Date"))
+            if review and review < today:
+                out.append(r)
+        return out
+
+    # -- v4.1: minimal RBAC -----------------------------------------------------------
+    def is_head(self, staff_name: str) -> bool:
+        want = _s(staff_name).lower()
+        unit = self.unit_by_id("U08")
+        heads = set()
+        if unit and _s(unit.get("Supervisor")):
+            heads.add(_s(unit.get("Supervisor")).lower())
+        for s in self.supervisors():
+            if _s(s.get("Area")).lower() == "section head":
+                heads.add(_s(s.get("Supervisor")).lower())
+        return want in heads
+
+    def supervises(self, staff_name: str, unit_id: str) -> bool:
+        unit = self.unit_by_id(unit_id)
+        if not unit:
+            return False
+        return _s(unit.get("Supervisor")).lower() == _s(staff_name).lower()
+
+    def can_manage(self, staff_name: str, unit_id: str) -> bool:
+        """Head or the unit's supervisor (used by /leave_approve)."""
+        return self.is_head(staff_name) or self.supervises(staff_name, unit_id)
 
     # -- governance ---------------------------------------------------------------
     def ensure_schema(self) -> dict[str, str]:

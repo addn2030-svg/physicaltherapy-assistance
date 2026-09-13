@@ -181,6 +181,88 @@ class GapAgent:
                 title=f"Overdue action {r.get('Action_ID')}",
                 body=f"{r.get('Title')} — owner: {owner or 'unassigned'}, "
                      f"due {r.get('Due_Date')}."))
+        alerts.extend(self.run_v41(ctx))
+        return alerts
+
+    def run_v41(self, ctx: Ctx) -> list[Alert]:
+        """v4.1 findings: licenses, competency, leave cover, readiness, policy."""
+        alerts: list[Alert] = []
+        day, today = ctx.day, ctx.today
+
+        expiring = ctx.db.licenses_expiring(30)
+        if expiring:
+            alerts.append(Alert(
+                key=f"gap:lic:{day}", severity="info", level="head",
+                title=f"Licenses expiring ≤30d ({len(expiring)})",
+                body="; ".join(f"{s.get('Name')} ({s.get('License_Expiry')})"
+                               for s in expiring[:8])))
+        expired = ctx.db.licenses_expired()
+        if expired:
+            alerts.append(Alert(
+                key=f"gap:licexp:{day}", severity="warning", level="head",
+                title=f"EXPIRED licenses ({len(expired)})",
+                body="; ".join(f"{s.get('Name')} (expired {s.get('License_Expiry')})"
+                               for s in expired[:8]) + "\nRenew immediately."))
+
+        comp = ctx.db.competency_expiring(30)
+        if comp:
+            alerts.append(Alert(
+                key=f"gap:comp:{day}", severity="info", level="head",
+                title=f"Competency assessments expiring ≤30d ({len(comp)})",
+                body="; ".join(f"{r.get('Staff_Name')} ({r.get('Expiry_Date')})"
+                               for r in comp[:8])))
+
+        for r in ctx.db.uncovered_leaves(today):
+            name = str(r.get("Staff_Name", ""))
+            unit = next((s for s in ctx.db.staff()
+                         if str(s.get("Name", "")).lower() == name.lower()), {})
+            u = ctx.db.resolve_unit(str(unit.get("Unit", ""))) if unit else None
+            uid = str(u.get("Unit_ID")).upper() if u else ""
+            alerts.append(Alert(
+                key=f"gap:cover:{day}:{r.get('Leave_ID')}", severity="warning",
+                level="supervisor", unit_id=uid,
+                title=f"Leave with no cover — {name}",
+                body=f"{r.get('Leave_Type')} leave {r.get('Start_Date')}→"
+                     f"{r.get('End_Date')} approved but Coverage_Arranged=No. "
+                     f"Arrange cover in Leave_Tracker."))
+
+        for r in ctx.db.supervisor_reports(today):
+            if str(r.get("Readiness", "")).strip().lower() not in {"not ready", "red"}:
+                continue
+            unit = ctx.db.resolve_unit(str(r.get("Unit", "")))
+            uid = str(unit.get("Unit_ID")).upper() if unit else str(r.get("Unit"))
+            alerts.append(Alert(
+                key=f"gap:notready:{day}:{uid}", severity="warning", level="head",
+                unit_id=uid,
+                title=f"Unit NOT READY — {uid}",
+                body=f"{r.get('Supervisor')}: present {r.get('Present')}, "
+                     f"equipment: {str(r.get('Equipment', ''))[:150]}. "
+                     f"Urgent: {str(r.get('Urgent_Decision', ''))[:150]}"))
+
+        for r in ctx.db.supervisor_reports(today):
+            unit = ctx.db.resolve_unit(str(r.get("Unit", "")))
+            if not unit:
+                continue
+            uid = str(unit.get("Unit_ID")).upper()
+            minimum = ctx.db.unit_min_staff(uid)
+            try:
+                present = int(float(str(r.get("Present", "0")).strip()))
+            except ValueError:
+                continue
+            if minimum and present < minimum:
+                alerts.append(Alert(
+                    key=f"gap:understaff:{day}:{uid}", severity="warning",
+                    level="supervisor", unit_id=uid,
+                    title=f"Understaffed — {uid} ({present}/{minimum} present)",
+                    body="Below Min_Staff_Required. Arrange cover or escalate."))
+
+        overdue = ctx.db.policies_overdue(today)
+        if overdue:
+            alerts.append(Alert(
+                key=f"gap:policy:{day}", severity="info", level="head",
+                title=f"Policies overdue for review ({len(overdue)})",
+                body="; ".join(f"{r.get('Policy_ID')} {r.get('Title')} "
+                               f"(due {r.get('Review_Date')})" for r in overdue[:8])))
         return alerts
 
 
@@ -233,6 +315,19 @@ class WatchdogAgent:
                 body=f"{r.get('Staff_Name')} expired {r.get('Expiry_Date')}. "
                      f"Renew immediately (Training_Tracker).",
                 dedup_hours=24))
+
+        for r in ctx.db.serious_incidents():
+            u = ctx.db.resolve_unit(str(r.get("Unit", "")))
+            uid = str(u.get("Unit_ID")).upper() if u else str(r.get("Unit", ""))
+            meta = OpsDB.incident_public(r)
+            alerts.append(Alert(
+                key=f"watch:inc:{day}:{meta['Incident_ID']}", severity="critical",
+                level="supervisor", unit_id=uid,
+                title=f"{meta['Severity']} incident {meta['Incident_ID']}",
+                body=f"{meta['Incident_Type']} in {meta['Unit']} "
+                     f"({meta['Date']}, status: {meta['Status']}). "
+                     f"Full details in Incident_Reports tab only — "
+                     f"acknowledge and update Status there."))
         return alerts
 
 

@@ -8,8 +8,8 @@ escalate to supervisors → head → higher admin, and auto-generate reports.
 
 | Agent | Job | Produces |
 |---|---|---|
-| GapAgent | Every gap scan | Missing supervisor/staff reports, missing roles, missing Chat IDs, unverified capabilities, ownerless actions, stale equipment (7d+), overdue actions |
-| WatchdogAgent | Every 30 min | CRITICAL equipment, uncovered/partial coverage, due-today actions, expired training |
+| GapAgent | Every gap scan | Missing supervisor/staff reports, missing roles, missing Chat IDs, unverified capabilities, ownerless actions, stale equipment (7d+), overdue actions, **v4.1:** expiring/expired licenses, expiring competency, uncovered leave, Not-Ready units, understaffing vs minimum, overdue policy reviews |
+| WatchdogAgent | Every 30 min | CRITICAL equipment, uncovered/partial coverage, due-today actions, expired training, **v4.1:** Serious/Critical incidents (metadata page → supervisor + head) |
 | EscalationAgent | After 15:00 cutoff | Direct therapist nudges for missing `/daily` reports |
 | BriefingAgent | 07:30 | Morning briefing push → head + all supervisors |
 | ReportAgent | 17:00 + Sunday 08:00 | Evening rollup (Supervisor_Briefings rows + Drive `.docx`); weekly auto-fill (Weekly_Summary rows + Drive `.docx` + admin summary) |
