@@ -77,8 +77,16 @@ class GeminiClient:
 
     # -- core -------------------------------------------------------------
     def generate(self, prompt: str, context: str = "") -> str:
-        """Generate text. Returns a refusal when PHI is detected."""
-        phi = contains_phi(prompt + "\n" + context)
+        """Generate text. Returns a refusal when PHI is detected in the request.
+
+        Only the *prompt* (user question / user-supplied notes) is screened:
+        the context is trusted knowledge-base text from approved department
+        documents, which legitimately contains words like "patient" or "MRN"
+        (e.g. "never upload MRNs"). Screening it would block every grounded
+        answer. Callers must screen raw user input before it reaches here —
+        bot.py and demo.py both do.
+        """
+        phi = contains_phi(prompt)
         if phi.blocked:
             log.warning("Blocked PHI in generation request: %s", phi.reasons)
             return (

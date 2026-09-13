@@ -33,6 +33,26 @@ SUPPORTED_SUFFIXES = {".pdf", ".docx", ".xlsx", ".csv", ".md", ".txt"}
 
 TOKEN_RE = re.compile(r"[a-z0-9]{3,}")
 
+# Common words carry no retrieval signal ("the", "what", ...) and would
+# inflate match scores — especially the knowledge-coverage heuristic.
+STOPWORDS = frozenset({
+    "what", "whats", "when", "where", "which", "who", "whom", "whose", "why",
+    "how", "is", "are", "was", "were", "be", "been", "being", "do", "does",
+    "did", "have", "has", "had", "having", "can", "will", "would", "should",
+    "the", "a", "an", "and", "or", "but", "for", "with", "about", "into",
+    "over", "after", "before", "between", "under", "again", "once", "here",
+    "there", "all", "any", "both", "each", "few", "more", "most", "other",
+    "some", "such", "only", "own", "same", "than", "too", "very", "just",
+    "now", "from", "that", "this", "these", "those", "it", "its", "they",
+    "them", "their", "you", "your", "our", "ours", "we",
+    "show", "tell", "give", "get", "please",
+})
+
+
+def tokenize(text: str) -> set[str]:
+    """Lowercase alphanumeric tokens (3+ chars) minus stopwords."""
+    return set(TOKEN_RE.findall(text.lower())) - STOPWORDS
+
 
 @dataclass
 class KBChunk:
@@ -41,7 +61,7 @@ class KBChunk:
     tokens: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
-        self.tokens = set(TOKEN_RE.findall(self.text.lower()))
+        self.tokens = tokenize(self.text)
 
 
 @dataclass
@@ -245,6 +265,8 @@ class KnowledgeBase:
                 continue
             if path.name.lower() in {"manifest.json", "manifest.example.json"}:
                 continue
+            if path.name.lower().startswith("readme"):
+                continue  # instructions, not a citable department source
             meta = self.meta_for(path.name)
             if self.manifest and meta.status.lower() != "active":
                 self.skipped_inactive.append(f"{path.name} [{meta.status}]")
@@ -261,7 +283,7 @@ class KnowledgeBase:
 
     # -- search -----------------------------------------------------------
     def search(self, query: str, top_k: int = 4) -> list[KBResult]:
-        qtokens = set(TOKEN_RE.findall(query.lower()))
+        qtokens = tokenize(query)
         if not qtokens or not self.chunks:
             return []
         scored: list[tuple[float, KBChunk]] = []

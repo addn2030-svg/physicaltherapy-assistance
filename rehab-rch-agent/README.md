@@ -216,6 +216,17 @@ cp .env.example .env   # add TELEGRAM_BOT_TOKEN + GEMINI_API_KEY
 python bot.py
 ```
 
+No keys yet? Run the zero-credential demo — it exercises the full
+pipeline (auth → PHI screen → KB search → drafts → .docx → Drive save
+→ audit) with template AI responses:
+
+```bash
+python demo.py                 # scripted end-to-end scenario
+python demo.py --interactive   # chat with the agent in your terminal
+```
+
+Or build the container: `docker build -t rehab-rch-agent .`
+
 1. **Telegram token:** message [@BotFather](https://t.me/BotFather) → `/newbot` → paste token into `.env`.
 2. **Gemini key:** https://aistudio.google.com/app/apikey → paste into `.env`.
 3. **Google Drive/Sheets:** follow [docs/GOOGLE_SETUP.md](docs/GOOGLE_SETUP.md) (~20 min).

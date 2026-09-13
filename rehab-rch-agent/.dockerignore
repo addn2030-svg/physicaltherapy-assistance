@@ -1,0 +1,8 @@
+.env
+credentials.json
+staff_allowlist.json
+output/
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
