@@ -7,11 +7,18 @@ records, MRNs, diagnostic reports, clinical notes, or any PHI.
 Supported local formats: .pdf, .docx, .xlsx, .csv, .md, .txt
 Search: lightweight keyword scoring (no embeddings → $0 cost).
 Optional: sync from the Google Drive "Knowledge Base" folder.
+
+Governance (Phase 2 safety rails): if ``manifest.json`` exists in the
+knowledge folder, only documents with ``status == "Active"`` are indexed,
+and every citation carries ``Document | Version | Approved By | Date``.
+See ``manifest.example.json``. Without a manifest, all files are indexed
+and marked "unversioned" (fine for pilots, not for production).
 """
 
 from __future__ import annotations
 
 import csv
+import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -42,6 +49,47 @@ class KBResult:
     source: str
     snippet: str
     score: float
+    citation: str = ""  # e.g. "SOP.pdf v2.1 (approved: Section Head, 2026-09-01)"
+
+
+@dataclass
+class DocMeta:
+    """Governance metadata for one knowledge document."""
+
+    file: str
+    version: str = "unversioned"
+    approved_by: str = "unknown"
+    date: str = "unknown"
+    status: str = "Active"
+
+    def citation(self) -> str:
+        if self.version == "unversioned":
+            return f"{self.file} (unversioned — pilot only)"
+        return f"{self.file} v{self.version} (approved: {self.approved_by}, {self.date})"
+
+
+def coverage_label(results: list[KBResult]) -> tuple[str, str]:
+    """Heuristic confidence level for KB-backed answers.
+
+    Based on query-token coverage of the best-matching chunk. This is a
+    *retrieval* heuristic, not a guarantee of correctness — Medium/Low
+    answers must be verified by the Section Head.
+
+    Returns (level, human-readable note).
+    """
+    if not results:
+        return (
+            "None",
+            "Not covered in approved documents — general guidance only, "
+            "requires Section Head review.",
+        )
+    top = results[0].score
+    n = len(results)
+    if top >= 0.6 or (top >= 0.4 and n >= 3):
+        return ("High", f"Supported by {n} approved source(s).")
+    if top >= 0.3:
+        return ("Medium", f"Partially covered ({n} source(s)) — verify before acting.")
+    return ("Low", f"Weak match ({n} source(s)) — verify with Section Head.")
 
 
 def _read_txt(path: Path) -> str:
@@ -148,16 +196,58 @@ class KnowledgeBase:
         self.dir.mkdir(parents=True, exist_ok=True)
         self.chunks: list[KBChunk] = []
         self.files_indexed: list[str] = []
+        self.manifest: dict[str, DocMeta] = {}
+        self.skipped_inactive: list[str] = []
         self.index()
+
+    # -- governance --------------------------------------------------------
+    def _load_manifest(self) -> None:
+        """Load manifest.json governance metadata (if present)."""
+        self.manifest = {}
+        path = self.dir / settings.manifest_file
+        if not path.exists():
+            return
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            items = data if isinstance(data, list) else data.get("documents", [])
+            for item in items:
+                name = str(item.get("file", "")).strip()
+                if not name:
+                    continue
+                self.manifest[name.lower()] = DocMeta(
+                    file=name,
+                    version=str(item.get("version", "unversioned")),
+                    approved_by=str(item.get("approved_by", "unknown")),
+                    date=str(item.get("date", "unknown")),
+                    status=str(item.get("status", "Active")),
+                )
+            log.info("KB manifest loaded: %d entries.", len(self.manifest))
+        except Exception as exc:
+            log.warning("KB manifest parse failed (%s) — indexing all files.", exc)
+            self.manifest = {}
+
+    def meta_for(self, filename: str) -> DocMeta:
+        return self.manifest.get(filename.lower(), DocMeta(file=filename))
+
+    def citation_for(self, filename: str) -> str:
+        return self.meta_for(filename).citation()
 
     # -- indexing ---------------------------------------------------------
     def index(self) -> int:
         self.chunks = []
         self.files_indexed = []
+        self.skipped_inactive = []
+        self._load_manifest()
         for path in sorted(self.dir.rglob("*")):
             if not path.is_file() or path.name.startswith("."):
                 continue
             if path.suffix.lower() not in SUPPORTED_SUFFIXES:
+                continue
+            if path.name.lower() in {"manifest.json", "manifest.example.json"}:
+                continue
+            meta = self.meta_for(path.name)
+            if self.manifest and meta.status.lower() != "active":
+                self.skipped_inactive.append(f"{path.name} [{meta.status}]")
                 continue
             text = READERS[path.suffix.lower()](path)
             text = text.strip()
@@ -190,14 +280,21 @@ class KnowledgeBase:
         results: list[KBResult] = []
         for score, chunk in scored[:top_k]:
             snippet = chunk.text[:600].strip()
-            results.append(KBResult(source=chunk.source, snippet=snippet, score=round(score, 3)))
+            results.append(
+                KBResult(
+                    source=chunk.source,
+                    snippet=snippet,
+                    score=round(score, 3),
+                    citation=self.citation_for(chunk.source),
+                )
+            )
         return results
 
     def context_for(self, query: str, top_k: int = 4, max_chars: int = 4000) -> str:
         results = self.search(query, top_k=top_k)
         if not results:
             return ""
-        parts = [f"[Source: {r.source}]\n{r.snippet}" for r in results]
+        parts = [f"[Source: {r.citation}]\n{r.snippet}" for r in results]
         context = "\n\n---\n\n".join(parts)
         return context[:max_chars]
 
@@ -217,7 +314,11 @@ class KnowledgeBase:
             )
         lines = [f"📚 Knowledge base: {len(self.files_indexed)} file(s), {len(self.chunks)} chunks."]
         for name in self.files_indexed[:20]:
-            lines.append(f"• {name}")
+            lines.append(f"• {self.citation_for(name)}")
+        if self.skipped_inactive:
+            lines.append(f"⏸️ Skipped (not Active): {', '.join(self.skipped_inactive)}")
+        if not self.manifest:
+            lines.append("⚠️ No manifest.json — files are unversioned (pilot only).")
         return "\n".join(lines)
 
 

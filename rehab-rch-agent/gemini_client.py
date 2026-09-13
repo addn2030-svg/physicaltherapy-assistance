@@ -29,12 +29,16 @@ Rules:
 medical records, diagnoses, or treatment details. If the user provides any, refuse \
 and ask for a de-identified operational request.
 3. Base answers on the provided department knowledge base context when available. \
-If the context does not cover the question, say so and give best-practice \
-operational guidance marked as general guidance for Section Head review.
-4. Be concise, professional, and structured with headings and bullets.
-5. Use British English spelling for clinical-administrative terms where natural \
+Cite EVERY factual claim with its source as [Source: filename]. Never invent \
+SOP section numbers, names, dates, or procedures not present in the context.
+4. If the context does not cover the question, start with the exact line \
+"General guidance (not from approved documents):" then give best-practice \
+operational guidance for Section Head review. Never present general \
+guidance as department policy.
+5. Be concise, professional, and structured with headings and bullets.
+6. Use British English spelling for clinical-administrative terms where natural \
 (e.g. organised) but keep names and titles as given.
-6. Every draft ends with: "Draft for review — Rehabilitation Department, RCH."
+7. Every draft ends with: "Draft for review — Rehabilitation Department, RCH."
 """
 
 DEMO_BANNER = "_Demo mode — set GEMINI_API_KEY for full AI generation._\n\n"
@@ -100,7 +104,10 @@ class GeminiClient:
     def answer_question(self, question: str, context: str = "") -> str:
         prompt = (
             "Answer this Rehabilitation Department operational question. "
-            "Cite the source document name(s) when the context covers it.\n\n"
+            "When knowledge base context is provided, cite the source document "
+            "name(s) for every factual claim as [Source: filename]. When no "
+            "context is provided, begin with 'General guidance (not from "
+            "approved documents):'.\n\n"
             f"Question: {question}"
         )
         return self.generate(prompt, context=context)
@@ -136,8 +143,10 @@ class GeminiClient:
     def explain_sop(self, query: str, context: str) -> str:
         prompt = (
             "Answer strictly from the SOP / guideline context below. "
-            "Give step-by-step process, responsible roles, and escalation path. "
-            "If the context is insufficient, say what is missing.\n\n"
+            "Give step-by-step process, responsible roles, and escalation path, "
+            "citing each fact as [Source: filename]. "
+            "If the context is insufficient, say exactly what is missing and "
+            "do not invent procedures.\n\n"
             f"Question: {query}"
         )
         return self.generate(prompt, context=context)

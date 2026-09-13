@@ -2,18 +2,23 @@
 
 Source of truth: a Google Sheet with columns::
 
-    Telegram ID | Name | Role
+    Telegram ID | Name | Role | Status | Valid Until
 
 Example row::
 
-    123456789 | Abdulrahman | Section Head
+    123456789 | Abdulrahman | Section Head | Active | 2027-09-01
+
+``Status`` / ``Valid Until`` are optional (Phase 2 access review):
+Status != Active, or a past Valid Until (YYYY-MM-DD), denies access.
+Use them for monthly access reviews and offboarding without deleting rows.
 
 Fallbacks (in order) when Google Sheets is unavailable:
   1. ``ALLOWED_TELEGRAM_IDS`` env var (comma separated)
   2. Local ``staff_allowlist.json`` file::
 
         [
-          {"telegram_id": "123456789", "name": "Abdulrahman", "role": "Section Head"}
+          {"telegram_id": "123456789", "name": "Abdulrahman", "role": "Section Head",
+           "status": "Active", "valid_until": "2027-09-01"}
         ]
 
 Unauthorized users receive: "Access denied. Contact Rehabilitation Section Head."
@@ -23,8 +28,8 @@ from __future__ import annotations
 
 import json
 import logging
-import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 
@@ -39,14 +44,38 @@ ACCESS_DENIED_MESSAGE = (
 )
 
 
+def _parse_valid_until(raw: str) -> Optional[date]:
+    raw = (raw or "").strip()
+    if not raw:
+        return None
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%Y/%m/%d"):
+        try:
+            return datetime.strptime(raw, fmt).date()
+        except ValueError:
+            continue
+    log.warning("Unparseable Valid Until %r — treating as no expiry.", raw)
+    return None
+
+
 @dataclass
 class StaffMember:
     telegram_id: str
     name: str
     role: str = "Staff"
+    status: str = "Active"
+    valid_until: Optional[date] = field(default=None)
 
     def display(self) -> str:
         return f"{self.name} ({self.role})"
+
+    @property
+    def access_ok(self) -> bool:
+        """Active status and not past Valid Until (periodic re-auth)."""
+        if self.status.strip().lower() != "active":
+            return False
+        if self.valid_until and self.valid_until < date.today():
+            return False
+        return True
 
 
 class StaffAuth:
@@ -89,13 +118,18 @@ class StaffAuth:
         return 0
 
     def is_authorized(self, telegram_id: int | str) -> bool:
-        return str(telegram_id) in self._cache
+        member = self._cache.get(str(telegram_id))
+        return bool(member and member.access_ok)
 
     def get_staff(self, telegram_id: int | str) -> Optional[StaffMember]:
         return self._cache.get(str(telegram_id))
 
     def count(self) -> int:
         return len(self._cache)
+
+    def active_count(self) -> int:
+        """Staff with current access (Active + not expired)."""
+        return sum(1 for m in self._cache.values() if m.access_ok)
 
     # -- loaders ---------------------------------------------------------
     def _load_from_google_sheets(self) -> bool:
@@ -126,7 +160,14 @@ class StaffAuth:
                 tid = str(int(float(tid))) if tid.replace(".", "", 1).isdigit() else tid
                 name = str(row.get("Name", row.get("name", "Staff"))).strip() or "Staff"
                 role = str(row.get("Role", row.get("role", "Staff"))).strip() or "Staff"
-                self._cache[tid] = StaffMember(telegram_id=tid, name=name, role=role)
+                status = str(row.get("Status", row.get("status", "Active"))).strip() or "Active"
+                valid_until = _parse_valid_until(
+                    str(row.get("Valid Until", row.get("valid_until", "")))
+                )
+                self._cache[tid] = StaffMember(
+                    telegram_id=tid, name=name, role=role,
+                    status=status, valid_until=valid_until,
+                )
             log.info("Loaded %d staff from Google Sheets.", len(self._cache))
             return bool(self._cache)
         except Exception as exc:  # pragma: no cover - needs live creds
@@ -150,6 +191,8 @@ class StaffAuth:
                     telegram_id=tid,
                     name=str(item.get("name", "Staff")),
                     role=str(item.get("role", "Staff")),
+                    status=str(item.get("status", "Active")),
+                    valid_until=_parse_valid_until(str(item.get("valid_until", ""))),
                 )
             log.info("Loaded %d staff from %s.", len(self._cache), path.name)
             return bool(self._cache)

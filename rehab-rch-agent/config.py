@@ -63,6 +63,16 @@ class Settings:
     drive_root_folder_id: str = field(default_factory=lambda: _env("DRIVE_ROOT_FOLDER_ID"))
     staff_sheet_id: str = field(default_factory=lambda: _env("STAFF_SHEET_ID"))
     staff_sheet_tab: str = field(default_factory=lambda: _env("STAFF_SHEET_TAB", "Staff"))
+    audit_sheet_tab: str = field(default_factory=lambda: _env("AUDIT_SHEET_TAB", "AuditLog"))
+    audit_sheet_enabled: bool = field(
+        default_factory=lambda: _env("AUDIT_SHEET_ENABLED", "true").lower() not in {"0", "false", "no"}
+    )
+
+    # -- Retention / compliance -------------------------------------------
+    retention_days: int = field(default_factory=lambda: _env_int("RETENTION_DAYS", 365))
+    manifest_file: str = field(
+        default_factory=lambda: _env("KB_MANIFEST_FILE", "manifest.json")
+    )
 
     # -- Local allowlist fallback (comma separated telegram ids) ----------
     allowed_telegram_ids: list[str] = field(

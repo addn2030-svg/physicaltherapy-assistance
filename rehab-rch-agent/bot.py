@@ -12,15 +12,17 @@ Commands:
     /meeting      — guided meeting-minutes builder → Drive save
     /save         — save last generated document to Google Drive
     /kb           — knowledge-base status (admin: "/kb reload")
+    /audit        — recent audit events (admins only)
     /cancel       — cancel current guided flow
 
 Free-text questions from authorized staff are answered with Gemini +
 knowledge-base context. Every message is screened for PHI first.
+Phase 2 safety rails: audit trail, versioned citations, knowledge
+coverage levels, and out-of-scope human-review flags.
 """
 
 from __future__ import annotations
 
-import html
 import logging
 import traceback
 from datetime import datetime
@@ -39,11 +41,12 @@ from telegram.ext import (
     filters,
 )
 
-from auth import ACCESS_DENIED_MESSAGE, staff_auth
+from audit import audit
+from auth import is_admin, staff_auth
 from config import settings
 from gemini_client import gemini
 from google_drive import drive
-from knowledge_base import kb
+from knowledge_base import coverage_label, kb
 from report_generator import (
     build_announcement,
     build_meeting_minutes,
@@ -51,7 +54,7 @@ from report_generator import (
     build_operational_report,
     build_weekly_report,
 )
-from safety import BLOCK_MESSAGE, contains_phi
+from safety import contains_phi
 
 # ----------------------------------------------------------------------------
 # Logging
@@ -96,6 +99,7 @@ HELP_TEXT = """🏥 *Rehab RCH Agent — Commands*
 /meeting — Build meeting minutes from raw notes
 /save — Save last document to Google Drive
 /kb — Knowledge-base status
+/audit — Recent audit events (admins only)
 /cancel — Cancel current flow
 
 *Free text:* just ask, e.g.
@@ -118,7 +122,7 @@ Reply with one of: weekly / monthly / operational
 
 
 # ----------------------------------------------------------------------------
-# Decorators
+# Decorators & helpers
 # ----------------------------------------------------------------------------
 def authorized_only(handler: Callable) -> Callable:
     """Block unauthorized Telegram users before running the handler."""
@@ -128,6 +132,12 @@ def authorized_only(handler: Callable) -> Callable:
         user = update.effective_user
         if user is None or not staff_auth.is_authorized(user.id):
             log.warning("Denied access for telegram_id=%s", getattr(user, "id", "?"))
+            audit.log(
+                "auth_denied",
+                getattr(user, "id", "?"),
+                getattr(user, "full_name", ""),
+                f"handler={handler.__name__}",
+            )
             if update.effective_message:
                 await update.effective_message.reply_text(
                     "🔒 Access denied.\n\nContact Rehabilitation Section Head.",
@@ -138,12 +148,33 @@ def authorized_only(handler: Callable) -> Callable:
     return wrapper
 
 
+def _staff_name(update: Update) -> str:
+    """Display name for audit entries ('' when unauthorized)."""
+    try:
+        staff = staff_auth.get_staff(update.effective_user.id)  # type: ignore[union-attr]
+        return staff.display() if staff else ""
+    except Exception:
+        return ""
+
+
 def phi_guarded_text(text: str) -> bool:
     """True when text is blocked (caller should abort the flow)."""
     return contains_phi(text).blocked
 
 
-async def _reply_phi_blocked(update: Update) -> None:
+async def _reply_phi_blocked(update: Update, event: str = "message") -> None:
+    # Audit the block WITHOUT storing user content — reasons + length only.
+    try:
+        text = update.message.text if update.message else ""  # type: ignore[union-attr]
+        result = contains_phi(text or "")
+        audit.log(
+            "phi_blocked",
+            update.effective_user.id,  # type: ignore[union-attr]
+            _staff_name(update),
+            f"flow={event} reasons={'; '.join(result.reasons)[:200]} len={len(text or '')}",
+        )
+    except Exception as exc:
+        log.debug("PHI audit skipped: %s", exc)
     if update.effective_message:
         await update.effective_message.reply_text(
             "⛔ This request can't be processed.\n\n"
@@ -160,11 +191,13 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     assert user is not None
     staff = staff_auth.get_staff(user.id)
-    if staff is None:
+    if staff is None or not staff.access_ok:
+        audit.log("auth_denied", user.id, user.full_name, "handler=cmd_start")
         await update.message.reply_text(  # type: ignore[union-attr]
             "🔒 Access denied.\n\nContact Rehabilitation Section Head."
         )
         return
+    audit.log("auth_granted", user.id, staff.display(), "handler=cmd_start")
     await update.message.reply_text(  # type: ignore[union-attr]
         WELCOME.format(dept=settings.department_name, staff=f", {staff.name}"),
         parse_mode=ParseMode.MARKDOWN,
@@ -189,9 +222,30 @@ async def cmd_kb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     args = context.args or []
     if args and args[0].lower() == "reload":
         kb.index()
+        audit.log(
+            "kb_reload", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+            f"files={len(kb.files_indexed)} chunks={len(kb.chunks)}",
+        )
         await update.message.reply_text(f"🔄 Knowledge base reloaded.\n\n{kb.status()}")  # type: ignore[union-attr]
     else:
         await update.message.reply_text(kb.status())  # type: ignore[union-attr]
+
+
+@authorized_only
+async def cmd_audit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show recent audit events (admins only, for access reviews)."""
+    if not is_admin(update.effective_user.id):  # type: ignore[union-attr]
+        await update.message.reply_text("🔒 Admins only.")  # type: ignore[union-attr]
+        return
+    entries = audit.recent(10)
+    if not entries:
+        await update.message.reply_text("No audit events yet.")  # type: ignore[union-attr]
+        return
+    lines = ["🧾 *Recent audit events (newest last):*"]
+    for e in entries:
+        who = f"{e.get('name') or e.get('telegram_id')}".strip()
+        lines.append(f"`{e.get('ts_utc')}` {e.get('event')} — {who}\n_{e.get('details')}_")
+    await _send_long(update, "\n\n".join(lines))
 
 
 @authorized_only
@@ -203,19 +257,31 @@ async def cmd_sop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
         return
     if phi_guarded_text(query):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "sop")
         return
     await update.message.reply_text("🔍 Searching approved department documents…")  # type: ignore[union-attr]
+    results = kb.search(query, top_k=3)
     ctx = kb.context_for(query)
     answer = gemini.explain_sop(query, ctx) if ctx else gemini.answer_question(query)
-    sources = "\n".join(f"📄 {r.source}" for r in kb.search(query, top_k=3))
+    level, note = coverage_label(results)
     reply = f"{answer}\n\n"
-    if sources:
-        reply += f"*Sources:*\n{sources}\n\n"
+    if results:
+        cites = "\n".join(f"📄 {r.citation}" for r in results)
+        reply += f"*Sources:*\n{cites}\n\n"
     elif not kb.files_indexed:
-        reply += "_No knowledge-base files indexed yet — _\n\n"
+        reply += "_No knowledge-base files indexed yet._\n\n"
+    reply += f"_Knowledge coverage: {level} — {note}_\n"
     reply += "_Draft for review — Rehabilitation Department, RCH._"
     await _send_long(update, reply)
+    audit.log(
+        "sop_asked", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+        f"coverage={level} q={query[:120]}",
+    )
+    if level == "None":
+        audit.log(
+            "needs_review", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+            f"out-of-scope q={query[:150]}",
+        )
 
 
 @authorized_only
@@ -231,6 +297,10 @@ async def cmd_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if result.get("drive_link"):
         msg += f"\n🔗 {result['drive_link']}"
     await update.message.reply_text(msg)  # type: ignore[union-attr]
+    audit.log(
+        "drive_upload", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+        f"file={result.get('filename')} folder={folder} demo={result.get('demo')}",
+    )
 
 
 # ----------------------------------------------------------------------------
@@ -245,7 +315,7 @@ async def report_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 async def report_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     choice = (update.message.text or "").strip().lower()  # type: ignore[union-attr]
     if phi_guarded_text(choice):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "report_type")
         return ConversationHandler.END
     if choice not in {"weekly", "monthly", "operational"}:
         await update.message.reply_text("Please reply with: weekly / monthly / operational (/cancel to stop).")  # type: ignore[union-attr]
@@ -262,7 +332,7 @@ async def report_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
 async def report_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     notes = (update.message.text or "").strip()  # type: ignore[union-attr]
     if phi_guarded_text(notes):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "report_notes")
         return ConversationHandler.END
     rtype = context.user_data.get("report_type", "weekly")
     staff = staff_auth.get_staff(update.effective_user.id)  # type: ignore[union-attr]
@@ -292,6 +362,10 @@ async def report_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if result.get("drive_link"):
         msg += f"\n🔗 {result['drive_link']}"
     await update.message.reply_text(msg)  # type: ignore[union-attr]
+    audit.log(
+        "report_generated", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+        f"type={rtype} file={Path(path).name} drive_ok={result.get('ok')}",
+    )
     # Also send the .docx file to chat
     try:
         with open(path, "rb") as f:
@@ -318,7 +392,7 @@ async def ann_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def ann_details(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     details = (update.message.text or "").strip()  # type: ignore[union-attr]
     if phi_guarded_text(details):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "announcement")
         return ConversationHandler.END
     await update.message.reply_text("🤖 Drafting announcement…")  # type: ignore[union-attr]
     draft = gemini.draft_announcement(details)
@@ -348,12 +422,17 @@ async def ann_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         if result.get("drive_link"):
             msg += f"\n🔗 {result['drive_link']}"
         await update.message.reply_text(msg)  # type: ignore[union-attr]
+        audit.log(
+            "announcement_saved", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+            f"file={Path(path).name} drive_ok={result.get('ok')}",
+        )
         try:
             with open(path, "rb") as f:
                 await update.message.reply_document(document=f, filename=Path(path).name)  # type: ignore[union-attr]
         except Exception as exc:
             log.warning("Could not send docx to chat: %s", exc)
     else:
+        audit.log("announcement_discarded", update.effective_user.id, _staff_name(update))  # type: ignore[union-attr]
         await update.message.reply_text("Discarded. Type /announcement to start over.")  # type: ignore[union-attr]
     return ConversationHandler.END
 
@@ -373,7 +452,7 @@ async def meet_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def meet_title(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     title = (update.message.text or "").strip()  # type: ignore[union-attr]
     if phi_guarded_text(title):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "meeting_title")
         return ConversationHandler.END
     context.user_data["meet_title"] = "" if title.lower() == "skip" else title
     await update.message.reply_text("Now paste the raw meeting notes / bullet points.")  # type: ignore[union-attr]
@@ -383,7 +462,7 @@ async def meet_title(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def meet_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     notes = (update.message.text or "").strip()  # type: ignore[union-attr]
     if phi_guarded_text(notes):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "meeting_notes")
         return ConversationHandler.END
     staff = staff_auth.get_staff(update.effective_user.id)  # type: ignore[union-attr]
     prepared_by = staff.display() if staff else "Rehab RCH Agent"
@@ -401,6 +480,10 @@ async def meet_notes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if result.get("drive_link"):
         msg += f"\n🔗 {result['drive_link']}"
     await update.message.reply_text(msg)  # type: ignore[union-attr]
+    audit.log(
+        "meeting_saved", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+        f"title={title[:80]} file={Path(path).name} drive_ok={result.get('ok')}",
+    )
     try:
         with open(path, "rb") as f:
             await update.message.reply_document(document=f, filename=Path(path).name)  # type: ignore[union-attr]
@@ -418,11 +501,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if not text:
         return
     if phi_guarded_text(text):
-        await _reply_phi_blocked(update)
+        await _reply_phi_blocked(update, "free_text")
         return
+    results = kb.search(text, top_k=3)
     ctx = kb.context_for(text)
     answer = gemini.answer_question(text, context=ctx)
-    await _send_long(update, answer)
+    level, note = coverage_label(results)
+    reply = f"{answer}\n\n_Knowledge coverage: {level} — {note}_"
+    await _send_long(update, reply)
+    audit.log(
+        "question_asked", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+        f"coverage={level} q={text[:120]}",
+    )
+    if level == "None":
+        audit.log(
+            "needs_review", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
+            f"out-of-scope q={text[:150]}",
+        )
 
 
 async def _send_long(update: Update, text: str, chunk: int = 3500) -> None:
@@ -487,6 +582,7 @@ def build_app() -> Application:
     app.add_handler(CommandHandler("sop", cmd_sop))
     app.add_handler(CommandHandler("save", cmd_save))
     app.add_handler(CommandHandler("kb", cmd_kb))
+    app.add_handler(CommandHandler("audit", cmd_audit))
     app.add_handler(report_conv)
     app.add_handler(ann_conv)
     app.add_handler(meet_conv)
@@ -498,7 +594,8 @@ def build_app() -> Application:
 def main() -> None:
     log.info("Starting Rehab RCH Agent v2 | dept=%s | kb_files=%d | gemini_demo=%s | drive_demo=%s",
              settings.department_name, len(kb.files_indexed), gemini.demo_mode, drive.demo_mode)
-    log.info("Staff source=%s count=%d", staff_auth.source, staff_auth.count())
+    log.info("Staff source=%s count=%d active=%d", staff_auth.source, staff_auth.count(),
+             staff_auth.active_count())
     drive.ensure_folder_structure()
     build_app().run_polling(allowed_updates=Update.ALL_TYPES)
 

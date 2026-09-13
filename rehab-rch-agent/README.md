@@ -20,6 +20,17 @@ generates operational reports, searches approved documents, and
 - ✅ Available 24/7 via Telegram
 - ✅ No patient information allowed (PHI guardrail + refusal flow)
 
+## Safety rails (Phase 2)
+
+- 🧾 **Audit trail** — every access, block, question, and Drive save logged
+  (local JSONL + Google Sheet mirror); admins review with `/audit`
+- 📑 **Versioned citations** — answers cite `Document vVersion (approved: By, Date)`;
+  only `Active` manifest documents are indexed
+- 📶 **Knowledge coverage** — every answer shows High / Medium / Low / None;
+  out-of-scope answers are labelled general guidance and flagged for human review
+- 🔐 **Access review** — `Status` + `Valid Until` columns suspend/expire staff
+  without deleting rows
+
 ## Architecture
 
 ```
@@ -49,19 +60,23 @@ rehab-rch-agent/
 ├── bot.py               # Telegram entry point (commands + conversations)
 ├── gemini_client.py     # Gemini AI wrapper (operational prompts, demo fallback)
 ├── google_drive.py      # Drive folder tree + dated uploads
-├── knowledge_base.py    # Approved-docs index + keyword search
+├── knowledge_base.py    # Approved-docs index + keyword search + manifest governance
 ├── report_generator.py  # Branded .docx builder
 ├── auth.py              # Google Sheets staff allowlist (+ env/JSON fallback)
 ├── safety.py            # PHI screen — blocks patient data
+├── audit.py             # Append-only audit trail (JSONL + Sheet mirror)
 ├── config.py            # Typed settings from .env
 ├── requirements.txt
 ├── .env.example         # Copy to .env (never commit .env)
 ├── staff_allowlist.example.json
 ├── systemd/rehab-agent.service   # 24/7 auto-restart service
 ├── scripts/setup_oracle.sh       # Oracle Cloud installer
+├── scripts/retention_cleanup.py  # Local retention cleanup (audit exempt)
 ├── knowledge/           # Approved SOPs / guidelines / contacts (samples incl.)
-├── tests/               # pytest: safety, KB, report generator
-└── docs/                # ARCHITECTURE.md, GOOGLE_SETUP.md
+│   └── manifest.example.json     # Document version control template
+├── tests/               # pytest: safety, auth, KB, governance, audit, reports
+└── docs/                # ARCHITECTURE, GOOGLE_SETUP, PRELAUNCH_CHECKLIST,
+                         # STAFF_TRAINING, INCIDENT_RESPONSE
 ```
 
 ## Google Drive integration
@@ -98,6 +113,10 @@ Upload **approved files only**: `SOP.pdf`, `Department Guideline.docx`,
 `Rehabilitation Structure.pdf`, `Contacts.xlsx`.
 The agent reads them and answers staff questions (citing source files).
 
+For production, register every file in `knowledge/manifest.json`
+(see `manifest.example.json`): Document | Version | Approved By | Date | Status.
+Only `Active` documents are indexed.
+
 Recommended sources: department SOPs, operational procedures, contact lists,
 meeting minutes, announcements, department policies.
 
@@ -125,6 +144,7 @@ Blocked (bot rejects + asks for de-identified resubmission):
 | `/meeting` | Meeting-minutes builder → Drive |
 | `/save` | Save last document to Drive |
 | `/kb` | Knowledge-base status (`/kb reload` to re-index) |
+| `/audit` | Recent audit events (admins only) |
 | `/cancel` | Cancel current flow |
 
 ### Example — announcement
@@ -165,15 +185,21 @@ Next Actions
 
 …and automatically saves the report to Google Drive.
 
+Every answer also shows `Knowledge coverage: High/Medium/Low/None` plus
+source citations, e.g. `📄 SOP.pdf v2.1 (approved: Section Head, 2026-09-01)`.
+
 ## Authentication
 
 Only approved staff can use the bot. Google Sheet columns:
 
 ```
-Telegram ID | Name | Role
+Telegram ID | Name | Role | Status | Valid Until
 ```
 
-Example: `123456789 | Abdulrahman | Section Head`
+Example: `123456789 | Abdulrahman | Section Head | Active | 2027-09-01`
+
+`Status` ≠ Active or past `Valid Until` denies access — use for monthly
+access reviews and offboarding without deleting rows.
 
 If not listed: `Access denied. Contact Rehabilitation Section Head.`
 
@@ -198,6 +224,13 @@ python bot.py
 
 Without keys, the bot runs in **demo mode** (template drafts + local `output/`
 saves) so all Telegram flows are testable for free.
+
+## Before launch
+
+Work through [docs/PRELAUNCH_CHECKLIST.md](docs/PRELAUNCH_CHECKLIST.md):
+adversarial PHI tests, `manifest.json`, private repo, IT/Compliance written
+approval, pilot testers, [staff training](docs/STAFF_TRAINING.md), and the
+[incident response plan](docs/INCIDENT_RESPONSE.md).
 
 ## 24/7 hosting
 

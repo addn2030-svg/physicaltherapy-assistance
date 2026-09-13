@@ -1,0 +1,37 @@
+[
+  {
+    "file": "SOP.pdf",
+    "version": "2.1",
+    "approved_by": "Section Head",
+    "date": "2026-09-01",
+    "status": "Active"
+  },
+  {
+    "file": "Department Guideline.docx",
+    "version": "1.4",
+    "approved_by": "Section Head",
+    "date": "2026-08-15",
+    "status": "Active"
+  },
+  {
+    "file": "Rehabilitation Structure.pdf",
+    "version": "3.0",
+    "approved_by": "Section Head",
+    "date": "2026-07-01",
+    "status": "Active"
+  },
+  {
+    "file": "Contacts.xlsx",
+    "version": "2026-09",
+    "approved_by": "Admin Coordinator",
+    "date": "2026-09-01",
+    "status": "Active"
+  },
+  {
+    "file": "Old-Leave-Policy-2023.pdf",
+    "version": "1.0",
+    "approved_by": "Former Head",
+    "date": "2023-01-10",
+    "status": "Archived"
+  }
+]

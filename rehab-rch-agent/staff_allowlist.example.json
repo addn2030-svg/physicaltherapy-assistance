@@ -2,11 +2,22 @@
   {
     "telegram_id": "123456789",
     "name": "Abdulrahman",
-    "role": "Section Head"
+    "role": "Section Head",
+    "status": "Active",
+    "valid_until": "2027-09-01"
   },
   {
     "telegram_id": "987654321",
     "name": "Sara",
-    "role": "Senior Physiotherapist"
+    "role": "Senior Physiotherapist",
+    "status": "Active",
+    "valid_until": "2027-09-01"
+  },
+  {
+    "telegram_id": "555555555",
+    "name": "Former Staff (example)",
+    "role": "Staff",
+    "status": "Suspended",
+    "valid_until": ""
   }
 ]

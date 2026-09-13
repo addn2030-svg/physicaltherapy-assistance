@@ -32,6 +32,23 @@ Google Drive (service account)
 | `report_generator.py` | Branded .docx builder | python-docx |
 | `google_drive.py` | Folder tree + dated upload, demo fallback | google-api-python-client |
 | `config.py` | Typed env settings | python-dotenv |
+| `audit.py` | Append-only audit trail (JSONL + Sheet mirror) | gspread |
+| `scripts/retention_cleanup.py` | Local retention cleanup (audit logs exempt) | — |
+
+## Phase 2 safety rails
+
+- **Audit**: `auth_granted/denied`, `phi_blocked` (no content stored),
+  `sop_asked`/`question_asked` with coverage, `needs_review` for
+  out-of-scope questions, `report_generated`/`announcement_saved`/
+  `meeting_saved`/`drive_upload`, `kb_reload`. Admins review via `/audit`.
+- **Anti-hallucination**: answers cite `[Source: file]`; out-of-scope
+  answers are prefixed `General guidance (not from approved documents):`
+  and flagged for human review; every reply shows a knowledge-coverage
+  level (High/Medium/Low/None).
+- **KB governance**: `manifest.json` gates indexing to `Active` versions;
+  citations carry `Document vVersion (approved: By, Date)`.
+- **Access review**: Sheet/JSON `Status` + `Valid Until` columns deny
+  suspended/expired staff without deleting rows.
 
 ## Data safety
 
