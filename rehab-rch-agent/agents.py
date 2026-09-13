@@ -9,6 +9,8 @@ Six specialist agents run on a schedule inside the bot process:
   BriefingAgent   — morning briefing push (head + supervisors)
   ReportAgent     — evening rollup + weekly auto-fill (sheet rows + Drive .docx)
   InsightAgent    — Gemini narrative over pre-computed numbers (AI polish only)
+  ReminderAgent   — v4.2 reminders cadence + HIGH task nudges + agenda nudges
+  EvaluationAgent — v4.2 monthly staff evaluation digests
 
 The :class:`Orchestrator` runs agents per job, routes every finding up the
 ladder (therapist → supervisor → head → admin) via :mod:`messenger`,
@@ -511,6 +513,189 @@ class InsightAgent:
 # ----------------------------------------------------------------------------
 # Orchestrator
 # ----------------------------------------------------------------------------
+def _parse_day(value) -> Optional[date]:
+    try:
+        return date.fromisoformat(str(value).strip().split()[0])
+    except ValueError:
+        return None
+
+
+class ReminderAgent:
+    """Reminders + task cadence + agenda nudges. Runs on the reminders job."""
+
+    name = "reminder"
+
+    def run(self, ctx: Ctx) -> list[Alert]:
+        alerts: list[Alert] = []
+        day, today = ctx.day, ctx.today
+
+        for r in ctx.db.due_reminders(today):
+            rid = str(r.get("Reminder_ID", ""))
+            title = str(r.get("Title", "")).strip()
+            audience = str(r.get("Audience", "")).strip() or "All"
+            notes = str(r.get("Notes", "")).strip()
+            body = f"{title}\nAudience: {audience}"
+            if notes:
+                body += f"\n{notes[:300]}"
+            self._email(ctx, audience, f"Reminder: {title}", body)
+            names = ctx.db.resolve_audience(audience)
+            for name in names:
+                alerts.append(Alert(
+                    key=f"rem:{rid}:{day}:{name}", severity="info",
+                    level="therapist", staff_name=name,
+                    title=f"⏰ Reminder: {title}",
+                    body=f"{notes[:300]}\n_(Reminder {rid} · {audience})_"
+                    if notes else f"_(Reminder {rid} · {audience})_",
+                    dedup_hours=20))
+            if not names:
+                alerts.append(Alert(
+                    key=f"rem:{rid}:{day}:unroutable", severity="warning",
+                    level="head", title=f"Reminder has no audience: {rid}",
+                    body=f"'{title}' (audience '{audience}') matched nobody. "
+                         f"Fix the Audience in the Reminders tab."))
+            once = str(r.get("Cadence", "")).strip().lower() == "once"
+            ctx.db.mark_reminder_sent(rid, today, done=once)
+
+        high_due = [r for r in ctx.db.actions_due_within(3, today)
+                    if str(r.get("Priority", "")).strip().lower() == "high"]
+        high_over = [r for r in ctx.db.overdue_actions(today)
+                     if str(r.get("Priority", "")).strip().lower() == "high"]
+        for r in high_over:
+            owner = str(r.get("Owner", "")).strip()
+            alerts.append(Alert(
+                key=f"rem:task:{day}:{r.get('Action_ID')}", severity="warning",
+                level="therapist" if owner else "head", staff_name=owner,
+                title=f"🔴 HIGH task OVERDUE — {r.get('Action_ID')}",
+                body=f"{r.get('Title')} (owner: {owner or 'unassigned'}, "
+                     f"was due {r.get('Due_Date')}). Update status today."))
+        for r in high_due:
+            if r in high_over:
+                continue
+            owner = str(r.get("Owner", "")).strip()
+            alerts.append(Alert(
+                key=f"rem:task:{day}:{r.get('Action_ID')}", severity="info",
+                level="therapist" if owner else "head", staff_name=owner,
+                title=f"⏰ HIGH task due {r.get('Due_Date')} — "
+                     f"{r.get('Action_ID')}",
+                body=f"{r.get('Title')} (owner: {owner or 'unassigned'}).",
+                dedup_hours=20))
+
+        if today.strftime("%a").upper() == settings.weekly_day.upper():
+            alerts += self._weekly_task_digest(ctx)
+
+        tomorrow = today + timedelta(days=1)
+        for a in ctx.db.upcoming_agendas(today, days=1):
+            if _parse_day(a.get("Date")) != tomorrow:
+                continue
+            mid = str(a.get("Meeting_ID", ""))
+            names = ctx.db.resolve_audience(str(a.get("Attendees", "")))
+            for name in names:
+                alerts.append(Alert(
+                    key=f"agenda:{mid}:{day}:{name}", severity="info",
+                    level="therapist", staff_name=name,
+                    title=f"📅 Meeting tomorrow: {a.get('Title')}",
+                    body=f"{str(a.get('Agenda_Items', ''))[:400]}\n_({mid})_",
+                    dedup_hours=20))
+        return alerts
+
+    @staticmethod
+    def _email(ctx: Ctx, audience: str, subject: str, body: str) -> int:
+        try:
+            from mailer import send_staff_email  # lazy
+            return send_staff_email(ctx.db, audience, subject, body)
+        except Exception as exc:
+            log.debug("Reminder email skipped: %s", exc)
+            return 0
+
+    def _weekly_task_digest(self, ctx: Ctx) -> list[Alert]:
+        by_unit: dict[str, list[dict]] = {}
+        for r in ctx.db.open_actions():
+            owner = str(r.get("Owner", "")).strip()
+            uid = ""
+            for s in ctx.db.staff():
+                if str(s.get("Name", "")).strip().lower() == owner.lower():
+                    u = ctx.db.resolve_unit(str(s.get("Unit", "")))
+                    uid = str(u.get("Unit_ID")).upper() if u else ""
+                    break
+            by_unit.setdefault(uid or "UNASSIGNED", []).append(r)
+        alerts = []
+        for uid, rows in sorted(by_unit.items()):
+            lines = [f"• {r.get('Action_ID')} [{r.get('Priority')}] "
+                     f"{r.get('Title')} — {r.get('Owner')} "
+                     f"(due {r.get('Due_Date')})" for r in rows[:12]]
+            if len(rows) > 12:
+                lines.append(f"_+{len(rows) - 12} more_")
+            alerts.append(Alert(
+                key=f"taskdigest:{ctx.day}:{uid}", severity="info",
+                level="supervisor" if uid != "UNASSIGNED" else "head",
+                unit_id=uid if uid != "UNASSIGNED" else "",
+                title=f"🗂️ Weekly task digest — {uid} ({len(rows)} open)",
+                body="\n".join(lines), dedup_hours=24 * 6))
+        return alerts
+
+
+class EvaluationAgent:
+    """Monthly staff evaluation. Runs on the evaluation job (EVAL_DAY)."""
+
+    name = "evaluation"
+
+    def run(self, ctx: Ctx) -> list[Alert]:
+        from staff_eval import (format_head_summary, format_unit_digest,
+                                month_label, month_range, previous_month,
+                                run_monthly_evaluation)
+        year, month = previous_month(ctx.today)
+        label = month_label(year, month)
+        if ctx.db.evaluations_for(label):
+            return []  # already computed + announced (restart-safe)
+        start, end = month_range(year, month)
+        if not ctx.db.staff_reports_between(start, end):
+            log.info("Evaluation %s skipped: no reports filed that month.",
+                     label)
+            return []
+        _, rows = run_monthly_evaluation(ctx.db, ctx.today)
+        if not rows:
+            return []
+        try:
+            from mailer import send_staff_email  # lazy
+        except Exception:
+            send_staff_email = None  # type: ignore[assignment]
+
+        alerts: list[Alert] = []
+        by_unit: dict[str, list[dict]] = {}
+        for r in rows:
+            by_unit.setdefault(str(r.get("Unit", "—")), []).append(r)
+        for unit_name, urows in sorted(by_unit.items()):
+            digest = format_unit_digest(unit_name, urows)
+            unit = ctx.db.resolve_unit(unit_name)
+            uid = str(unit.get("Unit_ID")).upper() if unit else ""
+            alerts.append(Alert(
+                key=f"eval:{label}:{uid or unit_name}", severity="info",
+                level="supervisor" if uid else "head", unit_id=uid,
+                title=f"Monthly evaluation — {unit_name} ({label})",
+                body=digest, dedup_hours=24 * 32))
+            if send_staff_email:
+                try:
+                    send_staff_email(ctx.db, unit_name,
+                                     f"Monthly evaluation {label}", digest)
+                except Exception as exc:
+                    log.debug("Eval email skipped: %s", exc)
+        summary = format_head_summary(rows)
+        alerts.append(Alert(
+            key=f"eval:{label}:head", severity="info", level="head",
+            title=f"Monthly evaluation summary ({label})",
+            body=summary, dedup_hours=24 * 32))
+        if send_staff_email:
+            try:
+                head_name, _ = ctx.directory.section_head()
+                if head_name:
+                    send_staff_email(ctx.db, head_name,
+                                     f"Monthly evaluation summary {label}",
+                                     summary)
+            except Exception as exc:
+                log.debug("Eval head email skipped: %s", exc)
+        return alerts
+
+
 class Orchestrator:
     """Runs agents per job, routes alerts, dedups, audits."""
 
@@ -525,6 +710,8 @@ class Orchestrator:
         self.briefing = BriefingAgent()
         self.report = ReportAgent()
         self.insight = InsightAgent()
+        self.reminder = ReminderAgent()
+        self.evaluation = EvaluationAgent()
 
     # -- state -------------------------------------------------------------
     def _load_state(self) -> dict[str, str]:
@@ -576,6 +763,10 @@ class Orchestrator:
                 alerts += self.report.evening_rollup(ctx)
             if "weekly" in jobs:
                 alerts += self.report.weekly(ctx)
+            if "reminders" in jobs:
+                alerts += self.reminder.run(ctx)
+            if "evaluation" in jobs:
+                alerts += self.evaluation.run(ctx)
         except Exception as exc:
             log.exception("Orchestrator job failed: %s", exc)
 

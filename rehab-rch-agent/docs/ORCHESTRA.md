@@ -14,6 +14,8 @@ escalate to supervisors → head → higher admin, and auto-generate reports.
 | BriefingAgent | 07:30 | Morning briefing push → head + all supervisors |
 | ReportAgent | 17:00 + Sunday 08:00 | Evening rollup (Supervisor_Briefings rows + Drive `.docx`); weekly auto-fill (Weekly_Summary rows + Drive `.docx` + admin summary) |
 | InsightAgent | On demand | Gemini narrative over pre-computed stats (AI polish — numbers fixed, never invented) |
+| ReminderAgent (v4.2) | Daily `REMINDER_TIMES` | Due reminders by cadence (Once/Daily/Weekly/Monthly) → audience fan-out + email copy; HIGH tasks due ≤3d/overdue → daily owner nudge; weekly task digest per unit (on `WEEKLY_DAY`); meeting-day-before nudges |
+| EvaluationAgent (v4.2) | Monthly, day `EVAL_DAY` | Previous-month staff evaluation: snapshots → `Staff_Evaluations`, unit digests → supervisors, summary → head (+ email copies). Idempotent: computes + announces once even across restarts; silent when the month has zero reports |
 
 ## Escalation ladder (`messenger.py`)
 
@@ -37,6 +39,8 @@ therapist → unit supervisor → section head → higher admin
 | 17:00 | Evening rollup + archive | Head (+ Drive `.docx`) |
 | SUN 08:00 | Weekly auto-draft | Head + higher admin (+ Drive `.docx`) |
 | Every 30 min | Watchdog | By severity |
+| 08:15 (`REMINDER_TIMES`) | Reminders + HIGH-task nudges | Reminder audiences + task owners |
+| 1st 08:00 (`EVAL_DAY`) | Monthly staff evaluation | Supervisors (unit) + head (summary) |
 | 22:00–06:30 | Quiet hours | Critical only, rest held |
 
 ## Anti-noise rules

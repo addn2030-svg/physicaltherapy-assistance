@@ -169,6 +169,20 @@ Blocked (bot rejects + asks for de-identified resubmission):
 | `/digest` | Your personal ops slice |
 | `/watchdog` | Run gap scan now (admins only) |
 | `/schedule` | Proactive timetable |
+| `/leave` | My leave requests (+ pending for managers) |
+| `/leave_add` | Request leave (guided) |
+| `/leave_approve` | Approve leave (own unit, supervisor/head) |
+| `/incidents` | Open incidents — metadata only |
+| `/incident_add` | Log an incident (guided, PHI-screened) |
+| `/capability` | Capability & competency status |
+| `/policies` | Policy register + overdue reviews |
+| `/status` | My record: unit, license, leave, capabilities |
+| `/whoison` | Who is on leave today (+ cover) |
+| `/coverage` | Coverage vs minimum staffing |
+| `/reminders` | Active reminders (`/remind_add` to add) |
+| `/memos` | Recent memos (`/memo` to save) |
+| `/agenda` | Upcoming agendas (`/agenda_add` to add) |
+| `/evaluate` | Staff evaluation (self; managers: any name) |
 | `/cancel` | Cancel current flow |
 
 ### Example — announcement
@@ -287,6 +301,17 @@ report automator (evening rollup + weekly auto-fill into the sheet and
 Drive), and a Gemini insight narrator. Dedup windows, quiet hours, full
 audit. Manual: [docs/ORCHESTRA.md](docs/ORCHESTRA.md) · Simulation:
 `python demo_orchestra.py`
+
+## Reminders, comms & evaluation (Agent v4.2)
+
+Eight agents now: + reminder cadence (Once/Daily/Weekly/Monthly audiences,
+HIGH-task daily nudges, weekly task digests, meeting-day-before nudges)
+and monthly staff evaluation (working-days %, patient share, load vs unit
+average, documentation rate, flags — transparent formulas, no black-box
+score). Reminders, memos (`/memo`), and agendas (`/agenda_add`) are saved
+to the sheet and optionally fanned out by **email** (any SMTP provider)
+and **Google Calendar** (same service account as Drive) — both off by
+default until configured. Setup: [docs/COMMS.md](docs/COMMS.md)
 
 ## Before launch
 

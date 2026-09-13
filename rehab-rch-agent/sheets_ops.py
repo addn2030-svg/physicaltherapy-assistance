@@ -25,7 +25,8 @@ from __future__ import annotations
 import logging
 import re
 from abc import ABC, abstractmethod
-from datetime import date, datetime
+from calendar import monthrange
+from datetime import date, datetime, timedelta
 from typing import Any, Optional
 
 from config import settings
@@ -42,7 +43,9 @@ SCHEMAS: dict[str, list[str]] = {
     "Supervisors": ["Supervisor", "Area"],
     "Staff_Register": ["Name", "Unit", "Role",
                        # v4.1 additions (all optional, backward compatible):
-                       "Status", "Contract_Type", "License_Expiry"],
+                       "Status", "Contract_Type", "License_Expiry",
+                       # v4.2: staff email for agent email reminders (optional)
+                       "Email"],
     "Daily_Staff_Reports": [
         "Report_Date", "Staff_Name", "Unit", "Patients_Seen", "New_Cases",
         "Follow_Up_Cases", "Documentation_Status", "Issues",
@@ -109,6 +112,24 @@ SCHEMAS: dict[str, list[str]] = {
     "Policy_Registry": [
         "Policy_ID", "Title", "Version", "Effective_Date", "Review_Date",
         "Owner", "Status", "Last_Reviewed_By", "Notes",
+    ],
+    # -- v4.2 tabs (reminders, memos, agendas, evaluations) ---------------
+    "Reminders": [
+        "Reminder_ID", "Title", "Audience", "Start_Date", "End_Date",
+        "Cadence", "Priority", "Status", "Created_By", "Last_Sent",
+        "Calendar_Event_ID", "Notes",
+    ],
+    "Memo_Log": [
+        "Memo_ID", "Date", "Title", "Body", "Audience", "Author", "Status",
+    ],
+    "Meeting_Agenda": [
+        "Meeting_ID", "Date", "Title", "Agenda_Items", "Attendees",
+        "Status", "Calendar_Event_ID", "Minutes_Ref",
+    ],
+    "Staff_Evaluations": [
+        "Eval_Month", "Staff_Name", "Unit", "Working_Days_Pct",
+        "Patients_Seen", "Patient_Share_Pct", "Load_Index", "Doc_Rate_Pct",
+        "Leave_Days", "Flags",
     ],
 }
 
@@ -538,6 +559,31 @@ def seed_demo_tabs(today: Optional[date] = None) -> dict[str, list[dict[str, str
              "Status": "Active", "Last_Reviewed_By": "",
              "Notes": "Overdue for scheduled review"},
         ],
+        "Reminders": [
+            {"Reminder_ID": "REM-2026-001",
+             "Title": "Confirm weekend coverage roster",
+             "Audience": "Supervisors", "Start_Date": day, "End_Date": "",
+             "Cadence": "Weekly", "Priority": "Normal", "Status": "Active",
+             "Created_By": "Section Head", "Last_Sent": "",
+             "Calendar_Event_ID": "",
+             "Notes": "Seeded example — edit or set Status=Done"},
+        ],
+        "Memo_Log": [
+            {"Memo_ID": "MEM-2026-001", "Date": day,
+             "Title": "Welcome to agent reminders",
+             "Body": "Reminders, memos and agendas from the bot are saved "
+                     "here and in your calendar when connected.",
+             "Audience": "All", "Author": "Section Head", "Status": "Active"},
+        ],
+        "Meeting_Agenda": [
+            {"Meeting_ID": "MTG-2026-001", "Date": day,
+             "Title": "Weekly supervisors huddle",
+             "Agenda_Items": "1) Coverage gaps 2) Overdue actions "
+                             "3) Equipment issues",
+             "Attendees": "Supervisors", "Status": "Scheduled",
+             "Calendar_Event_ID": "", "Minutes_Ref": ""},
+        ],
+        "Staff_Evaluations": [],
         "Announcements_Log": [
             {"Date": day, "Title": "Weekly huddle moved to 09:30",
              "Body": "Tuesday huddle starts 09:30 this week only.",
@@ -783,6 +829,17 @@ class OpsDB:
         for r in self.open_actions():
             due = _parse_date(r.get("Due_Date"))
             if due and due < today:
+                out.append(r)
+        return out
+
+    def actions_due_within(self, days: int,
+                           today: Optional[date] = None) -> list[dict[str, str]]:
+        """Open actions due today..today+days (inclusive)."""
+        today = today or date.today()
+        out = []
+        for r in self.open_actions():
+            due = _parse_date(r.get("Due_Date"))
+            if due and today <= due <= today + timedelta(days=days):
                 out.append(r)
         return out
 
@@ -1066,6 +1123,201 @@ class OpsDB:
     def can_manage(self, staff_name: str, unit_id: str) -> bool:
         """Head or the unit's supervisor (used by /leave_approve)."""
         return self.is_head(staff_name) or self.supervises(staff_name, unit_id)
+
+    # -- v4.2: audiences + email ------------------------------------------------------
+    def email_for(self, staff_name: str) -> str:
+        want = _s(staff_name).lower()
+        for s in self.staff():
+            if _s(s.get("Name")).lower() == want:
+                return _s(s.get("Email"))
+        return ""
+
+    def supervisor_names(self) -> list[str]:
+        names: list[str] = []
+        for u in self.units():
+            sup = _s(u.get("Supervisor"))
+            if sup and sup not in names:
+                names.append(sup)
+        for s in self.supervisors():
+            sup = _s(s.get("Supervisor"))
+            if sup and sup not in names:
+                names.append(sup)
+        return names
+
+    def resolve_audience(self, audience: str) -> list[str]:
+        """Audience label → staff names. All / Supervisors / unit / name."""
+        label = _s(audience).strip()
+        low = label.lower()
+        if low == "all":
+            return [_s(s.get("Name")) for s in self.active_staff()
+                    if _s(s.get("Name"))]
+        if low in {"supervisors", "supervisor"}:
+            return self.supervisor_names()
+        unit = self.resolve_unit(label)
+        if unit:
+            uid = str(unit.get("Unit_ID")).upper()
+            out = []
+            for s in self.active_staff():
+                u = self.resolve_unit(str(s.get("Unit", "")))
+                if u and str(u.get("Unit_ID")).upper() == uid:
+                    out.append(_s(s.get("Name")))
+            if out:
+                return out
+        if any(_s(s.get("Name")).lower() == low for s in self.staff()):
+            return [_s(s.get("Name")) for s in self.staff()
+                    if _s(s.get("Name")).lower() == low]
+        return []
+
+    def emails_for_audience(self, audience: str) -> list[str]:
+        addrs = []
+        for name in self.resolve_audience(audience):
+            email = self.email_for(name)
+            if email and "@" in email and email not in addrs:
+                addrs.append(email)
+        return addrs
+
+    # -- v4.2: reminders ------------------------------------------------------------
+    def reminders(self) -> list[dict[str, str]]:
+        return self.b.read_tab("Reminders")
+
+    def active_reminders(self) -> list[dict[str, str]]:
+        return [r for r in self.reminders()
+                if _s(r.get("Status")).lower() == "active"]
+
+    def _next_seq_id(self, tab: str, col: str, prefix: str) -> str:
+        year = date.today().year
+        best = 0
+        for r in self.b.read_tab(tab):
+            m = re.fullmatch(rf"{prefix}-{year}-(\d+)", _s(r.get(col)))
+            if m:
+                best = max(best, int(m.group(1)))
+        return f"{prefix}-{year}-{best + 1:03d}"
+
+    def next_reminder_id(self) -> str:
+        return self._next_seq_id("Reminders", "Reminder_ID", "REM")
+
+    def add_reminder(self, row: dict[str, str]) -> str:
+        row = dict(row)
+        row.setdefault("Reminder_ID", self.next_reminder_id())
+        row.setdefault("Status", "Active")
+        self.b.append_row("Reminders", row)
+        return row["Reminder_ID"]
+
+    def mark_reminder_sent(self, reminder_id: str, day: date | str,
+                           done: bool = False) -> bool:
+        updates = {"Last_Sent": _datestr(day)}
+        if done:
+            updates["Status"] = "Done"
+        return self.b.update_rows("Reminders", "Reminder_ID",
+                                  reminder_id, updates) > 0
+
+    def due_reminders(self, today: date | None = None) -> list[dict[str, str]]:
+        """Active reminders due on `today` per their cadence."""
+        today = today or date.today()
+        out = []
+        for r in self.active_reminders():
+            start = _parse_date(r.get("Start_Date")) or today
+            if start > today:
+                continue
+            end = _parse_date(r.get("End_Date"))
+            if end and end < today:
+                continue
+            cadence = _s(r.get("Cadence")).lower() or "once"
+            last = _parse_date(r.get("Last_Sent"))
+            if cadence == "once":
+                if last is None and start <= today:
+                    out.append(r)
+            elif cadence == "daily":
+                if last != today:
+                    out.append(r)
+            elif cadence == "weekly":
+                if today.weekday() == start.weekday() and last != today:
+                    out.append(r)
+            elif cadence == "monthly":
+                anchor = min(start.day, monthrange(today.year, today.month)[1])
+                anchor_date = date(today.year, today.month, anchor)
+                if today >= anchor_date and (last is None or last < anchor_date):
+                    out.append(r)
+        return out
+
+    # -- v4.2: memos + agendas ---------------------------------------------------------
+    def memos(self) -> list[dict[str, str]]:
+        return self.b.read_tab("Memo_Log")
+
+    def add_memo(self, row: dict[str, str]) -> str:
+        row = dict(row)
+        row.setdefault("Memo_ID", self._next_seq_id("Memo_Log", "Memo_ID", "MEM"))
+        row.setdefault("Date", date.today().isoformat())
+        row.setdefault("Status", "Active")
+        self.b.append_row("Memo_Log", row)
+        return row["Memo_ID"]
+
+    def agendas(self) -> list[dict[str, str]]:
+        return self.b.read_tab("Meeting_Agenda")
+
+    def upcoming_agendas(self, today: date | None = None,
+                         days: int = 14) -> list[dict[str, str]]:
+        today = today or date.today()
+        out = []
+        for r in self.agendas():
+            if _s(r.get("Status")).lower() in {"done", "cancelled", "canceled"}:
+                continue
+            d = _parse_date(r.get("Date"))
+            if d and today <= d <= today + timedelta(days=days):
+                out.append(r)
+        return sorted(out, key=lambda r: str(r.get("Date")))
+
+    def add_agenda(self, row: dict[str, str]) -> str:
+        row = dict(row)
+        row.setdefault("Meeting_ID",
+                       self._next_seq_id("Meeting_Agenda", "Meeting_ID", "MTG"))
+        row.setdefault("Status", "Scheduled")
+        self.b.append_row("Meeting_Agenda", row)
+        return row["Meeting_ID"]
+
+    # -- v4.2: evaluation range reads -----------------------------------------------------
+    def staff_reports_between(self, start: date, end: date,
+                              name: str = "") -> list[dict[str, str]]:
+        want = _s(name).lower()
+        out = []
+        for r in self.b.read_tab("Daily_Staff_Reports"):
+            d = _parse_date(r.get("Report_Date"))
+            if not d or not (start <= d <= end):
+                continue
+            if want and _s(r.get("Staff_Name")).lower() != want:
+                continue
+            out.append(r)
+        return out
+
+    def approved_leave_days_between(self, name: str, start: date,
+                                    end: date) -> int:
+        want = _s(name).lower()
+        total = 0
+        for r in self.b.read_tab("Leave_Tracker"):
+            if _s(r.get("Staff_Name")).lower() != want:
+                continue
+            if _s(r.get("Status")).lower() != "approved":
+                continue
+            s = _parse_date(r.get("Start_Date"))
+            e = _parse_date(r.get("End_Date")) or s
+            if not s or not e:
+                continue
+            lo, hi = max(s, start), min(e, end)
+            if lo <= hi:
+                total += (hi - lo).days + 1
+        return total
+
+    def evaluations_for(self, month: str) -> list[dict[str, str]]:
+        """Latest snapshot per staff for `month` (append-wins on re-runs)."""
+        latest: dict[str, dict[str, str]] = {}
+        for r in self.b.read_tab("Staff_Evaluations"):
+            if _s(r.get("Eval_Month")) == month:
+                latest[_s(r.get("Staff_Name")).lower()] = r
+        return list(latest.values())
+
+    def save_evaluation(self, row: dict[str, str]) -> None:
+        """Append-only snapshot; readers take the latest per staff."""
+        self.b.append_row("Staff_Evaluations", row)
 
     # -- governance ---------------------------------------------------------------
     def ensure_schema(self) -> dict[str, str]:

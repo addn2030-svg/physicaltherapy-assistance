@@ -90,6 +90,30 @@ class Settings:
         default_factory=lambda: _env("AUDIT_SHEET_ENABLED", "true").lower() not in {"0", "false", "no"}
     )
 
+    # -- Reminders + evaluation (Agent v4.2) ----------------------------------
+    reminder_times: list[str] = field(
+        default_factory=lambda: [t.strip() for t in _env("REMINDER_TIMES", "08:15").split(",") if t.strip()]
+    )
+    eval_day: int = field(default_factory=lambda: _env_int("EVAL_DAY", 1))
+    eval_time: str = field(default_factory=lambda: _env("EVAL_TIME", "08:00"))
+    eval_weekend: str = field(default_factory=lambda: _env("EVAL_WEEKEND", "FRI,SAT").upper())
+
+    # -- Email (Agent v4.2, disabled unless SMTP_HOST set) ----------------------
+    smtp_host: str = field(default_factory=lambda: _env("SMTP_HOST"))
+    smtp_port: int = field(default_factory=lambda: _env_int("SMTP_PORT", 587))
+    smtp_user: str = field(default_factory=lambda: _env("SMTP_USER"))
+    smtp_password: str = field(default_factory=lambda: _env("SMTP_PASSWORD"))
+    smtp_from: str = field(default_factory=lambda: _env("SMTP_FROM"))
+    email_enabled: bool = field(
+        default_factory=lambda: _env("EMAIL_ENABLED", "true").lower() not in {"0", "false", "no"}
+    )
+
+    # -- Google Calendar (Agent v4.2, disabled unless ID set) --------------------
+    calendar_id: str = field(default_factory=lambda: _env("GOOGLE_CALENDAR_ID"))
+    calendar_enabled: bool = field(
+        default_factory=lambda: _env("CALENDAR_ENABLED", "true").lower() not in {"0", "false", "no"}
+    )
+
     # -- Retention / compliance -------------------------------------------
     retention_days: int = field(default_factory=lambda: _env_int("RETENTION_DAYS", 365))
     manifest_file: str = field(

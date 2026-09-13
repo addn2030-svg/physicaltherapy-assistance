@@ -85,7 +85,7 @@ def test_datahealth_flags_gaps():
 def test_ensure_schema_creates_all_tabs():
     mem = MemoryBackend({})
     status = mem.ensure_tabs(SCHEMAS)
-    assert len(status) == 22  # 11 core + 8 v3 + 3 v4.1
+    assert len(status) == 26  # 11 core + 8 v3 + 3 v4.1 + 4 v4.2
     assert all(v == "created" for v in status.values())
     status2 = mem.ensure_tabs(SCHEMAS)
     assert all(v == "exists" for v in status2.values())

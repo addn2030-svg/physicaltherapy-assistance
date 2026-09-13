@@ -129,6 +129,10 @@ HELP_TEXT = """🏥 *Rehab RCH Agent — Commands*
 /status — My record, license, leave
 /whoison — Who is on leave today
 /coverage — Coverage vs minimum staffing
+/reminders — Active reminders (/remind_add to add)
+/memos — Recent memos (/memo to save)
+/agenda — Upcoming agendas (/agenda_add to add)
+/evaluate — Staff evaluation (self; managers: any name)
 /cancel — Cancel current flow
 
 *Free text:* just ask, e.g.

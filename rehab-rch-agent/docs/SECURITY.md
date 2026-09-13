@@ -58,7 +58,13 @@ effect within 60 minutes without a restart.
   never message content**), questions (first 120 chars), reports generated,
   alerts routed, approvals, leave requests/approvals (IDs + names only),
   incident logs (**metadata only — ID, unit, type, severity**),
+  reminders/memos/agendas saved (IDs + titles only), emails sent/failed
+  (counts + subjects, never bodies), calendar events (IDs + titles),
   hourly access refreshes.
+- Email rule: SMTP credentials live only in server `.env` (never chat,
+  Git, or Sheets). Bot emails are operational only — the same PHI screen
+  applies before queueing, and memo/reminder bodies are staff-written
+  operational text.
 - Incident rule: `Incident_Reports.Description` is **never** read by the bot
   and never enters Telegram, logs, or alerts — supervisors complete it in
   the Sheet. `/incidents` and watchdog pages show metadata only.

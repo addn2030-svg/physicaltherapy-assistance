@@ -21,6 +21,13 @@ Commands (all require ops-sheet connection + staff auth):
     /status       — my staff record, license, leave, capabilities
     /whoison      — who is on approved leave today (+ cover status)
     /coverage     — today's coverage vs minimum staffing
+    /reminders    — active reminders (cadence, audience, last sent)
+    /remind_add   — create a reminder (guided, + calendar event)
+    /memos        — recent memos
+    /memo         — save a memo (guided, + email to audience)
+    /agenda       — upcoming meeting agendas
+    /agenda_add   — save a meeting agenda (guided, + calendar event)
+    /evaluate     — staff evaluation: workload, share, doc rate, flags
 
 Registered into the bot via :func:`register_ops_handlers` (called from
 bot.py). Number formatting is deterministic — Gemini is never asked to
@@ -44,8 +51,11 @@ from telegram.ext import (
 
 from audit import audit
 from auth import is_admin, staff_auth
+from calendar_ops import create_calendar_event
+from mailer import send_staff_email
 from safety import contains_phi
 from sheets_ops import OpsDB, get_ops_db
+from staff_eval import evaluate_staff, format_eval_card, previous_month
 
 log = logging.getLogger("ops")
 
@@ -56,6 +66,9 @@ log = logging.getLogger("ops")
 (E_UNIT, E_EQUIP, E_ISSUE, E_SEV) = range(130, 134)
 (L_TYPE, L_START, L_END, L_NOTES) = range(140, 144)
 (I_UNIT, I_TYPE, I_SEV, I_ACTION) = range(150, 154)
+(R_TITLE, R_AUD, R_START, R_END, R_CAD, R_PRI) = range(160, 166)
+(M_TITLE, M_AUD, M_BODY) = range(170, 173)
+(G_TITLE, G_DATE, G_ATT, G_ITEMS) = range(180, 184)
 
 
 # ----------------------------------------------------------------------------
@@ -1438,6 +1451,355 @@ async def cmd_coverage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 # ----------------------------------------------------------------------------
+# v4.2: reminders, memos, agendas, evaluation
+# ----------------------------------------------------------------------------
+_AUD_HINT = "Audience? (All / Supervisors / U01–U08 / unit name / staff name)"
+
+
+def _check_audience(db: OpsDB, text: str) -> list[str]:
+    return db.resolve_audience(text.strip())
+
+
+async def cmd_reminders(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    rows = db.active_reminders()
+    if not rows:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "⏰ No active reminders.\n\nCreate one: /remind_add")
+        return
+    lines = [f"⏰ *Active reminders ({len(rows)})*"]
+    for r in rows[:15]:
+        lines.append(f"• {r.get('Reminder_ID')} [{r.get('Cadence')}/"
+                     f"{r.get('Priority')}] {r.get('Title')}\n"
+                     f"  → {r.get('Audience')} | {r.get('Start_Date')}→"
+                     f"{r.get('End_Date') or '…'} | last sent: "
+                     f"{r.get('Last_Sent') or 'never'}")
+    if len(rows) > 15:
+        lines.append(f"_+{len(rows) - 15} more_")
+    lines.append("\n_Add: /remind_add · stop one in the Reminders tab "
+                 "(Status=Done)_")
+    await update.message.reply_text("\n".join(lines))  # type: ignore[union-attr]
+
+
+async def remind_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if await _me(update) is None:
+        return ConversationHandler.END
+    if await _db_or_msg(update) is None:
+        return ConversationHandler.END
+    context.user_data["ops_rem"] = {}
+    await update.message.reply_text("⏰ New reminder — title?")  # type: ignore[union-attr]
+    return R_TITLE
+
+
+async def remind_add_title(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "remind_title")
+        return ConversationHandler.END
+    context.user_data["ops_rem"]["Title"] = text[:200]  # type: ignore[index]
+    await update.message.reply_text(_AUD_HINT)  # type: ignore[union-attr]
+    return R_AUD
+
+
+async def remind_add_aud(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if not _check_audience(db, text):
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Nobody matches that audience. " + _AUD_HINT)
+        return R_AUD
+    context.user_data["ops_rem"]["Audience"] = text[:60]  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Start date? (YYYY-MM-DD — first day it can fire)")
+    return R_START
+
+
+async def remind_add_start_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    day = _parse_ymd(update.message.text or "")  # type: ignore[union-attr]
+    if day is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Use YYYY-MM-DD please. Start date?")
+        return R_START
+    context.user_data["ops_rem"]["Start_Date"] = day.isoformat()  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "End date? (YYYY-MM-DD, or 'none' for open-ended)")
+    return R_END
+
+
+async def remind_add_end_d(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if not _none(text):
+        day = _parse_ymd(text)
+        start = context.user_data["ops_rem"].get("Start_Date", "")  # type: ignore[index]
+        if day is None or day.isoformat() < start:
+            await update.message.reply_text(  # type: ignore[union-attr]
+                f"End must be on/after {start} (or 'none'). End date?")
+            return R_END
+        context.user_data["ops_rem"]["End_Date"] = day.isoformat()  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Cadence? (Once / Daily / Weekly / Monthly)")
+    return R_CAD
+
+
+_CAD_MAP = {"once": "Once", "daily": "Daily", "weekly": "Weekly",
+            "monthly": "Monthly"}
+
+
+async def remind_add_cad(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    cad = _CAD_MAP.get((update.message.text or "").strip().lower())  # type: ignore[union-attr]
+    if cad is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Choose: Once / Daily / Weekly / Monthly.")
+        return R_CAD
+    context.user_data["ops_rem"]["Cadence"] = cad  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Priority? (High = daily attention / Normal)")
+    return R_PRI
+
+
+async def remind_add_pri(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    pri = (update.message.text or "").strip().lower()  # type: ignore[union-attr]
+    data = context.user_data.get("ops_rem", {})
+    data["Priority"] = "High" if pri.startswith("high") else "Normal"
+    data["Created_By"] = _raw_name(update)
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    rid = db.add_reminder(data)
+    eid = create_calendar_event(f"Reminder: {data.get('Title')}",
+                                str(data.get("Start_Date", "")),
+                                f"Reminder {rid} · {data.get('Cadence')} · "
+                                f"audience: {data.get('Audience')}")
+    if eid:
+        db.b.update_rows("Reminders", "Reminder_ID", rid,
+                         {"Calendar_Event_ID": eid})
+    audit.log("reminder_added", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update), f"id={rid} cad={data.get('Cadence')}")
+    cal = "📅 Calendar event created." if eid else \
+        "📅 Calendar not connected (set GOOGLE_CALENDAR_ID to enable)."
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ Reminder *{rid}* saved ({data.get('Cadence')}, "
+        f"{data.get('Priority')}).\n{cal}\nList: /reminders")
+    return ConversationHandler.END
+
+
+async def cmd_memos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    rows = [r for r in db.memos()
+            if str(r.get("Status", "")).lower() == "active"][-10:]
+    if not rows:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "📝 No memos on file.\n\nSave one: /memo")
+        return
+    lines = ["📝 *Latest memos*"]
+    for r in reversed(rows):
+        lines.append(f"• {r.get('Memo_ID')} ({r.get('Date')}) "
+                     f"{r.get('Title')}\n"
+                     f"  → {r.get('Audience')} · by {r.get('Author')}\n"
+                     f"  {str(r.get('Body', ''))[:400]}")
+    await _send_long(update, "\n".join(lines))
+
+
+async def memo_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if await _me(update) is None:
+        return ConversationHandler.END
+    if await _db_or_msg(update) is None:
+        return ConversationHandler.END
+    context.user_data["ops_memo"] = {}
+    await update.message.reply_text("📝 New memo — title?")  # type: ignore[union-attr]
+    return M_TITLE
+
+
+async def memo_add_title(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "memo_title")
+        return ConversationHandler.END
+    context.user_data["ops_memo"]["Title"] = text[:200]  # type: ignore[index]
+    await update.message.reply_text(_AUD_HINT)  # type: ignore[union-attr]
+    return M_AUD
+
+
+async def memo_add_aud(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if not _check_audience(db, text):
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Nobody matches that audience. " + _AUD_HINT)
+        return M_AUD
+    context.user_data["ops_memo"]["Audience"] = text[:60]  # type: ignore[index]
+    await update.message.reply_text("Memo body?")  # type: ignore[union-attr]
+    return M_BODY
+
+
+async def memo_add_body(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "memo_body")
+        return ConversationHandler.END
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    data = context.user_data.get("ops_memo", {})
+    data["Body"] = text[:2000]
+    data["Author"] = _raw_name(update)
+    mid = db.add_memo(data)
+    emailed = send_staff_email(
+        db, str(data.get("Audience", "")),
+        f"Memo: {data.get('Title')}",
+        f"{data.get('Title')}\n\n{text}\n\n— {data.get('Author')}")
+    audit.log("memo_saved", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update), f"id={mid} emailed={emailed}")
+    mail = f"📧 Emailed to {emailed} staff." if emailed else \
+        "📧 Not emailed (SMTP not configured or no staff emails on file)."
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ Memo *{mid}* saved to Memo_Log.\n{mail}\nList: /memos")
+    return ConversationHandler.END
+
+
+async def cmd_agenda(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if await _me(update) is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    rows = db.upcoming_agendas()
+    if not rows:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "📅 No upcoming agendas.\n\nAdd one: /agenda_add")
+        return
+    lines = [f"📅 *Upcoming agendas ({len(rows)})*"]
+    for r in rows[:10]:
+        lines.append(f"• {r.get('Meeting_ID')} {r.get('Date')} — "
+                     f"{r.get('Title')}\n"
+                     f"  Attendees: {r.get('Attendees')} | "
+                     f"{r.get('Status')}\n"
+                     f"  {str(r.get('Agenda_Items', ''))[:300]}")
+    await _send_long(update, "\n".join(lines))
+
+
+async def agenda_add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if await _me(update) is None:
+        return ConversationHandler.END
+    if await _db_or_msg(update) is None:
+        return ConversationHandler.END
+    context.user_data["ops_agenda"] = {}
+    await update.message.reply_text("📅 New agenda — meeting title?")  # type: ignore[union-attr]
+    return G_TITLE
+
+
+async def agenda_add_title(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "agenda_title")
+        return ConversationHandler.END
+    context.user_data["ops_agenda"]["Title"] = text[:200]  # type: ignore[index]
+    await update.message.reply_text("Meeting date? (YYYY-MM-DD)")  # type: ignore[union-attr]
+    return G_DATE
+
+
+async def agenda_add_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    day = _parse_ymd(update.message.text or "")  # type: ignore[union-attr]
+    if day is None:
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Use YYYY-MM-DD please. Meeting date?")
+        return G_DATE
+    context.user_data["ops_agenda"]["Date"] = day.isoformat()  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Attendees? (All / Supervisors / U01–U08 / staff name)")
+    return G_ATT
+
+
+async def agenda_add_att(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if not _check_audience(db, text):
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "Nobody matches that audience. Attendees? "
+            "(All / Supervisors / U01–U08 / staff name)")
+        return G_ATT
+    context.user_data["ops_agenda"]["Attendees"] = text[:100]  # type: ignore[index]
+    await update.message.reply_text(  # type: ignore[union-attr]
+        "Agenda items? (number them: 1) … 2) …)")
+    return G_ITEMS
+
+
+async def agenda_add_items(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip()  # type: ignore[union-attr]
+    if contains_phi(text).blocked:
+        await _phi_block(update, text, "agenda_items")
+        return ConversationHandler.END
+    db = await _db_or_msg(update)
+    if db is None:
+        return ConversationHandler.END
+    data = context.user_data.get("ops_agenda", {})
+    data["Agenda_Items"] = text[:2000]
+    mid = db.add_agenda(data)
+    eid = create_calendar_event(f"Meeting: {data.get('Title')}",
+                                str(data.get("Date", "")),
+                                f"Agenda {mid} · attendees: "
+                                f"{data.get('Attendees')}\n{text[:1500]}")
+    if eid:
+        db.b.update_rows("Meeting_Agenda", "Meeting_ID", mid,
+                         {"Calendar_Event_ID": eid})
+    audit.log("agenda_saved", update.effective_user.id,  # type: ignore[union-attr]
+              _staff_name(update), f"id={mid}")
+    cal = "📅 Calendar event created." if eid else \
+        "📅 Calendar not connected (set GOOGLE_CALENDAR_ID to enable)."
+    await update.message.reply_text(  # type: ignore[union-attr]
+        f"✅ Agenda *{mid}* saved ({data.get('Date')}).\n{cal}\n"
+        f"Attendees get a bot nudge the day before. List: /agenda")
+    return ConversationHandler.END
+
+
+async def cmd_evaluate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    staff = await _me(update)
+    if staff is None:
+        return
+    db = await _db_or_msg(update)
+    if db is None:
+        return
+    me = staff.name
+    args = list(context.args or [])
+    year, month = previous_month(date.today())
+    if args and len(args[-1]) == 7 and args[-1][4] == "-":
+        try:
+            y, m = args.pop().split("-")
+            year, month = int(y), int(m)
+            assert 1 <= month <= 12 and 2020 <= year <= 2100
+        except (ValueError, AssertionError):
+            await update.message.reply_text(  # type: ignore[union-attr]
+                "Month format: YYYY-MM (e.g. /evaluate 2026-08).")
+            return
+    name = " ".join(args).strip() or me
+    if name.lower() != me.lower() and not _manages_any(db, me):
+        await update.message.reply_text(  # type: ignore[union-attr]
+            "🔒 You can only evaluate yourself. "
+            "Supervisors/head can evaluate their staff.")
+        return
+    if not any(str(s.get("Name", "")).strip().lower() == name.lower()
+               for s in db.staff()):
+        await update.message.reply_text(f"No staff member '{name}'.")  # type: ignore[union-attr]
+        return
+    row = evaluate_staff(db, name, year, month)
+    await update.message.reply_text(format_eval_card(row))  # type: ignore[union-attr]
+
+
+# ----------------------------------------------------------------------------
 # Registration (called from bot.py — keeps bot.py diff to 2 lines)
 # ----------------------------------------------------------------------------
 def register_ops_handlers(app) -> None:
@@ -1509,6 +1871,41 @@ def register_ops_handlers(app) -> None:
     app.add_handler(CommandHandler("status", cmd_status))
     app.add_handler(CommandHandler("whoison", cmd_whoison))
     app.add_handler(CommandHandler("coverage", cmd_coverage))
+    app.add_handler(CommandHandler("reminders", cmd_reminders))
+    app.add_handler(CommandHandler("memos", cmd_memos))
+    app.add_handler(CommandHandler("agenda", cmd_agenda))
+    app.add_handler(CommandHandler("evaluate", cmd_evaluate))
+    remind_conv = ConversationHandler(
+        entry_points=[CommandHandler("remind_add", remind_add_start)],
+        states={
+            R_TITLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_title)],
+            R_AUD: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_aud)],
+            R_START: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_start_d)],
+            R_END: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_end_d)],
+            R_CAD: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_cad)],
+            R_PRI: [MessageHandler(filters.TEXT & ~filters.COMMAND, remind_add_pri)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
+    memo_conv = ConversationHandler(
+        entry_points=[CommandHandler("memo", memo_add_start)],
+        states={
+            M_TITLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, memo_add_title)],
+            M_AUD: [MessageHandler(filters.TEXT & ~filters.COMMAND, memo_add_aud)],
+            M_BODY: [MessageHandler(filters.TEXT & ~filters.COMMAND, memo_add_body)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
+    agenda_conv = ConversationHandler(
+        entry_points=[CommandHandler("agenda_add", agenda_add_start)],
+        states={
+            G_TITLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, agenda_add_title)],
+            G_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, agenda_add_date)],
+            G_ATT: [MessageHandler(filters.TEXT & ~filters.COMMAND, agenda_add_att)],
+            G_ITEMS: [MessageHandler(filters.TEXT & ~filters.COMMAND, agenda_add_items)],
+        },
+        fallbacks=[CommandHandler("cancel", ops_cancel)],
+    )
     leave_conv = ConversationHandler(
         entry_points=[CommandHandler("leave_add", leave_add_start)],
         states={
@@ -1544,3 +1941,6 @@ def register_ops_handlers(app) -> None:
     app.add_handler(equip_conv)
     app.add_handler(leave_conv)
     app.add_handler(incident_conv)
+    app.add_handler(remind_conv)
+    app.add_handler(memo_conv)
+    app.add_handler(agenda_conv)

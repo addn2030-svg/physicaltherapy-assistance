@@ -8,6 +8,8 @@ Asia/Riyadh) and runs due jobs through the orchestrator:
   17:00 (ROLLUP_TIME)    rollup → evening rollup + Drive archive
   SUN 08:00              weekly → auto-fill Weekly_Summary + Drive + admin
   every 30 min           watchdog → critical lens
+  08:15 (REMINDER_TIMES) reminders → v4.2 cadence reminders + HIGH tasks
+  1st 08:00 (EVAL_DAY)   evaluation → v4.2 monthly staff evaluation
 
 Also writes output/heartbeat.txt each tick (Docker HEALTHCHECK + admin
 monitoring). Started from bot.py post_init; no-ops cleanly when the ops
@@ -18,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from calendar import monthrange
 from datetime import datetime, timedelta
 
 from config import settings
@@ -79,6 +82,17 @@ def due_jobs(now: datetime, last: dict[str, datetime]) -> list[str]:
     prev_wd = last.get("watchdog")
     if prev_wd is None or (now - prev_wd) >= timedelta(minutes=settings.watchdog_minutes):
         jobs.append("watchdog")
+    for slot in settings.reminder_times:
+        target = _at_time(now, slot)
+        key = f"reminders:{slot}"
+        if target and _due_since(last, key, target, now):
+            jobs.append("reminders")
+            break
+    eval_day = min(max(settings.eval_day, 1),
+                   monthrange(now.year, now.month)[1])
+    eval_target = _at_time(now.replace(day=eval_day), settings.eval_time)
+    if eval_target and _due_since(last, "evaluation", eval_target, now):
+        jobs.append("evaluation")
     return jobs
 
 
@@ -89,6 +103,11 @@ def mark_ran(last: dict[str, datetime], jobs: list[str], now: datetime) -> None:
                 target = _at_time(now, slot)
                 if target and target <= now:
                     last[f"gaps:{slot}"] = now
+        elif job == "reminders":
+            for slot in settings.reminder_times:
+                target = _at_time(now, slot)
+                if target and target <= now:
+                    last[f"reminders:{slot}"] = now
         else:
             last[job] = now
 
@@ -103,6 +122,8 @@ def describe_schedule() -> str:
         f"• Evening rollup: daily {settings.rollup_time} → head (+ Drive archive)\n"
         f"• Weekly auto-draft: {settings.weekly_day} {settings.weekly_time} → head + higher admin\n"
         f"• Watchdog: every {settings.watchdog_minutes} min (critical equipment, coverage, due-today)\n"
+        f"• Reminders: daily {', '.join(settings.reminder_times)} (cadence + HIGH tasks + agendas)\n"
+        f"• Monthly evaluation: day {settings.eval_day} {settings.eval_time} → supervisors + head\n"
         f"• Quiet hours: {settings.quiet_hours} (critical only)\n"
         f"• Higher admin: {len(settings.higher_admin_chat_ids)} chat(s) configured")
 
