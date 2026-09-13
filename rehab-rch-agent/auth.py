@@ -12,7 +12,12 @@ Example row::
 Status != Active, or a past Valid Until (YYYY-MM-DD), denies access.
 Use them for monthly access reviews and offboarding without deleting rows.
 
-Fallbacks (in order) when Google Sheets is unavailable:
+Second source: the ``Telegram_Users`` tab of the operations workbook
+(``OPS_SHEET_ID``) — rows with an ``Active`` flag and matching
+``Telegram_Chat_ID`` grant access, with roles resolved from
+``Staff_Register`` by name.
+
+Further fallbacks (in order) when Google Sheets is unavailable:
   1. ``ALLOWED_TELEGRAM_IDS`` env var (comma separated)
   2. Local ``staff_allowlist.json`` file::
 
@@ -95,20 +100,25 @@ class StaffAuth:
         """Reload staff list. Returns number of entries loaded."""
         self._cache = {}
 
-        # 1) Google Sheets (preferred)
+        # 1) Google Sheets staff tab (preferred)
         loaded = self._load_from_google_sheets()
         if loaded:
             self._source = "google-sheets"
             return len(self._cache)
 
-        # 2) Env var
+        # 2) Ops workbook Telegram_Users tab
+        if self._load_from_ops_sheet():
+            self._source = "ops-telegram-users"
+            return len(self._cache)
+
+        # 3) Env var
         for tid in settings.allowed_telegram_ids:
             self._cache[str(tid)] = StaffMember(telegram_id=str(tid), name=f"Staff {tid}")
         if self._cache:
             self._source = "env"
             return len(self._cache)
 
-        # 3) Local JSON file
+        # 4) Local JSON file
         if self._load_from_json_file():
             self._source = "json"
             return len(self._cache)
@@ -172,6 +182,28 @@ class StaffAuth:
             return bool(self._cache)
         except Exception as exc:  # pragma: no cover - needs live creds
             log.warning("Google Sheets staff load failed: %s", exc)
+            return False
+
+    def _load_from_ops_sheet(self) -> bool:
+        """Auth from the ops workbook Telegram_Users tab (Agent v3)."""
+        if not settings.ops_sheet_id or not settings.has_google_credentials:
+            return False
+        try:
+            from sheets_ops import OpsDB, GSpreadBackend  # lazy: avoid import cycles
+
+            db = OpsDB(GSpreadBackend(settings.ops_sheet_id))
+            for user in db.telegram_users(active_only=True):
+                chat_id = str(user.get("Telegram_Chat_ID", "")).strip()
+                if not chat_id or not chat_id.lstrip("-").isdigit():
+                    continue
+                name = str(user.get("Staff_Name", "")).strip() or "Staff"
+                self._cache[chat_id] = StaffMember(
+                    telegram_id=chat_id, name=name, role=db.staff_role(name),
+                )
+            log.info("Loaded %d staff from ops Telegram_Users.", len(self._cache))
+            return bool(self._cache)
+        except Exception as exc:
+            log.warning("Ops Telegram_Users load failed: %s", exc)
             return False
 
     def _load_from_json_file(self) -> bool:

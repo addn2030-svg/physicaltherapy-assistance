@@ -15,6 +15,10 @@ Commands:
     /audit        — recent audit events (admins only)
     /cancel       — cancel current guided flow
 
+Agent v3 ops (ops_handlers.py, needs OPS_SHEET_ID):
+    /briefing /daily /supervisor /actions /actions_add /equipment
+    /equipment_add /dashboard /staff /units /datahealth /setup
+
 Free-text questions from authorized staff are answered with Gemini +
 knowledge-base context. Every message is screened for PHI first.
 Phase 2 safety rails: audit trail, versioned citations, knowledge
@@ -47,6 +51,7 @@ from config import settings
 from gemini_client import gemini
 from google_drive import drive
 from knowledge_base import coverage_label, kb
+from ops_handlers import register_ops_handlers
 from report_generator import (
     build_announcement,
     build_meeting_minutes,
@@ -100,6 +105,16 @@ HELP_TEXT = """🏥 *Rehab RCH Agent — Commands*
 /save — Save last document to Google Drive
 /kb — Knowledge-base status
 /audit — Recent audit events (admins only)
+/briefing — Morning ops briefing (ops sheet)
+/daily — File daily staff report
+/supervisor — File daily supervisor report
+/actions — Open actions (/actions_add to add)
+/equipment — Open equipment issues (/equipment_add to log)
+/dashboard — Sheet KPIs
+/staff — Staff directory
+/units — Units + supervisors
+/datahealth — Sheet data-quality check
+/setup — Create ops tabs (admins only)
 /cancel — Cancel current flow
 
 *Free text:* just ask, e.g.
@@ -426,6 +441,20 @@ async def ann_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
             "announcement_saved", update.effective_user.id, _staff_name(update),  # type: ignore[union-attr]
             f"file={Path(path).name} drive_ok={result.get('ok')}",
         )
+        try:  # Agent v3: also log to the ops sheet Announcements_Log tab
+            from sheets_ops import get_ops_db
+
+            ops_db = get_ops_db()
+            if ops_db is not None:
+                ops_db.add_announcement({
+                    "Title": context.user_data.get("ann_subject", "Department Announcement"),
+                    "Body": context.user_data.get("ann_draft", "")[:1000],
+                    "Audience": "All units",
+                    "Author": prepared_by,
+                    "Status": "Sent",
+                })
+        except Exception as exc:
+            log.debug("Ops announcement log skipped: %s", exc)
         try:
             with open(path, "rb") as f:
                 await update.message.reply_document(document=f, filename=Path(path).name)  # type: ignore[union-attr]
@@ -583,6 +612,7 @@ def build_app() -> Application:
     app.add_handler(CommandHandler("save", cmd_save))
     app.add_handler(CommandHandler("kb", cmd_kb))
     app.add_handler(CommandHandler("audit", cmd_audit))
+    register_ops_handlers(app)  # Agent v3: /briefing /daily /supervisor ...
     app.add_handler(report_conv)
     app.add_handler(ann_conv)
     app.add_handler(meet_conv)

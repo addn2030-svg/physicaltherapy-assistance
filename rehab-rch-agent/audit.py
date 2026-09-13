@@ -63,6 +63,7 @@ class AuditLogger:
         except Exception as exc:
             log.warning("Local audit write failed: %s", exc)
         self._append_to_sheet(entry)
+        self._append_to_ops_log(entry)
         return entry
 
     def recent(self, limit: int = 20) -> list[dict[str, Any]]:
@@ -118,6 +119,22 @@ class AuditLogger:
         except Exception as exc:
             # Sheet mirroring is optional — local JSONL is the source of truth.
             log.debug("Audit sheet append skipped: %s", exc)
+
+    def _append_to_ops_log(self, entry: dict[str, Any]) -> None:
+        """Mirror to the Agent_Audit_Log tab of the ops workbook (best-effort)."""
+        if not settings.ops_sheet_id or not settings.has_google_credentials:
+            return
+        try:
+            from sheets_ops import get_ops_db  # lazy: avoid import cycles
+
+            db = get_ops_db()
+            if db is not None:
+                db.audit_append(
+                    entry["event"], entry["telegram_id"],
+                    entry["name"], entry["details"],
+                )
+        except Exception as exc:
+            log.debug("Ops audit mirror skipped: %s", exc)
 
 
 # Singleton

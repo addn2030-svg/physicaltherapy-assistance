@@ -58,6 +58,9 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full module map.
 ```
 rehab-rch-agent/
 ├── bot.py               # Telegram entry point (commands + conversations)
+├── ops_handlers.py      # Agent v3 ops commands (/briefing, /daily, ...)
+├── sheets_ops.py        # Rehab_Operations_Master_v2 workbook layer
+├── demo_ops.py          # Zero-credential ops demo (in-memory sheet)
 ├── gemini_client.py     # Gemini AI wrapper (operational prompts, demo fallback)
 ├── google_drive.py      # Drive folder tree + dated uploads
 ├── knowledge_base.py    # Approved-docs index + keyword search + manifest governance
@@ -145,6 +148,16 @@ Blocked (bot rejects + asks for de-identified resubmission):
 | `/save` | Save last document to Drive |
 | `/kb` | Knowledge-base status (`/kb reload` to re-index) |
 | `/audit` | Recent audit events (admins only) |
+| `/briefing` | Morning ops briefing (ops sheet) |
+| `/daily` | File daily staff report |
+| `/supervisor` | File daily supervisor report |
+| `/actions` | Open actions (`/actions_add` to add) |
+| `/equipment` | Open equipment issues (`/equipment_add` to log) |
+| `/dashboard` | Sheet KPIs |
+| `/staff` | Staff directory |
+| `/units` | Units + supervisors |
+| `/datahealth` | Sheet data-quality check |
+| `/setup` | Create ops tabs (admins only) |
 | `/cancel` | Cancel current flow |
 
 ### Example — announcement
@@ -203,8 +216,12 @@ access reviews and offboarding without deleting rows.
 
 If not listed: `Access denied. Contact Rehabilitation Section Head.`
 
-Fallbacks when Sheets is unavailable: `ALLOWED_TELEGRAM_IDS` env var,
-then local `staff_allowlist.json` (see `staff_allowlist.example.json`).
+Second source: the `Telegram_Users` tab of the operations workbook —
+rows with `Active = TRUE` and a matching `Telegram_Chat_ID` grant access
+(roles resolve from `Staff_Register`).
+
+Further fallbacks when Sheets is unavailable: `ALLOWED_TELEGRAM_IDS` env
+var, then local `staff_allowlist.json` (see `staff_allowlist.example.json`).
 
 ## Quickstart (local)
 
@@ -235,6 +252,17 @@ Or build the container: `docker build -t rehab-rch-agent .`
 
 Without keys, the bot runs in **demo mode** (template drafts + local `output/`
 saves) so all Telegram flows are testable for free.
+
+## Operations workbook (Agent v3)
+
+Mirror `Rehab_Operations_Master_v2.xlsx` to Google Sheets (11 core tabs +
+8 agent tabs) and the bot becomes your daily operations desk: `/briefing`
+morning rollup, `/daily` + `/supervisor` guided reporting, `/actions` and
+`/equipment` tracking, `/dashboard` KPIs, `/datahealth` quality checks —
+with every event mirrored to the `Agent_Audit_Log` tab.
+
+Setup: [docs/SHEETS_OPS.md](docs/SHEETS_OPS.md) · Zero-key preview:
+`python demo_ops.py`
 
 ## Before launch
 
