@@ -106,6 +106,18 @@ This directory recognizes that manual therapy and rehabilitation techniques are 
 
 These techniques should be applied by qualified healthcare professionals with appropriate training and certification. This directory is for educational and reference purposes and does not replace formal training or clinical judgment.
 
+## 🤖 Rehab RCH Agent v2
+
+New in this repo: a 24/7 AI assistant for the Rehabilitation Department — RCH
+(**Telegram + Gemini + Google Drive + GitHub + Oracle Cloud Free Tier**, $0/month).
+
+- Answers department questions, drafts announcements, summarizes meetings
+- Generates operational reports and auto-saves them to Google Drive
+- Searches approved SOPs/guidelines; **no patient information allowed**
+
+👉 See [rehab-rch-agent/README.md](./rehab-rch-agent/README.md) for setup,
+commands, Google/Drive configuration, and Oracle Cloud 24/7 deployment.
+
 ---
 
 **Last Updated**: 2026

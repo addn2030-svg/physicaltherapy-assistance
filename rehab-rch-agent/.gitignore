@@ -1,0 +1,10 @@
+.env
+credentials.json
+staff_allowlist.json
+__pycache__/
+*.pyc
+.pytest_cache/
+output/*
+!output/.gitkeep
+.venv/
+venv/
