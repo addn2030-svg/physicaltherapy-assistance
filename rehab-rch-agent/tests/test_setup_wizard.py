@@ -5,6 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from config import fix_console_encoding  # noqa: E402
 from setup_wizard import mask, parse_env_file, render_env, valid_token  # noqa: E402
 
 
@@ -32,3 +33,7 @@ def test_valid_token():
 def test_mask():
     assert mask("") == "(empty)"
     assert mask("abcdef") == "ab…ef"
+
+
+def test_fix_console_encoding_never_raises():
+    fix_console_encoding()  # Windows cp1252 guard; no-op elsewhere

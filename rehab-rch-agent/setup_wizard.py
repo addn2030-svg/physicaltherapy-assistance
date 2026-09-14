@@ -112,6 +112,11 @@ def valid_token(token: str) -> bool:
 
 
 def main() -> int:
+    try:  # Windows consoles default to cp1252 — don't crash on emoji
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
     print("=" * 60)
     print("Rehab RCH Agent — setup wizard")
     print("=" * 60)

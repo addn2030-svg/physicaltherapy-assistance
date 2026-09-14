@@ -21,6 +21,22 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent
 
 
+def fix_console_encoding() -> None:
+    """Allow emoji/log output on Windows consoles without crashing.
+
+    Windows terminals default to cp1252, where print("✅") raises
+    UnicodeEncodeError. Safe no-op on Linux/Mac. Call once in main().
+    """
+    try:
+        import sys
+
+        for stream in (sys.stdout, sys.stderr):
+            if hasattr(stream, "reconfigure"):
+                stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+
 def _env(key: str, default: str = "") -> str:
     return os.getenv(key, default).strip()
 

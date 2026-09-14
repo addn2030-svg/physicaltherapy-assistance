@@ -47,7 +47,7 @@ from telegram.ext import (
 
 from audit import audit
 from auth import is_admin, staff_auth
-from config import settings
+from config import fix_console_encoding, settings
 from gemini_client import gemini
 from google_drive import drive
 from knowledge_base import coverage_label, kb
@@ -680,6 +680,7 @@ def build_app() -> Application:
 
 
 def main() -> None:
+    fix_console_encoding()  # Windows: don't crash on emoji output
     try:  # staff-only: secrets file must not be world-readable
         import os as _os
         import stat as _stat
