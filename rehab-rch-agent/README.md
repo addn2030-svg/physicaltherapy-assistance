@@ -258,6 +258,9 @@ python setup_wizard.py   # answers a few questions, creates .env for you
 python bot.py
 ```
 
+Windows shortcut: double-click `restart_bot.bat` — it pulls the latest
+code, stops any running bot, and starts a fresh one (no typing needed).
+
 No keys yet? Run the zero-credential demo — it exercises the full
 pipeline (auth → PHI screen → KB search → drafts → .docx → Drive save
 → audit) with template AI responses:
