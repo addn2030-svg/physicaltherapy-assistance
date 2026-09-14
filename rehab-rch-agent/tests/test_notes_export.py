@@ -63,9 +63,15 @@ def test_archive_note_demo_stays_local(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "output_dir", tmp_path)
     monkeypatch.setattr(settings, "notes_vault_path", "")
     monkeypatch.setattr(settings, "notes_drive_upload", True)
+
+    class DemoDrive:  # hermetic: pass with or without real credentials.json
+        def upload_file(self, *a, **k):
+            return {"demo": True, "drive_link": ""}
+
+    monkeypatch.setattr("google_drive.DriveClient", DemoDrive)
     res = notes_export.archive_note("memos", "n.md", "# n")
     assert res["local"] and Path(res["local"]).exists()
-    assert res["demo"] is True and res["drive_link"] == ""  # no creds in tests
+    assert res["demo"] is True and res["drive_link"] == ""
 
 
 def test_archive_note_upload_disabled(tmp_path, monkeypatch):
