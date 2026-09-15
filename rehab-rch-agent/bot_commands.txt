@@ -1,0 +1,43 @@
+start - Welcome message and access check
+help - Show all available commands
+report - Generate operational reports (weekly/monthly/annual)
+announcement - Draft department announcements
+sop - Search SOPs and guidelines
+meeting - Create meeting minutes
+save - Save last document to Google Drive
+kb - Knowledge base status and management
+audit - View recent audit events (admins only)
+briefing - Morning operations briefing
+daily - File daily staff report
+supervisor - File daily supervisor report
+actions - View open actions
+actions_add - Add new action item
+equipment - View open equipment issues
+equipment_add - Log equipment issue
+dashboard - View sheet KPIs
+staff - Staff directory
+units - Units and supervisors list
+datahealth - Sheet data quality check
+setup - Create operations tabs (admins only)
+register - Self-register for alerts
+digest - Your personal operations slice
+watchdog - Run gap scan (admins only)
+schedule - View proactive timetable
+leave - View my leave requests
+leave_add - Request leave
+leave_approve - Approve leave requests
+incidents - View open incidents
+incident_add - Log an incident
+capability - Capability and competency status
+policies - Policy register and overdue reviews
+status - View my record (unit, license, leave, capabilities)
+whoison - Who is on leave today
+coverage - Coverage vs minimum staffing
+reminders - View active reminders
+remind_add - Add new reminder
+memos - View recent memos
+memo - Save a memo
+agenda - View upcoming agendas
+agenda_add - Add agenda item
+evaluate - Staff evaluation
+cancel - Cancel current conversation flow

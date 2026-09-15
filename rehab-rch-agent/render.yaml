@@ -1,0 +1,49 @@
+# Render Blueprint for Rehab RCH Agent
+# This file enables one-click deployment to Render.com
+# 
+# To use:
+# 1. Push this file to your GitHub repo
+# 2. Go to https://render.com/deploy
+# 3. Connect your repository
+# 4. Render will read this file and set everything up automatically
+
+services:
+  - type: worker
+    name: rehab-rch-agent
+    env: docker
+    region: frankfurt  # Change to: oregon, frankfurt, singapore, ohio
+    plan: free  # Change to 'starter' for $7/mo always-on
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false  # Must be set manually in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false  # Must be set manually in Render dashboard
+      - key: ALLOWED_TELEGRAM_IDS
+        sync: false  # Must be set manually in Render dashboard
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false  # Optional: for Google Sheets/Drive integration
+      - key: STAFF_SHEET_ID
+        sync: false  # Optional: Google Sheet ID
+      - key: GOOGLE_DRIVE_FOLDER_ID
+        sync: false  # Optional: Drive folder ID
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    
+    # Health check (Render will restart if this fails)
+    healthCheckPath: /  # Not applicable for background workers
+    
+    # Auto-deploy on git push
+    autoDeploy: true
+    
+    # Build command (optional, Docker handles this)
+    # buildCommand: pip install -r requirements.txt
+    
+    # Start command (defined in Dockerfile CMD)
+    # startCommand: python bot.py
+
+# Note: Free tier limitations
+# - Spins down after 15 minutes of inactivity
+# - 512 MB RAM
+# - Shared CPU
+# - For 24/7 uptime, upgrade to 'starter' plan ($7/mo) or use Oracle Cloud (free)
