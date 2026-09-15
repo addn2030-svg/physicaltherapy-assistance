@@ -48,3 +48,27 @@ def test_expired_staff_denied(tmp_path):
 def test_access_ok_defaults():
     assert StaffMember("1", "A").access_ok
     assert not StaffMember("1", "A", status="Inactive").access_ok
+
+
+def test_admin_ids_always_authorized(tmp_path, monkeypatch):
+    """Fresh install: admin in .env is let in even with all sheets empty."""
+    monkeypatch.setattr(settings, "staff_sheet_id", "")
+    monkeypatch.setattr(settings, "ops_sheet_id", "")
+    monkeypatch.setattr(settings, "allowed_telegram_ids", [])
+    monkeypatch.setattr(settings, "telegram_admin_ids", ["7398495644"])
+    monkeypatch.setattr(settings, "staff_allowlist_file",
+                        str(tmp_path / "missing.json"))
+    auth = StaffAuth()
+    assert auth.source == "admin"
+    assert auth.is_authorized(7398495644)  # int form works
+    assert auth.is_authorized("7398495644")
+    assert not auth.is_authorized("000")
+
+
+def test_rich_entry_beats_admin_default(tmp_path, monkeypatch):
+    """A sheet/JSON row keeps its name/role over the generic Admin entry."""
+    monkeypatch.setattr(settings, "telegram_admin_ids", ["111"])
+    auth = _auth_with(tmp_path, [
+        {"telegram_id": "111", "name": "Abdulrahman", "role": "Section Head"},
+    ])
+    assert auth.get_staff("111").display() == "Abdulrahman (Section Head)"

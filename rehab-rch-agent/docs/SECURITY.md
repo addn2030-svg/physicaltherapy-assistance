@@ -26,6 +26,9 @@ is enforced in code, not just documented.
 
 ## 3. Access sources (checked in order, first hit wins)
 
+0. `TELEGRAM_ADMIN_IDS` in `.env` — **always authorized**, even when every
+   sheet is empty (bootstrap access; the owner can never be locked out).
+   Sheet/JSON rows take precedence for name/role when present.
 1. Staff access Sheet (`Telegram ID | Name | Role | Status | Valid Until`)
 2. Ops workbook `Telegram_Users` tab (`Active=TRUE` + matching Chat ID)
 3. `ALLOWED_TELEGRAM_IDS` in `.env`

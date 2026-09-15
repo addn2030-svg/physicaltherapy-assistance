@@ -21,6 +21,9 @@ Further fallbacks (in order) when Google Sheets is unavailable:
   1. ``ALLOWED_TELEGRAM_IDS`` env var (comma separated)
   2. Local ``staff_allowlist.json`` file::
 
+On top of all sources: ``TELEGRAM_ADMIN_IDS`` are always authorized
+(bootstrap access for a fresh install — an admin is never locked out).
+
         [
           {"telegram_id": "123456789", "name": "Abdulrahman", "role": "Section Head",
            "status": "Active", "valid_until": "2027-09-01"}
@@ -99,33 +102,35 @@ class StaffAuth:
     def reload(self) -> int:
         """Reload staff list. Returns number of entries loaded."""
         self._cache = {}
+        self._source = "none"
 
         # 1) Google Sheets staff tab (preferred)
-        loaded = self._load_from_google_sheets()
-        if loaded:
+        if self._load_from_google_sheets():
             self._source = "google-sheets"
-            return len(self._cache)
-
         # 2) Ops workbook Telegram_Users tab
-        if self._load_from_ops_sheet():
+        elif self._load_from_ops_sheet():
             self._source = "ops-telegram-users"
-            return len(self._cache)
-
         # 3) Env var
-        for tid in settings.allowed_telegram_ids:
-            self._cache[str(tid)] = StaffMember(telegram_id=str(tid), name=f"Staff {tid}")
-        if self._cache:
+        elif settings.allowed_telegram_ids:
+            for tid in settings.allowed_telegram_ids:
+                self._cache[str(tid)] = StaffMember(
+                    telegram_id=str(tid), name=f"Staff {tid}")
             self._source = "env"
-            return len(self._cache)
-
         # 4) Local JSON file
-        if self._load_from_json_file():
+        elif self._load_from_json_file():
             self._source = "json"
-            return len(self._cache)
 
-        self._source = "none"
-        log.warning("No staff allowlist configured — all users will be denied.")
-        return 0
+        # Admin IDs are ALWAYS authorized (bootstrap + break-glass access),
+        # even when every sheet is empty. Richer sheet/JSON entries take
+        # precedence for name/role via setdefault.
+        for tid in settings.telegram_admin_ids or []:
+            self._cache.setdefault(str(tid), StaffMember(
+                telegram_id=str(tid), name="Admin", role="Admin"))
+        if self._cache and self._source == "none":
+            self._source = "admin"
+        if self._source == "none":
+            log.warning("No staff allowlist configured — all users will be denied.")
+        return len(self._cache)
 
     def is_authorized(self, telegram_id: int | str) -> bool:
         member = self._cache.get(str(telegram_id))
